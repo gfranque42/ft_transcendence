@@ -1,22 +1,17 @@
-build:
+all: 
 	docker compose -f ./docker-compose.yml build
-
-up:
 	docker compose -f ./docker-compose.yml up -d
 
-down:
-	docker compose -f ./docker-compose.yml down
+logs:
+	docker logs db
+	docker logs backend
 
-restart:
-	make down
-	make up
-
-all: build up
-
-clean: down
+clean:
+	docker container stop backend db
 
 fclean: clean
+	@docker system prune -af
 
 re: fclean all
 
-.PHONY: up down clean fclean re
+.Phony: all logs clean fclean
