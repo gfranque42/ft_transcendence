@@ -1,4 +1,5 @@
 from django.shortcuts import render
+<<<<<<< HEAD
 from django.http import HttpResponse
 
 def home(request):
@@ -9,3 +10,7 @@ def login(request):
 
 def signup(request):
     return render(request, 'pages/signup.html')
+=======
+
+# Create your views here.
+>>>>>>> de43d52 (✨ feat: add new app for the pages)
