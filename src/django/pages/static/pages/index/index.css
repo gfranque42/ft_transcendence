@@ -1,6 +1,7 @@
 .index-body {
     background-color: #62BBC1;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: #131112;
     overflow: hidden;
     width: 100vw;
@@ -14,6 +15,11 @@ a {
     text-decoration: none;
 =======
 >>>>>>> 43a047f (ajusted speeds)
+=======
+    overflow: hidden;
+    width: 100vw;
+    padding: 1vh 3vw;
+>>>>>>> 8303d39 (🚧 feat: navbar prototype)
 }
 
 .index-game-title {

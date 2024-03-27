@@ -13,15 +13,10 @@
 <body class="index-body">
     
     <div class="navbar">
-<<<<<<< HEAD
         <a href="{% url 'base-home' %}" class="navbar-content"><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
         <a href="{% url 'base-home' %}" class="navbar-content">HOME</a>
         <a href="{% url 'base-home' %}" class="navbar-content">LOGIN</a>
-=======
-        <div class="navbar-content"><img src="{% static 'pages/Group.svg.svg' %}" alt="Logo"></div>
-        <div class="navbar-content">HOME</div>
-        <div class="navbar-content">LOGIN</div>
->>>>>>> 43a047f (ajusted speeds)
+        <div class="navbar-content"><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></div>
     </div>
 
     {% block content %}{% endblock %}
