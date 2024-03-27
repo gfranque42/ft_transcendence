@@ -2,6 +2,8 @@ version: '3.9'
 
 services:
   backend:
+    networks:
+      - project
     container_name: backend
     build:
       context: ./src/django/
@@ -11,6 +13,8 @@ services:
     depends_on:
       - db
   db:
+    networks:
+      - project
     container_name: db
     image: postgres
     environment:
@@ -20,4 +24,8 @@ services:
     # build:
     #   context: ./src/pgsql/Dockerfile
     #   dockerfile: Dockerfile
+
+networks:
+  project:
+    driver: bridge
 
