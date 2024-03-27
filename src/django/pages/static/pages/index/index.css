@@ -1,5 +1,8 @@
 .index-body {
     background-color: #62BBC1;
+    overflow: hidden;
+    width: 100vw;
+    padding: 1vh 3vw;
 }
 
 .index-game-title {
