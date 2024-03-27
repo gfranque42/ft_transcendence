@@ -2,8 +2,13 @@ version: '3.9'
 
 services:
   backend:
+<<<<<<< HEAD
     # networks:
       # - project
+=======
+    networks:
+      - project
+>>>>>>> 43a047f (ajusted speeds)
     container_name: backend
     build:
       context: ./src/django/
@@ -13,8 +18,13 @@ services:
     depends_on:
       - db
   db:
+<<<<<<< HEAD
     # networks:
       # - project
+=======
+    networks:
+      - project
+>>>>>>> 43a047f (ajusted speeds)
     container_name: db
     image: postgres
     environment:
@@ -25,7 +35,13 @@ services:
     #   context: ./src/pgsql/Dockerfile
     #   dockerfile: Dockerfile
 
+<<<<<<< HEAD
 # networks:
 #   project:
 #     driver: bridge
+=======
+networks:
+  project:
+    driver: bridge
+>>>>>>> 43a047f (ajusted speeds)
 
