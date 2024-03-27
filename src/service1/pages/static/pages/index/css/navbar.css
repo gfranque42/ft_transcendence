@@ -2,6 +2,12 @@
     width: 94vw;
     padding-left: 3vw;
     padding-right: 3vw;
+<<<<<<< HEAD
+=======
+    padding-top: 1vh; */
+    padding-left: 3vw;
+    padding-right: 3vw;
+>>>>>>> 7bca8e6 (ajusted speeds)
     padding-top: 1vh;
     display: flex;
     justify-content: space-between;
