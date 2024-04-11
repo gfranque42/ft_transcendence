@@ -7,6 +7,13 @@
     justify-content: space-between;
 }
 
+a .navbar{
+    color: #131112;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
 .navbar-content {
     font-family: Oswald;
     font-size: 2.5vw;
