@@ -1,25 +1,12 @@
 .navbar {
     width: 94vw;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    /* padding-left: 3vw;
-    padding-right: 3vw;
-    padding-top: 1vh; */
-=======
     padding-left: 3vw;
     padding-right: 3vw;
     padding-top: 1vh;
->>>>>>> 43a047f (ajusted speeds)
-=======
-    /* padding-left: 3vw;
-    padding-right: 3vw;
-    padding-top: 1vh; */
->>>>>>> 8303d39 (🚧 feat: navbar prototype)
     display: flex;
     justify-content: space-between;
 }
 
-<<<<<<< HEAD
 a .navbar{
     color: #131112;
     cursor: pointer;
@@ -35,12 +22,4 @@ a .navbar{
 
 .navbar-logo {
     height: 3vw;
-<<<<<<< HEAD
-=======
-.navbar-content {
-    font-family: Oswald;
-    font-size: 2.5vw;
->>>>>>> 43a047f (ajusted speeds)
-=======
->>>>>>> 8303d39 (🚧 feat: navbar prototype)
 }
