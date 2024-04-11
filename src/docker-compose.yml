@@ -1,10 +1,18 @@
 # version: '3.9'
 
 services:
-  backend:
-    container_name: backend_service1
+  # backend_service1:
+  #   container_name: backend_service1
+  #   build:
+  #     context: ./service1/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
+  
+  backend_service2:
+    container_name: backend_service2
     build:
-      context: ./service1/
+      context: ./service2/
       dockerfile: Dockerfile
     ports:
       - "8000:8000"

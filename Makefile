@@ -1,10 +1,10 @@
 all: up
 
 up:
-	docker-compose -f ./src/docker-compose.yml up --build
+	docker-compose -f ./src/docker-compose.yml up -d --build
 
 v:
-	docker-compose -f ./src/docker-compose.yml --verbose up --build
+	docker-compose -f ./src/docker-compose.yml --verbose up -d --build
 
 stop:
 	docker-compose -f ./src/docker-compose.yml stop
