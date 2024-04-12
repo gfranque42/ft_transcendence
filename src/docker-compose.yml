@@ -2,12 +2,16 @@
 
 services:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd31145 (🚧 struct: add the structure for the registration)
   # backend_service1:
   #   container_name: backend_service1
   #   build:
   #     context: ./service1/
   #     dockerfile: Dockerfile
   #   ports:
+<<<<<<< HEAD
   #     - "8001:8001"
     # networks:
     #   - Transcendence
@@ -28,6 +32,9 @@ services:
       - Transcendence
 =======
       - "8000:8000"
+=======
+  #     - "8000:8000"
+>>>>>>> cd31145 (🚧 struct: add the structure for the registration)
   
   # backend_service2:
   #   container_name: backend_service2
@@ -36,6 +43,7 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "8000:8000"
+<<<<<<< HEAD
 >>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
     # depends_on:
     #   - db
@@ -65,3 +73,13 @@ services:
 networks:
   Transcendence:
     name: Transcendence
+=======
+
+  backend_service3:
+    container_name: backend_service3
+    build:
+      context: ./service3/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+>>>>>>> cd31145 (🚧 struct: add the structure for the registration)
