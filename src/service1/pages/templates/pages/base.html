@@ -13,9 +13,15 @@
 <body class="index-body">
     
     <div class="navbar">
+<<<<<<< HEAD:src/service1/pages/templates/pages/base.html
         <a href="{% url 'base-home' %}" class="navbar-content"><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
         <a href="{% url 'base-home' %}" class="navbar-content">HOME</a>
         <a href="{% url 'base-home' %}" class="navbar-content">LOGIN</a>
+=======
+        <div class="navbar-content"><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></div>
+        <div class="navbar-content">HOME</div>
+        <div class="navbar-content">LOGIN</div>
+>>>>>>> 8303d39 (🚧 feat: navbar prototype):src/django/pages/templates/pages/base.html
     </div>
 
     {% block content %}{% endblock %}
