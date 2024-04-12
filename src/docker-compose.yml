@@ -5,11 +5,14 @@ services:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> cd31145 (🚧 struct: add the structure for the registration)
 =======
 =======
 >>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
+=======
+>>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
  backend_authapi:
     container_name: backend_authapi
     build:
@@ -22,6 +25,7 @@ services:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
 =======
 >>>>>>> 806ef20 (🚧 Fixing stuff: test.rest)
@@ -30,6 +34,8 @@ services:
 <<<<<<< HEAD
 >>>>>>> 248fe0e (🐛 fix: new architecture fixed)
 >>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
+=======
+>>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
   # backend_service1:
   #   container_name: backend_service1
   #   build:
@@ -90,14 +96,13 @@ services:
   
   backend_service2:
     container_name: backend_service2
-=======
   backend_service1:
     container_name: backend_service1
->>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
     build:
       context: ./service1/
       dockerfile: Dockerfile
     ports:
+<<<<<<< HEAD
 <<<<<<< HEAD
       - "8002:8002"
     networks:
@@ -106,8 +111,9 @@ services:
 >>>>>>> df5a683 (🔧 add: add nginx container)
 =======
 =======
+=======
+>>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
       - "8000:8000"
-  
   # backend_service2:
   #   container_name: backend_service2
   #   build:
@@ -115,8 +121,11 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "8000:8000"
+<<<<<<< HEAD
 >>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
 >>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
+=======
+>>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
     # depends_on:
     #   - db
   # db:
