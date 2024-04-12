@@ -1,0 +1,31 @@
+.navbar {
+    width: 94vw;
+    /* padding-left: 3vw;
+<<<<<<< HEAD
+    padding-right: 3vw;
+    padding-top: 1vh; */
+    padding-left: 3vw;
+=======
+>>>>>>> 8303d39 (🚧 feat: navbar prototype)
+    padding-right: 3vw;
+    padding-top: 1vh; */
+    display: flex;
+    justify-content: space-between;
+}
+
+a .navbar{
+    color: #131112;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
+.navbar-content {
+    font-family: Oswald;
+    font-size: 2.5vw;
+}
+
+
+.navbar-logo {
+    height: 3vw;
+}
