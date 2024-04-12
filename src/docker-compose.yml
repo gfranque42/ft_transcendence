@@ -1,7 +1,6 @@
 # version: '3.9'
 
 services:
-<<<<<<< HEAD
  backend_authapi:
     container_name: backend_authapi
     build:
@@ -11,9 +10,6 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
-=======
-<<<<<<< HEAD
->>>>>>> 248fe0e (🐛 fix: new architecture fixed)
   # backend_service1:
   #   container_name: backend_service1
   #   build:
@@ -26,21 +22,13 @@ services:
   
   backend_service2:
     container_name: backend_service2
-=======
   backend_service1:
     container_name: backend_service1
->>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
     build:
       context: ./service1/
       dockerfile: Dockerfile
     ports:
-<<<<<<< HEAD
-      - "8002:8002"
-    networks:
-      - Transcendence
-=======
       - "8000:8000"
-  
   # backend_service2:
   #   container_name: backend_service2
   #   build:
@@ -48,7 +36,6 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "8000:8000"
->>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
     # depends_on:
     #   - db
   # db:
