@@ -1,0 +1,21 @@
+.index-body {
+    background-color: #FFFBFC;
+    color: #131112;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.title-register {
+    background-color: #F08080;
+    width: 50%;
+    height: 100%;
+    float:left;
+}
+
+.form-register {
+    background-color: #FFFBFC;
+    width:50%;
+    height: 100%;
+    float:left;
+}
