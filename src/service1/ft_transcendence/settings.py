@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'ft_transcendence.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'username',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
+        'NAME': 'transcendence',
+        'USER': 'bob',
+        'PASSWORD': 'boby',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
