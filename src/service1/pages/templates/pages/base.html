@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'pages/pages.css'%}">
 </head>
 <body class="index-body">
+<<<<<<< HEAD
     
 <<<<<<< HEAD
     <div class="navbar">
@@ -27,6 +28,9 @@
         <div class="navbar-content"><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></div>
     </div>
 =======
+=======
+
+>>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
   <!--  Linked CDN links to support bootstrap functionality -->
     {% comment %} <script
     src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
@@ -67,5 +71,13 @@
       {% endblock %}
 >>>>>>> 72d2ee7 (🐛 bug: js script issues)
     </div>
+    
+    <div class="navbar">
+        <a href="{% url 'base-home' %}" class="navbar-content"><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+        <a href="{% url 'base-home' %}" class="navbar-content">HOME</a>
+        <a href="{% url 'base-home' %}" class="navbar-content">LOGIN</a>
+    </div>
+
+    {% block content %}{% endblock %}
 </body>
 </html>
