@@ -258,4 +258,20 @@ function gameLoop()
 	gameDraw();
 }
 
-gameLoop();
+let p1s = document.getElementById('player1Score');
+let p2s = document.getElementById('player2Score');
+let p1n = document.getElementById('player1Name');
+let p2n = document.getElementById('player2Name');
+let button = document.getElementById('button');
+function startGame()
+{
+	gameStarted = 1;
+	// const cnv = getElementById('canvas');
+	canvas.style.display = 'block';
+	p1s.style.display = 'block';
+	p2s.style.display = 'block';
+	p1n.style.display = 'block';
+	p2n.style.display = 'block';
+	button.style.display = 'none';
+	gameLoop();
+}

@@ -7,7 +7,7 @@
 	<title>Pong game</title>
 	<link href="{% static 'css/style.css'%}" rel="stylesheet" type="text/css">
 	<link href="http://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
-	<link rel="icon" type="image/x-icon" href="{% static 'svg/cat.svg'%}">
+	<link rel="icon" type="image/x-icon" href="{% static 'svg/pong.svg'%}">
 </head>
 <body>
 	<!-- <h1>PONG</h1> -->
@@ -16,7 +16,7 @@
 	<h1 id="player2Score">0</h1>
 	<h1 id="player1Name">Player1</h1>
 	<h1 id="player2Name">Player2</h1>
-	<h2></h2>
+	<button id="button" onclick="startGame()">Start Game</button>
 	<script src="{% static 'js/script.js'%}" defer></script>
 </body>
 </html>

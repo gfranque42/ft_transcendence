@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import TodoItems
+from .models import Player
 
 # Register your models here.
 
-admin.site.register(TodoItems)
+admin.site.register(Player)
