@@ -273,5 +273,5 @@ function startGame()
 	p1n.style.display = 'block';
 	p2n.style.display = 'block';
 	button.style.display = 'none';
-	gameLoop();
+	// gameLoop();
 }

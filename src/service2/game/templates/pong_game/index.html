@@ -14,8 +14,8 @@
 	<canvas id="canvas"></canvas>
 	<h1 id="player1Score">0</h1>
 	<h1 id="player2Score">0</h1>
-	<h1 id="player1Name">Player1</h1>
-	<h1 id="player2Name">Player2</h1>
+	<h1 id="player1Name">{{ ply.0.username }}</h1>
+	<h1 id="player2Name">{{ ply.1.username }}</h1>
 	<button id="button" onclick="startGame()">Start Game</button>
 	<script src="{% static 'js/script.js'%}" defer></script>
 </body>
