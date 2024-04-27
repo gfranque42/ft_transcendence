@@ -17,6 +17,12 @@ a {
     padding: 1vh 3vw;
 }
 
+a:hover {
+    color: #131112;
+    cursor: pointer;
+    text-decoration: none;
+}
+
 .index-game-title {
     font-family: Oswald;
     font-weight: 400;
