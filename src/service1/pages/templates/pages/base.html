@@ -30,17 +30,20 @@
     integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
     crossorigin="anonymous"
     ></script>
-
     
+    <script type="module" src="{% static 'pages/index/views/abstractviews.js' %}"></script>
+    <script type="module" src="{% static 'pages/index/views/home.js' %}"></script>
+    <script type="module" src="{% static 'pages/index/js/index.js' %}"></script>
+
     <div class="navbar">
       <a href="{% url 'base-home' %}" class="navbar-content" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
       <a href="{% url 'base-home' %}" class="navbar-content" data-link>HOME</a>
       <a href="{% url 'base-login' %}" class="navbar-content" data-link>LOGIN</a>
     </div>
-    
-    <script type="module" src="{% static 'pages/index/views/abstractviews.js' %}"></script>
-    <script type="module" src="{% static 'pages/index/views/home.js' %}"></script>
-    <script type="module" src="{% static 'pages/index/js/index.js' %}"></script>
+
+    <script src="{% static 'pages/index/js/hover_sudoku.js' %}"></script>  -->
+    {% block content %}
+    {% endblock %}
 
     <div id="app"> </div>
 </body>
