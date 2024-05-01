@@ -7,8 +7,15 @@ export default class extends abstractviews {
     }
 
     async getHtml() {
-        return `
-            <p>login<p/>
-        `;
+        // Fetch content HTML from Django view or API
+        const response = await fetch('/login');
+        const loginContentHtml = await response.text();
+
+        // Return the content HTML
+        return loginContentHtml;
+    }
+
+    setTitle(title) {
+        document.title = title;
     }
 }

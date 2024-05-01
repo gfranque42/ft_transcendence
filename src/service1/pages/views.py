@@ -3,9 +3,13 @@ from django.http import HttpResponse
 
 def home(request):
 <<<<<<< HEAD
+<<<<<<< HEAD
     return render(request, 'pages/index.html')
 =======
     return render(request, 'pages/base.html')
+=======
+    return render(request, 'pages/index.html')
+>>>>>>> 30b5f14 (🚧 feat: templates with SAP)
 
 def login(request):
     return render(request, 'pages/login.html')

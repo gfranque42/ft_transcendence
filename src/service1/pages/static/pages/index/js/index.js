@@ -119,8 +119,6 @@
 // });
 
 
-
-
 // Import the Home view class
 import Home from "../views/home.js";
 import Login from "../views/login.js";
@@ -147,6 +145,7 @@ const navigateTo = url => {
 // Router function
 const router = async () => {
     // Define routes
+    console.log("Router function called");
     const routes = [
         { path: "/", view: Home },
         { path: "/login/", view: Login } // Assuming login also uses the Home view
