@@ -1,18 +1,31 @@
+{%extends "pages/base.html" %}
 {% load static %}
+{% block content %}
 
-<script src="{% static 'pages/index/js/hover_sudoku.js' %}"></script>
-<script src="{% static 'pages/index/js/hover_pong.js' %}"></script>
 
-<div class="index-page-layout">
-    <div class="index-main-container">
-        <div class="index-game-titles-container" >
-            <a href="{% url 'base-home' %}" class="index-game-title index-pong"><img src="{% static 'pages/PONG.svg' %}" alt="PONG"></a>
-            <a href="{% url 'base-home' %}" class="index-game-title index-sudoku"><img src="{% static 'pages/SUDOKU.svg' %}" alt="SODUKU"></a>
-        </div>
-        <div class="index-game-title">
-            <img class=" index-logo" src="{% static 'pages/Group.svg' %}" alt="Logo">
+    <script src="{% static 'pages/index/js/hover_sudoku.js' %}"></script>
+    <script src="{% static 'pages/index/js/hover_pong.js' %}"></script>
+    <script src="{% static 'pages/index/js/hover.js' %}"></script>
+    
+    {% comment %} <div class="navbar">
+        <a href="{% url 'base-home' %}" class="navbar-content" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+        <a href="{% url 'base-home' %}" class="navbar-content" data-link>HOME</a>
+        <a href="{% url 'base-login' %}" class="navbar-content" data-link>LOGIN</a>
+        </div> {% endcomment %}
+    <!-- 
+        <script src="{% static 'pages/index/js/hover_sudoku.js' %}"></script>  -->
+    
+
+    <div class="index-page-layout">
+        <div class="index-main-container">
+            <div class="index-game-titles-container" >
+                <a href="{% url 'base-home' %}" class="index-game-title index-pong"><img src="{% static 'pages/PONG.svg' %}" alt="PONG"></a>
+                <a href="{% url 'base-home' %}" class="index-game-title index-sudoku"><img src="{% static 'pages/SUDOKU.svg' %}" alt="SODUKU"></a>
+            </div>
+            <div class="index-game-title">
+                <img class=" index-logo" src="{% static 'pages/Group.svg' %}" alt="Logo">
+            </div>
         </div>
     </div>
-</div>
 
-<!-- <a href="{% url 'base-home' %}" class="index-game-title index-sudoku"><img src="{% static 'pages/SUDOKU.svg' %}" alt="SODUKU"> -->
+{% endblock content %}
