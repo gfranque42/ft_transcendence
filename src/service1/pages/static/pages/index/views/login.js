@@ -1,17 +1,19 @@
 import abstractviews from "./abstractviews.js";
 
 export default class extends abstractviews {
-    constructor() {
+    constructor() 
+    {
         super();
         this.setTitle("Login");
     }
 
-    async getHtml() {
-        // Fetch content HTML from Django view or API
+    async getHtml() 
+    {
         const response = await fetch('/login');
-        const loginContentHtml = await response.text();
-
-        // Return the content HTML
+        const tempContentHtml = await response.text();
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = tempContentHtml;
+        const loginContentHtml = tempContainer.querySelector('#app').innerHTML;
         return loginContentHtml;
     }
 
