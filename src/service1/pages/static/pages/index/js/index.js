@@ -183,7 +183,7 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
     // Listen for click events on elements with data-link attribute
     document.body.addEventListener("click", e => {
-        if (e.target.matches("[data-link]")) {
+        if (e.target.closest("[data-link]")) {
             e.preventDefault();
             navigateTo(e.target.href);
         }

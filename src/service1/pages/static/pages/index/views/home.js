@@ -42,14 +42,11 @@ export default class {
     }
 
     async getHtml() {
-        // Fetch content HTML from Django view or API
         const response = await fetch('/');
-        const homeContentHtml = await response.text();
-        console.log("Content fetched:", homeContentHtml);
-
-        
-        // Return the content HTML
-        console.log("here");
+        const tempContentHtml = await response.text();
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = tempContentHtml;
+        const homeContentHtml = tempContainer.querySelector('#app').innerHTML;
         return homeContentHtml;
     }
 

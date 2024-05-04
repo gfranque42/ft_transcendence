@@ -1,7 +1,11 @@
 {%extends "pages/base.html" %}
+{% load static %}
 {% block content %}
-    <body>
-        
-        <h1>LOGIN</h1>
-    </body>
+
+<div class="navbar">
+    <a href="{% url 'base-home' %}" class="navbar-content" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+    <a href="{% url 'base-home' %}" class="navbar-content" data-link>HOME</a>
+    <a href="{% url 'base-login' %}" class="navbar-content" data-link>LOGIN</a>
+</div>
+<h1>LOGIN</h1>
 {% endblock content %}
