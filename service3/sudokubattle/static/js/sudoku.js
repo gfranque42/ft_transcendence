@@ -54,11 +54,35 @@ function setGame() {
 				tile.innerText = board[r][c];
 				tile.classList.add("tile-start");
 			}
+			if (r == 0 && c == 0) {
+				tile.classList.add("corner-top-left");
+			}
+			if (r == 0 && c == 8) {
+				tile.classList.add("corner-top-right");
+			}
+			if (r == 8 && c == 0) {
+				tile.classList.add("corner-bottom-left");
+			}
+			if (r == 8 && c == 8) {
+				tile.classList.add("corner-bottom-right");
+			}
 			if (r == 2 || r == 5) {
 				tile.classList.add("horizontal-line");
 			}
 			if (c == 2 || c == 5) {
 				tile.classList.add("vertical-line");
+			}
+			if (r == 0) {
+				tile.classList.add("horizontal-top-line");
+			}
+			if (r == 8) {
+				tile.classList.add("horizontal-bottom-line");
+			}
+			if (c == 0) {
+				tile.classList.add("vertical-left-line");
+			}
+			if (c == 8) {
+				tile.classList.add("vertical-right-line");
 			}
 			tile.addEventListener("click", selectTile);
 			tile.classList.add("tile");
