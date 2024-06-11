@@ -1,6 +1,7 @@
 # version: '3.9'
 
 services:
+<<<<<<< HEAD
  backend_authapi:
     container_name: backend_authapi
     build:
@@ -24,11 +25,24 @@ services:
     container_name: backend_service2
   backend_service1:
     container_name: backend_service1
+=======
+  backend_authapi:
+    container_name: backend_authapi
+>>>>>>> 1408063 (👷 build: add new aplication for authentication api)
     build:
-      context: ./service1/
+      context: ./authapi/
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - ./authapi:/project
+  # backend_service1:
+  #   container_name: backend_service1
+  #   build:
+  #     context: ./service1/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
   # backend_service2:
   #   container_name: backend_service2
   #   build:
@@ -49,6 +63,7 @@ services:
     #   context: ./src/pgsql/Dockerfile
     #   dockerfile: Dockerfile
 
+<<<<<<< HEAD
   nginx:
     build:
       context: ./nginx
@@ -64,3 +79,12 @@ services:
 networks:
   Transcendence:
     name: Transcendence
+=======
+  # backend_service3:
+  #   container_name: backend_service3
+  #   build:
+  #     context: ./service3/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
+>>>>>>> 1408063 (👷 build: add new aplication for authentication api)

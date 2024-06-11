@@ -1,4 +1,8 @@
 Django
 psycopg2-binary
+<<<<<<< HEAD
 django-cors-headers
 djangorestframework
+=======
+django-cors-headers
+>>>>>>> 1408063 (👷 build: add new aplication for authentication api)
