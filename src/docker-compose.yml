@@ -1,6 +1,15 @@
 # version: '3.9'
 
 services:
+ backend_authapi:
+    container_name: backend_authapi
+    build:
+      context: ./authapi/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./authapi:/project
   # backend_service1:
   #   container_name: backend_service1
   #   build:
@@ -17,10 +26,10 @@ services:
   #   ports:
   #     - "8000:8000"
 
-  backend_service3:
-    container_name: backend_service3
-    build:
-      context: ./service3/
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+  # backend_service3:
+  #   container_name: backend_service3
+  #   build:
+  #     context: ./service3/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
