@@ -28,6 +28,7 @@ hr {
 	height: 6vh;
 
 	border : 1px solid #C1BDE9;
+	z-index: 1;
 
 	/* Text */
 	margin : 1 auto;
@@ -75,26 +76,33 @@ hr {
 
 .horizontal-line {
 	border-bottom: 4px solid #FFFBFC;
+	z-index: 2;
 }
 
 .vertical-line {
 	border-right: 4px solid #FFFBFC;
+	z-index: 2;
 }
 
 .horizontal-top-line {
 	border-top: 4px solid #FFFBFC;
+	z-index: 2;
+
 }
 
 .horizontal-bottom-line {
 	border-bottom: 4px solid #FFFBFC;
+	z-index: 2;
 }
 
 .vertical-left-line {
 	border-left: 4px solid #FFFBFC;
+	z-index: 2;
 }
 
 .vertical-right-line {
 	border-right: 4px solid #FFFBFC;
+	z-index: 2;
 }
 
 .corner-top-left {
@@ -111,4 +119,17 @@ hr {
 
 .corner-bottom-right {
 	border-radius: 0% 0% 10% 0%;
+}
+
+.outer-line {
+	z-index: 2;
+	position: relative;
+}
+
+.tile-selected {
+	background-color: #FFD700;
+}
+
+.tile-highlight {
+    background-color: #d3d3d3; /* Couleur gris clair pour la mise en évidence */
 }
