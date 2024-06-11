@@ -3,8 +3,20 @@
 services:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> cd31145 (🚧 struct: add the structure for the registration)
+=======
+ backend_authapi:
+    container_name: backend_authapi
+    build:
+      context: ./authapi/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./authapi:/project
+>>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
   # backend_service1:
   #   container_name: backend_service1
   #   build:
@@ -75,6 +87,7 @@ networks:
     name: Transcendence
 =======
 
+<<<<<<< HEAD
   backend_service3:
     container_name: backend_service3
     build:
@@ -83,3 +96,12 @@ networks:
     ports:
       - "8000:8000"
 >>>>>>> cd31145 (🚧 struct: add the structure for the registration)
+=======
+  # backend_service3:
+  #   container_name: backend_service3
+  #   build:
+  #     context: ./service3/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
+>>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
