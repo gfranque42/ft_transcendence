@@ -37,11 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
     'rest_framework',
     'rest_framework.authtoken',
-=======
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +55,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'authapi.urls'
 
-<<<<<<< HEAD
 import os
 
 TEMPLATES = [
@@ -64,13 +62,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': False,
-=======
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -134,19 +125,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-<<<<<<< HEAD
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'authapi/static'),
 ]
-=======
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-<<<<<<< HEAD
 
 APPEND_SLASH = False
-=======
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)

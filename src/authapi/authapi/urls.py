@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from django.urls import re_path
 from . import views
 
@@ -7,7 +7,6 @@ urlpatterns = [
     re_path(r'^auth/register$', views.RegisterForm.as_view(), name='register'),  # Endpoint for registration
     re_path(r'^auth/test_token$', views.test_token, name='test_token'),  # Endpoint for testing token
 ]
-=======
 """
 URL configuration for authapi project.
 
@@ -30,4 +29,11 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
+from django.urls import re_path
+from . import views
+
+urlpatterns = [
+    re_path('login', views.login),  
+    re_path('signup', views.signup),
+    re_path('test_token', views.test_token),  
+]

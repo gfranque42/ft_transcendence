@@ -19,26 +19,20 @@ cp ./pg_hba.conf /etc/postgresql/15/main
 
 python manage.py makemigrations
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
 echo "makemigrations done"
 
 python manage.py migrate
 
 echo "migrate done"
 
-<<<<<<< HEAD
 python manage.py collectstatic -y
 
 echo "static files collected"
 
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
+python manage.py makemigrations
 
-=======
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
+python manage.py migrate
 
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
 python manage.py runserver 0.0.0.0:8000
