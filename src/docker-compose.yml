@@ -16,6 +16,7 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
+<<<<<<< HEAD
 >>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
   # backend_service1:
   #   container_name: backend_service1
@@ -34,10 +35,15 @@ services:
   backend_service1:
     container_name: backend_service1
 >>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
+=======
+  backend_service1:
+    container_name: backend_service1
+>>>>>>> e49f4ed (✨ auth api: fonction plus qu'a implementer)
     build:
       context: ./service1/
       dockerfile: Dockerfile
     ports:
+<<<<<<< HEAD
 <<<<<<< HEAD
       - "8002:8002"
     networks:
@@ -47,6 +53,9 @@ services:
 =======
   #     - "8000:8000"
 >>>>>>> cd31145 (🚧 struct: add the structure for the registration)
+=======
+      - "8000:8000"
+>>>>>>> e49f4ed (✨ auth api: fonction plus qu'a implementer)
   
   # backend_service2:
   #   container_name: backend_service2
