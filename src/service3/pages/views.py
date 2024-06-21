@@ -5,12 +5,18 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import CreateUserForm
 
 # Create your views here.
-def register(response):
-    if response.method == "POST":
-        form = CreateUserForm(response.POST)
+class RegisterForm(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'register.html'
+
+    def get(self, request):
+        form = CreateUserForm()
+        return Response({'form': form})
+
+    def post(self, request):
+        form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
-    else:
-        form = CreateUserForm()
-    print(form)
-    return render(response, "register/register.html", {"form":form})
+            # You might want to redirect or send a success message
+            return Response({'form': form, 'success': True})
+        return Response({'form': form})

@@ -8,13 +8,13 @@ Content-Type: application/json
 }
 
 ### Signup request
-POST http://127.0.0.1:8000/signup
+POST http://127.0.0.1:8000/register/
 Content-Type: application/json
 
 {
     "username": "stan4",
-    "password": "Pass1234!",
-    "email": "stan@mail.com"
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
 }
 ###
 
@@ -25,6 +25,13 @@ Authorization: Token 054b1c5de555f30d982bd732ecfbd0efcc044776
 {
 }
 
+###
+
+GET http://127.0.0.1:8000/register
+Content-Type: application/json
+
+{
+}
 
 
 

@@ -17,13 +17,17 @@ services:
     volumes:
       - ./authapi:/project
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
+=======
+>>>>>>> 806ef20 (🚧 Fixing stuff: test.rest)
   # backend_service1:
   #   container_name: backend_service1
   #   build:
   #     context: ./service1/
   #     dockerfile: Dockerfile
   #   ports:
+<<<<<<< HEAD
 <<<<<<< HEAD
   #     - "8001:8001"
     # networks:
@@ -56,6 +60,9 @@ services:
 =======
       - "8000:8000"
 >>>>>>> e49f4ed (✨ auth api: fonction plus qu'a implementer)
+=======
+  #     - "8000:8000"
+>>>>>>> 806ef20 (🚧 Fixing stuff: test.rest)
   
   # backend_service2:
   #   container_name: backend_service2
