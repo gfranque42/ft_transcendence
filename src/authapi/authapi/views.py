@@ -32,9 +32,9 @@ class RegisterForm(APIView):
     # renderer_classes = [TemplateHTMLRenderer]
     # template_name = 'register/register.html'
 
-    # def get(self, request):
-    #     form = CreateUserForm()
-    #     return Response({'form': form})
+    def get(self, request):
+        form = CreateUserForm()
+        return render(request, "register.html", {"form":form})
 
     def post(self, request):
         form = CreateUserForm(request.data)
