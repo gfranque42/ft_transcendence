@@ -15,4 +15,5 @@ COPY entrypoint.sh /project/entrypoint.sh
 
 RUN pip install -r requirements.txt
 
+
 CMD bash entrypoint.sh
