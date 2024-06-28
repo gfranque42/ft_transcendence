@@ -1,5 +1,5 @@
 ### Login request
-POST http://127.0.0.1:8000/login
+POST http://127.0.0.1:8000/auth/login
 Content-Type: application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### Signup request
-POST http://127.0.0.1:8000/register
+POST http://127.0.0.1:8000/auth/register
 Content-Type: application/json
 
 {
@@ -18,16 +18,16 @@ Content-Type: application/json
 }
 ###
 
-GET http://127.0.0.1:8000/test_token
+GET http://127.0.0.1:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token a18613695df0ff05a86762a8348c727a4f69dbd8
+Authorization: Token 666222362038c7fc8e82681265e056470ec79f02
 
 {
 }
 
 ###
 
-GET http://127.0.0.1:8000/register
+GET http://127.0.0.1:8000/auth/register
 Content-Type: application/json
 
 {
