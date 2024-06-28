@@ -29,6 +29,7 @@ services:
   #   ports:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   #     - "8001:8001"
     # networks:
     #   - Transcendence
@@ -73,6 +74,21 @@ services:
   #     - "8000:8000"
 <<<<<<< HEAD
 >>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
+=======
+  #     - "8001:8001"
+    # networks:
+    #   - Transcendence
+  
+  backend_service2:
+    container_name: backend_service2
+    build:
+      context: ./service2/
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    networks:
+      - Transcendence
+>>>>>>> df5a683 (🔧 add: add nginx container)
     # depends_on:
     #   - db
   # db:
@@ -101,6 +117,7 @@ services:
 networks:
   Transcendence:
     name: Transcendence
+<<<<<<< HEAD
 =======
 
 <<<<<<< HEAD
@@ -121,3 +138,5 @@ networks:
   #   ports:
   #     - "8000:8000"
 >>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
+=======
+>>>>>>> df5a683 (🔧 add: add nginx container)
