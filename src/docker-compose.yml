@@ -7,7 +7,9 @@ services:
   #     context: ./service1/
   #     dockerfile: Dockerfile
   #   ports:
-  #     - "8000:8000"
+  #     - "8001:8001"
+    # networks:
+    #   - Transcendence
   
   backend_service2:
     container_name: backend_service2
@@ -15,7 +17,9 @@ services:
       context: ./service2/
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8002:8002"
+    networks:
+      - Transcendence
     # depends_on:
     #   - db
   # db:
@@ -29,3 +33,18 @@ services:
     #   context: ./src/pgsql/Dockerfile
     #   dockerfile: Dockerfile
 
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx_proxy
+    ports:
+      - 8082:80
+    networks:
+      - Transcendence
+    depends_on:
+      - backend_service2
+
+networks:
+  Transcendence:
+    name: Transcendence
