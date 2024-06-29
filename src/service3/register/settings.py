@@ -37,11 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
 
     'pages.apps.PagesConfig',
-=======
->>>>>>> d7d4b2f (🚧 struct: add the structure for the registration)
 ]
 
 MIDDLEWARE = [

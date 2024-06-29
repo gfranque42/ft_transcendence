@@ -1,5 +1,4 @@
 from django.shortcuts import render
-<<<<<<< HEAD
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 
@@ -21,7 +20,3 @@ class RegisterForm(APIView):
             # You might want to redirect or send a success message
             return Response({'form': form, 'success': True})
         return Response({'form': form})
-=======
-
-# Create your views here.
->>>>>>> d7d4b2f (🚧 struct: add the structure for the registration)

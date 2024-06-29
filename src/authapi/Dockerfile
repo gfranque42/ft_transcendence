@@ -15,8 +15,4 @@ COPY entrypoint.sh /project/entrypoint.sh
 
 RUN pip install -r requirements.txt
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
 CMD bash entrypoint.sh
