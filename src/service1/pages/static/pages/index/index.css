@@ -1,9 +1,5 @@
 .index-body {
     background-color: #62BBC1;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 2adb0d1 (🚧 feat: link homepage to login)
     color: #131112;
     overflow: hidden;
     width: 100vw;
@@ -15,22 +11,13 @@ a {
     color: #131112;
     cursor: pointer;
     text-decoration: none;
-<<<<<<< HEAD
-=======
     overflow: hidden;
     width: 100vw;
     padding: 1vh 3vw;
->>>>>>> 8303d39 (🚧 feat: navbar prototype)
-=======
->>>>>>> 2adb0d1 (🚧 feat: link homepage to login)
 }
 
 .index-game-title {
     font-family: Oswald;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 2adb0d1 (🚧 feat: link homepage to login)
     font-weight: 400;
     margin: -15vh -2vw;
     align-self: end;
