@@ -7,10 +7,13 @@ services:
     build:
       context: ./authapi/
       dockerfile: Dockerfile
+    networks:
+      - Transcendence
     ports:
       - "8000:8000"
     volumes:
       - ./authapi:/project
+<<<<<<< HEAD
   # backend_service1:
   #   container_name: backend_service1
   #   build:
@@ -36,13 +39,22 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
+=======
+>>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
   backend_service1:
     container_name: backend_service1
     build:
       context: ./service1/
       dockerfile: Dockerfile
+<<<<<<< HEAD
     ports:
       - "8000:8000"
+=======
+    networks:
+      - Transcendence
+    ports:
+      - "8001:8001"
+>>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
   
   # backend_service2:
   #   container_name: backend_service2
@@ -65,6 +77,9 @@ services:
     #   dockerfile: Dockerfile
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
   nginx:
     build:
       context: ./nginx
@@ -75,6 +90,7 @@ services:
     networks:
       - Transcendence
     depends_on:
+<<<<<<< HEAD
       - backend_service2
 
 networks:
@@ -89,3 +105,11 @@ networks:
   #   ports:
   #     - "8000:8000"
 >>>>>>> 1408063 (👷 build: add new aplication for authentication api)
+=======
+      - backend_authapi
+      - backend_service1
+
+networks:
+  Transcendence:
+    name: Transcendence
+>>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
