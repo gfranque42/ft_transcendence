@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-<<<<<<< HEAD
 from django.urls import path, include
 from pages import views
 
@@ -26,10 +25,4 @@ urlpatterns = [
     path('', include('pages.urls')),
 
 
-=======
-from django.urls import path
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
->>>>>>> d7d4b2f (🚧 struct: add the structure for the registration)
 ]

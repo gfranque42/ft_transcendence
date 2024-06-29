@@ -1,9 +1,5 @@
 ### Login request
-<<<<<<< HEAD
 POST http://127.0.0.1:8000/auth/login
-=======
-POST http://127.0.0.1:8000/login
->>>>>>> 1542611 (✨ auth api: fonction plus qu'a implementer)
 Content-Type: application/json
 
 {
@@ -12,16 +8,11 @@ Content-Type: application/json
 }
 
 ### Signup request
-<<<<<<< HEAD
 POST http://127.0.0.1:8000/auth/register
-=======
-POST http://127.0.0.1:8000/signup
->>>>>>> 1542611 (✨ auth api: fonction plus qu'a implementer)
 Content-Type: application/json
 
 {
     "username": "stan4",
-<<<<<<< HEAD
     "password1": "Pass1234!",
     "password2": "Pass1234!"
 }
@@ -30,21 +21,10 @@ Content-Type: application/json
 GET http://127.0.0.1:8000/auth/test_token
 Content-Type: application/json
 Authorization: Token 666222362038c7fc8e82681265e056470ec79f02
-=======
-    "password": "Pass1234!",
-    "email": "stan@mail.com"
-}
-###
-
-GET http://127.0.0.1:8000/test_token
-Content-Type: application/json
-Authorization: Token 054b1c5de555f30d982bd732ecfbd0efcc044776
->>>>>>> 1542611 (✨ auth api: fonction plus qu'a implementer)
 
 {
 }
 
-<<<<<<< HEAD
 ###
 
 GET http://127.0.0.1:8000/auth/register
@@ -52,8 +32,6 @@ Content-Type: application/json
 
 {
 }
-=======
->>>>>>> 1542611 (✨ auth api: fonction plus qu'a implementer)
 
 
 

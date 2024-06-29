@@ -11,6 +11,7 @@ def home(request):
     return render(request, 'pages/index.html')
 >>>>>>> 30b5f14 (🚧 feat: templates with SAP)
 
+<<<<<<< HEAD
 def login(request):
     return render(request, 'pages/login.html')
 
@@ -27,3 +28,5 @@ def signup(request):
     return render(request, 'pages/signup.html')
 >>>>>>> 43a047f (ajusted speeds)
 >>>>>>> 7bca8e6 (ajusted speeds)
+=======
+>>>>>>> 8854aa9 (🚧 authentication: combined with pages)
