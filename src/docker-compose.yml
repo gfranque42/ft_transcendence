@@ -1,8 +1,7 @@
 # version: '3.9'
 
 services:
-<<<<<<< HEAD
- backend_authapi:
+  backend_authapi:
     container_name: backend_authapi
     build:
       context: ./authapi/
@@ -13,48 +12,15 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
-<<<<<<< HEAD
-  # backend_service1:
-  #   container_name: backend_service1
-  #   build:
-  #     context: ./service1/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8001:8001"
-    # networks:
-    #   - Transcendence
-  
-  backend_service2:
-    container_name: backend_service2
-  backend_service1:
-    container_name: backend_service1
-=======
-  backend_authapi:
-    container_name: backend_authapi
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
-    build:
-      context: ./authapi/
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./authapi:/project
-=======
->>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
   backend_service1:
     container_name: backend_service1
     build:
       context: ./service1/
       dockerfile: Dockerfile
-<<<<<<< HEAD
-    ports:
-      - "8000:8000"
-=======
     networks:
       - Transcendence
     ports:
       - "8001:8001"
->>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
   
   # backend_service2:
   #   container_name: backend_service2
@@ -76,10 +42,6 @@ services:
     #   context: ./src/pgsql/Dockerfile
     #   dockerfile: Dockerfile
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
   nginx:
     build:
       context: ./nginx
@@ -90,26 +52,9 @@ services:
     networks:
       - Transcendence
     depends_on:
-<<<<<<< HEAD
-      - backend_service2
-
-networks:
-  Transcendence:
-    name: Transcendence
-=======
-  # backend_service3:
-  #   container_name: backend_service3
-  #   build:
-  #     context: ./service3/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8000:8000"
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
-=======
       - backend_authapi
       - backend_service1
 
 networks:
   Transcendence:
     name: Transcendence
->>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
