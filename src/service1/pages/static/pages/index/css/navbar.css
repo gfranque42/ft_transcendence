@@ -1,26 +1,8 @@
 .navbar {
     width: 94vw;
-<<<<<<< HEAD
-    padding-left: 3vw;
-=======
-    /* padding-left: 3vw;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> c42d4b4 (🚧 feat: navbar prototype)
-=======
->>>>>>> 8854aa9 (🚧 authentication: combined with pages)
-    padding-right: 3vw;
-<<<<<<< HEAD
-=======
-    padding-top: 1vh; */
     padding-left: 3vw;
     padding-right: 3vw;
-<<<<<<< HEAD
->>>>>>> 7bca8e6 (ajusted speeds)
     padding-top: 1vh;
-=======
-    padding-top: 1vh; */
->>>>>>> c42d4b4 (🚧 feat: navbar prototype)
     display: flex;
     justify-content: space-between;
 }

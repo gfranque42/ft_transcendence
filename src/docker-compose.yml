@@ -1,26 +1,7 @@
 # version: '3.9'
 
 services:
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> cd31145 (🚧 struct: add the structure for the registration)
-=======
-=======
->>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
-=======
->>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
-=======
->>>>>>> 94b293f (👷 build: add new aplication for authentication api)
- backend_authapi:
-=======
   backend_authapi:
->>>>>>> c84c734 (🚧 authentication: rebased with pages)
     container_name: backend_authapi
     build:
       context: ./authapi/
@@ -31,112 +12,6 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
-=======
->>>>>>> 806ef20 (🚧 Fixing stuff: test.rest)
-=======
-=======
-<<<<<<< HEAD
->>>>>>> 248fe0e (🐛 fix: new architecture fixed)
->>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
-=======
->>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
-=======
->>>>>>> 5fb1b31 (🚧 authentication: tested and rebasing with main)
-  # backend_service1:
-  #   container_name: backend_service1
-  #   build:
-  #     context: ./service1/
-  #     dockerfile: Dockerfile
-  #   ports:
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  #     - "8001:8001"
-    # networks:
-    #   - Transcendence
-  
-  backend_service2:
-    container_name: backend_service2
-=======
-  backend_service1:
-    container_name: backend_service1
->>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
-=======
-  backend_service1:
-    container_name: backend_service1
->>>>>>> e49f4ed (✨ auth api: fonction plus qu'a implementer)
-    build:
-      context: ./service1/
-      dockerfile: Dockerfile
-    ports:
-<<<<<<< HEAD
-<<<<<<< HEAD
-      - "8002:8002"
-    networks:
-      - Transcendence
-=======
-      - "8000:8000"
-=======
-  #     - "8000:8000"
->>>>>>> cd31145 (🚧 struct: add the structure for the registration)
-=======
-      - "8000:8000"
->>>>>>> e49f4ed (✨ auth api: fonction plus qu'a implementer)
-=======
-  #     - "8000:8000"
->>>>>>> 806ef20 (🚧 Fixing stuff: test.rest)
-  
-  # backend_service2:
-  #   container_name: backend_service2
-  #   build:
-  #     context: ./service2/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8000:8000"
-<<<<<<< HEAD
->>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
-=======
-  #     - "8001:8001"
-    # networks:
-    #   - Transcendence
-  
-  backend_service2:
-    container_name: backend_service2
-  backend_service1:
-    container_name: backend_service1
-=======
-  backend_authapi:
-    container_name: backend_authapi
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
-    build:
-      context: ./authapi/
-      dockerfile: Dockerfile
-    ports:
-<<<<<<< HEAD
-<<<<<<< HEAD
-      - "8002:8002"
-    networks:
-      - Transcendence
-<<<<<<< HEAD
->>>>>>> df5a683 (🔧 add: add nginx container)
-=======
-=======
-=======
->>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
-      - "8000:8000"
-    volumes:
-      - ./authapi:/project
-=======
->>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
-=======
->>>>>>> c84c734 (🚧 authentication: rebased with pages)
   backend_service1:
     container_name: backend_service1
     build:
@@ -154,11 +29,6 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "8000:8000"
-<<<<<<< HEAD
->>>>>>> 41e5fd0 (🐛 fix: new architecture fixed)
->>>>>>> f6ab7ea (🐛 fix: new architecture fixed)
-=======
->>>>>>> 0e6e0dd (🚧 struct: add the structure for the registration)
     # depends_on:
     #   - db
   # db:
@@ -182,57 +52,9 @@ services:
     networks:
       - Transcendence
     depends_on:
-<<<<<<< HEAD
-<<<<<<< HEAD
-      - backend_service2
-
-networks:
-  Transcendence:
-    name: Transcendence
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
-  backend_service3:
-    container_name: backend_service3
-    build:
-      context: ./service3/
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
->>>>>>> cd31145 (🚧 struct: add the structure for the registration)
-=======
->>>>>>> 94b293f (👷 build: add new aplication for authentication api)
-=======
-  # backend_service3:
-  #   container_name: backend_service3
-  #   build:
-  #     context: ./service3/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8000:8000"
-<<<<<<< HEAD
->>>>>>> ab6f0ec (👷 build: add new aplication for authentication api)
-=======
->>>>>>> df5a683 (🔧 add: add nginx container)
-=======
->>>>>>> 1408063 (👷 build: add new aplication for authentication api)
-<<<<<<< HEAD
->>>>>>> 94b293f (👷 build: add new aplication for authentication api)
-=======
-=======
-=======
->>>>>>> c84c734 (🚧 authentication: rebased with pages)
       - backend_authapi
       - backend_service1
 
 networks:
   Transcendence:
-<<<<<<< HEAD
     name: Transcendence
->>>>>>> 873e901 (🚧 authentication: tested and rebasing with main)
->>>>>>> 5fb1b31 (🚧 authentication: tested and rebasing with main)
-=======
-    name: Transcendence
->>>>>>> c84c734 (🚧 authentication: rebased with pages)
