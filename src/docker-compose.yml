@@ -11,10 +11,10 @@ services:
     # networks:
     #   - Transcendence
   
-  backend_service2:
-    container_name: backend_service2
+  backend_pong:
+    container_name: backend_pong
     build:
-      context: ./service2/
+      context: ./pong/
       dockerfile: Dockerfile
     ports:
       - "8002:8002"
@@ -43,7 +43,7 @@ services:
     networks:
       - Transcendence
     depends_on:
-      - backend_service2
+      - backend_pong
 
 networks:
   Transcendence:
