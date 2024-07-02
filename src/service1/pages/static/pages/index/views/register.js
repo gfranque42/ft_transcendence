@@ -13,7 +13,7 @@ export default class extends abstractviews {
 		const tempContentHtml = await response.text();
 		const tempContainer = document.createElement('div');
 		tempContainer.innerHTML = tempContentHtml;
-		// console.log(tempContainer);
+		console.log(tempContainer);
 		return tempContainer.innerHTML;
 	}
 
