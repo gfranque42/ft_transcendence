@@ -1,25 +1,34 @@
 # version: '3.9'
 
 services:
-  # backend_service1:
-  #   container_name: backend_service1
-  #   build:
-  #     context: ./service1/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8001:8001"
-    # networks:
-    #   - Transcendence
-  
-  backend_service2:
-    container_name: backend_service2
+  backend_authapi:
+    container_name: backend_authapi
     build:
-      context: ./service2/
+      context: ./authapi/
       dockerfile: Dockerfile
-    ports:
-      - "8002:8002"
     networks:
       - Transcendence
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./authapi:/project
+  backend_service1:
+    container_name: backend_service1
+    build:
+      context: ./service1/
+      dockerfile: Dockerfile
+    networks:
+      - Transcendence
+    ports:
+      - "8001:8001"
+  
+  # backend_service2:
+  #   container_name: backend_service2
+  #   build:
+  #     context: ./service2/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
     # depends_on:
     #   - db
   # db:
@@ -43,7 +52,8 @@ services:
     networks:
       - Transcendence
     depends_on:
-      - backend_service2
+      - backend_authapi
+      - backend_service1
 
 networks:
   Transcendence:
