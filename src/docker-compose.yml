@@ -1,13 +1,26 @@
 # version: '3.9'
 
 services:
+  backend_authapi:
+    container_name: backend_authapi
+    build:
+      context: ./authapi/
+      dockerfile: Dockerfile
+    networks:
+      - Transcendence
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./authapi:/project
   backend_service1:
     container_name: backend_service1
     build:
       context: ./service1/
       dockerfile: Dockerfile
+    networks:
+      - Transcendence
     ports:
-      - "8000:8000"
+      - "8001:8001"
   
   # backend_service2:
   #   container_name: backend_service2
@@ -29,3 +42,19 @@ services:
     #   context: ./src/pgsql/Dockerfile
     #   dockerfile: Dockerfile
 
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx_proxy
+    ports:
+      - 8082:80
+    networks:
+      - Transcendence
+    depends_on:
+      - backend_authapi
+      - backend_service1
+
+networks:
+  Transcendence:
+    name: Transcendence

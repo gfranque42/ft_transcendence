@@ -11,6 +11,9 @@ a {
     color: #131112;
     cursor: pointer;
     text-decoration: none;
+    overflow: hidden;
+    width: 100vw;
+    padding: 1vh 3vw;
 }
 
 a:hover {

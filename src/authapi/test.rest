@@ -1,0 +1,41 @@
+### Login request
+POST http://127.0.0.1:8000/auth/login/
+Content-Type: application/json
+
+{
+    "username": "stan4",
+    "password": "Pass1234!"
+}
+
+### Signup request
+POST http://127.0.0.1:8000/auth/register/
+Content-Type: application/json
+
+{
+    "username": "stan4",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+GET http://127.0.0.1:8000/auth/test_token/
+Content-Type: application/json
+Authorization: Token 666222362038c7fc8e82681265e056470ec79f02
+
+{
+}
+
+###
+
+GET http://127.0.0.1:8000/auth/register/
+Content-Type: application/json
+
+{
+}
+
+
+
+
+
+
+# Authorization: token xxx
