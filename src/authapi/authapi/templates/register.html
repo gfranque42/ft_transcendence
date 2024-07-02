@@ -10,7 +10,7 @@
     <p class="register-login">Are you a member? Log in now</p>
 </div>  
 <div class="form-register-half">  
-    <form method="POST" class="form-register">
+    <form action="http://localhost:8000/auth/register" method="POST" class="form-register">
         {% csrf_token %}
             {% for field in form %}
                 {{field}}
