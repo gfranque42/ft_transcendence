@@ -25,11 +25,6 @@ SECRET_KEY = 'django-insecure-@bla)uy1dk&-bkn3o*i4q!0(dlu%95i12b0&b839364-+%s$#%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-	'0.0.0.0',
-]
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'game',
+	'channels',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +68,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pong.wsgi.application'
 
+ASGI_APPLICATION = 'pong.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -130,4 +127,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ALLOWED_HOSTS = ['localhost',
+				 '0.0.0.0',
 ]

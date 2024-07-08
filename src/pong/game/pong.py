@@ -86,8 +86,8 @@ def	angleCalculation(c):
 	return (r)
 
 def	checkCollisionBallWithPaddle(ball, paddle):
-	if (ball.getXMin() < 50 and paddle.getXMin() < 50):
-		if (ball.getYMin() >= paddle.getYMin() and ball.getYMin() <= paddle.getYMax() and ball.getXMin() <= paddle.getXMax()):
+	if ((ball.getXMin() <= paddle.getXMax()) or (ball.getXMax() >= paddle.getXMin())):
+		if ((ball.getYMax() >= paddle.getYMin()) and (ball.getYMin() <= paddle.getYMax())):
 			x = paddle.getHitZone(ball)
 			if (ball.getMiddleHeight() == paddle.getMiddleHeight()):
 				angle = 90.0
@@ -98,8 +98,6 @@ def	checkCollisionBallWithPaddle(ball, paddle):
 			ball.setYDir(math.cos(math.radians(angle)) * ball.getVel())
 			if (ball.getMiddleHeight() < paddle.getMiddleHeight()):
 				ball.setYDir(ball.getYDir() * -1)
-	if (ball.getXMin() > 50 and paddle.getXMin() > 50):
-		bob = 1
 
 def checkCollisionOfPaddleWithEdge(paddle):
 	if (paddle.coor.y < 0):
