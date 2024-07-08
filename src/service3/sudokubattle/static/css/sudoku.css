@@ -2,14 +2,7 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	text-align: center;
 	background-color: #585481;
-}
-
-hr {
-	width: 50vw;
-}
-
-#errors {
-	color: #FF3150;
+	color: #FFFBFC;
 }
 
 #board {
@@ -63,7 +56,7 @@ hr {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 7%;
+    border-radius: 15%;
 }
 
 .number-selected {
@@ -106,19 +99,19 @@ hr {
 }
 
 .corner-top-left {
-	border-radius: 10% 0% 0% 0%;
+	border-radius: 20% 0% 0% 0%;
 }
 
 .corner-top-right {
-	border-radius: 0% 10% 0% 0%;
+	border-radius: 0% 20% 0% 0%;
 }
 
 .corner-bottom-left {
-	border-radius: 0% 0% 0% 10%;
+	border-radius: 0% 0% 0% 20%;
 }
 
 .corner-bottom-right {
-	border-radius: 0% 0% 10% 0%;
+	border-radius: 0% 0% 20% 0%;
 }
 
 .outer-line {

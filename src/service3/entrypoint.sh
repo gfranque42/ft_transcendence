@@ -15,6 +15,7 @@ psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO username;"
 psql -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO username;"
 EOF
 
+cp ./pg_hba.conf /etc/postgresql/15/main
 
 python manage.py makemigrations
 
@@ -23,5 +24,7 @@ echo "makemigrations done"
 python manage.py migrate
 
 echo "migrate done"
+
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
 python manage.py runserver 0.0.0.0:8000
