@@ -68,7 +68,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pong.wsgi.application'
 
-ASGI_APPLICATION = 'pong.routing.application'
+# ASGI_APPLICATION = 'pong.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

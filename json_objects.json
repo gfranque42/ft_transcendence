@@ -1,0 +1,30 @@
+
+fromclient = {
+	"event": "UP",
+}
+//  || "DOWN" || "NONE" || "START"
+
+fomserver = {
+	"paddle1": {
+		"playername": "bob",
+		"coorx": x,
+		"coory": y,
+		"sizex": x,
+		"sizey": y,
+		"score": n,
+	},
+	"paddle2": {
+		"playername": "bob",
+		"coorx": x,
+		"coory": y,
+		"sizex": x,
+		"sizey": y,
+		"score": n,
+	},
+	"ball": {
+		"coorx": x,
+		"coory": y,
+		"sizex": x,
+		"sizey": y,
+	},
+}

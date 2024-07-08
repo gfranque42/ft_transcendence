@@ -1,0 +1,23 @@
+body {
+	background-color: #53917E;
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+#Title {
+	color: #FFFBFC;
+	position: absolute;
+	left: 35vw;
+	width: 30vw;
+	height: 10vh;
+	top: 5vh;
+	text-align: center;
+	font-size: 5vh;
+	font-family: "Oswald", sans-serif;
+}
+
+button {
+	width: 20vw;
+	height: 10vh;
+	border: #FFFBFC;
+}
