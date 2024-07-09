@@ -68,7 +68,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pong.wsgi.application'
 
-# ASGI_APPLICATION = 'pong.routing.application'
+ASGI_APPLICATION = 'pong.asgi.application'
+
+CHANNEL_LAYERS = {
+	'default': {
+		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+		'CONFIG': {
+			"hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
