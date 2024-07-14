@@ -129,4 +129,4 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ASGI_APPLICATION = 'sudokubattle.asgi.application'
+ASGI_APPLICATION = 'sudoku.asgi.application'
