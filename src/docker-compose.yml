@@ -20,6 +20,8 @@ services:
       - "8002:8002"
     networks:
       - Transcendence
+    volumes:
+      - ./pong:/project
     # depends_on:
     #   - db
   # db:
