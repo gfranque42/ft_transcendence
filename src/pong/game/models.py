@@ -16,7 +16,7 @@ class	Room(models.Model):
 
 class	Player(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	current_room = models.ForeignKey(Room, on_delete=models.set_NULL, null=True, blank=True)
+	current_room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
 
 class	Leaderboard(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
