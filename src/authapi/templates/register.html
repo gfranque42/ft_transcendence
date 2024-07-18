@@ -1,31 +1,32 @@
 {%extends "base.html" %}
 {% load static %}
 {% block content %}
+<body class="index-body-register">
 
-<div class="title-register-half">  
-    <div class="title-register">
-    <div>SIGN</div>
-    <div>UP</div>
-    </div>
-    <p class="register-login">Are you a member? Log in now</p>
-</div>  
-<div class="form-register-half">  
-    <form method="POST" class="form-register">
-        {% csrf_token %}
-            {% for field in form %}
-                {{field}}
-                {% for error in field.errors%}
-                    <div class="row">
-                        <div class="small-12 columns val-error-msg error margin-below">
-                            {{ error }}
+    <div class="title-register-half">  
+        <div class="title-register">
+        <div>SIGN</div>
+        <div>UP</div>
+        </div>
+        <p class="register-login">Are you a member? Log in now</p>
+    </div>  
+    <div class="form-register-half">  
+        <form method="POST" class="form-register">
+            {% csrf_token %}
+                {% for field in form %}
+                    {{field}}
+                    {% for error in field.errors%}
+                        <div class="row">
+                            <div class="small-12 columns val-error-msg error margin-below">
+                                {{ error }}
+                            </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-    
-        <button type="submit" class="btn btn-register">Submit</button>
-    </form>
-</div>
+        
+            <button type="submit" class="btn btn-register">Submit</button>
+        </form>
+    </div>
 
-
+</body>
 {% endblock content %}

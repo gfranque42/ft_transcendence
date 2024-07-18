@@ -3,6 +3,8 @@
 import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Register from "../views/register.js";
+import csrfToken from "../views/register.js";
+
 
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -55,7 +57,25 @@ const router = async () => {
 
     // Instantiate the view and render it
     const view = new match.route.view(getParams(match));
-    document.querySelector("#app").innerHTML = await view.getHtml();
+    document.documentElement.innerHTML = await view.getHtml();
+
+    if (match.route.path == "/register/") {
+        console.log("post awaited");
+        const registrationForm = document.querySelector('form.form-register');
+        registrationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const username = document.querySelector('input[name="username"]');
+            const password1 = document.querySelector('input[name="password1"]');
+            const password2 = document.querySelector('input[name="password2"]');
+            let data = view.registerUser(username, password1, password2)
+            console.log(data);
+            // navigateTo("/");
+        });
+
+    } else {
+        console.log("nothing to post");
+    }
 };
 
 // Listen for popstate event and trigger router
@@ -74,3 +94,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initial router call
     router();
 });
+
+// import RegisterView from "./registerview.js";
+
+// Create an instance of the RegisterView class
+// const registerView = new RegisterView();
+
+// // Call the getHtml method to retrieve the HTML content and CSRF token
+// registerView.getHtml().then(({ tempContentHtml }) => {
+//     // Append the HTML content to the body of the page
+//     document.body.innerHTML = tempContentHtml;
+
+//     // Add event listener to the registration form
+//     const registrationForm = document.querySelector('#registration-form');
+//     registrationForm.addEventListener('submit', async (event) => {
+//         event.preventDefault();
+
+//         // Get the username and password from the form
+//         const username = document.querySelector('#username').value;
+//         const password = document.querySelector('#password').value;
+
+//         // Call the registerUser method to register the user
+//         const response = await registerView.registerUser(username, password);
+
+//         // Handle the response
+//         if (response.success) {
+//             console.log('User registered successfully');
+//             navigateTo('/');
+//         } else {
+//             console.error('Registration failed:', response.error);
+//         }
+//     });
+// });

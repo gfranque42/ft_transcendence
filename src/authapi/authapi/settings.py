@@ -25,7 +25,6 @@ SECRET_KEY = 'django-insecure-rx*(a-*_sz=a=)^-5zg4v_e_yt_jumxpze#564((ar1k=-n(av
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -37,6 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+	'corsheaders',
+
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -49,7 +51,49 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:8000', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082' 
+]
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_EXPOSE_HEADERS = [
+    'Content-Disposition',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_EXPOSE_HEADERS = [
+    'Refresh-Token', 'Content-Type', 'Authorization', 'X-CSRFToken'
+]
+CORS_ALLOW_CREDENTIALS = True
+
+
+# CSRF_COOKIE_SAMESITE = 'None'
 
 ROOT_URLCONF = 'authapi.urls'
 
@@ -59,7 +103,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -88,7 +132,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+# Password validationSRF
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -134,5 +178,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APPEND_SLASH = False
 
-ALLOWED_HOSTS = ['localhost']
+# ALLOWED_HOSTS = ['*']
 
+
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
