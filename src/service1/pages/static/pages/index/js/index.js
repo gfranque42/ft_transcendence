@@ -69,8 +69,9 @@ const router = async () => {
             const password1 = document.querySelector('input[name="password1"]');
             const password2 = document.querySelector('input[name="password2"]');
             let data = view.registerUser(username, password1, password2)
-            console.log(data);
-            // navigateTo("/");
+            console.log(data.form);
+            setTimeout(1000);
+            navigateTo("/");
         });
 
     } else {
@@ -83,46 +84,17 @@ window.addEventListener("popstate", router);
 
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
-    // Listen for click events on elements with data-link attribute
-    document.body.addEventListener("click", e => {
-        if (e.target.closest("[data-link]")) {
-            e.preventDefault();
-            navigateTo(e.target.href);
+    console.log("DOM fully loaded and parsed");
+
+
+    document.addEventListener('click', function(event) {
+        if (event.target.matches('a[data-link]')) {
+            event.preventDefault();
+            console.log('Clicked on a link with data-link attribute');
+            // Perform your navigation or other actions here
+            navigateTo(event.target);
         }
     });
-
-    // Initial router call
+    console.log("Initial router call");
     router();
 });
-
-// import RegisterView from "./registerview.js";
-
-// Create an instance of the RegisterView class
-// const registerView = new RegisterView();
-
-// // Call the getHtml method to retrieve the HTML content and CSRF token
-// registerView.getHtml().then(({ tempContentHtml }) => {
-//     // Append the HTML content to the body of the page
-//     document.body.innerHTML = tempContentHtml;
-
-//     // Add event listener to the registration form
-//     const registrationForm = document.querySelector('#registration-form');
-//     registrationForm.addEventListener('submit', async (event) => {
-//         event.preventDefault();
-
-//         // Get the username and password from the form
-//         const username = document.querySelector('#username').value;
-//         const password = document.querySelector('#password').value;
-
-//         // Call the registerUser method to register the user
-//         const response = await registerView.registerUser(username, password);
-
-//         // Handle the response
-//         if (response.success) {
-//             console.log('User registered successfully');
-//             navigateTo('/');
-//         } else {
-//             console.error('Registration failed:', response.error);
-//         }
-//     });
-// });

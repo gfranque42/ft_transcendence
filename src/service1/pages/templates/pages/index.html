@@ -13,9 +13,9 @@
 
 
     <div class="navbar">
-      <a href="/" class="navbar-content" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
-      <a href="/" class="navbar-content" data-link>HOME</a>
-      <a href="/register/" class="navbar-content" data-link>REGISTER</a>
+      <a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+      <a href="/" class="navbar-content" id="home" data-link>HOME</a>
+      <a href="/register/" class="navbar-content" id="register" data-link>REGISTER</a>
     </div>
 
     <div class="index-page-layout">
@@ -27,7 +27,7 @@
                 <a href="{% url 'base-home' %}" class="index-game-title index-sudoku" data-link>SUDOKU</a>
             </div>
             <div class="index-game-title">
-                <img class=" index-logo" src="{% static 'pages/Group.svg' %}" alt="Logo">
+                <img class="index-logo" src="{% static 'pages/Group.svg' %}" alt="Logo">
             </div>
         </div>
     </div>

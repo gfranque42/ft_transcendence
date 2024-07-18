@@ -91,14 +91,13 @@ export default class extends abstractviews {
         if (csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-
         let response = await fetch('http://localhost:8082/auth/register', {
             method: 'POST',
             body: JSON.stringify({ 
                 "csrfmiddlewaretoken": csrfToken, 
-                "username": username,
-                "password1": password1,
-                "password2": password2
+                "username": username.value,
+                "password1": password1.value,
+                "password2": password2.value
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -107,6 +106,7 @@ export default class extends abstractviews {
         });
 
         const data = await response.json();
+        // if (data.form.username)
         return data;
     }
 
