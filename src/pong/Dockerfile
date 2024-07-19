@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && \
-    apt-get install -y postgresql postgresql-contrib vim redis-server && \
+    apt-get install -y postgresql postgresql-contrib vim redis-server php-redis && \
     apt-get clean
 
 WORKDIR /project
