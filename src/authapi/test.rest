@@ -20,7 +20,7 @@ Content-Type: application/json
 
 GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token 666222362038c7fc8e82681265e056470ec79f02
+Authorization: Token 8e7b4872b72641439fbdced35058a25c536a38a4
 
 {
 }

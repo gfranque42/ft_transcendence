@@ -4,6 +4,8 @@ import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Register from "../views/register.js";
 
+import {setCookie, getCookie, eraseCookie} from "./cookie.js";
+
 let UserToken = null;
 
 // Define a function to convert path to regex
@@ -68,7 +70,7 @@ const router = async () => {
             const username = document.querySelector('input[name="username"]');
             const password1 = document.querySelector('input[name="password1"]');
             const password2 = document.querySelector('input[name="password2"]');
-            let UserToken = view.registerUser(username, password1, password2);
+            UserToken = view.registerUser(username, password1, password2);
             navigateTo("/");
         });
     } else if (match.route.path == "/login/") {
@@ -79,11 +81,49 @@ const router = async () => {
 
             const username = document.querySelector('input[name="username"]');
             const password = document.querySelector('input[name="password"]');
-            let UserToken = view.loginUser(username, password);
+            UserToken = view.loginUser(username, password);
             navigateTo("/");
         });
     }
+    console.log(UserToken);
+    if (!UserToken)
+    {
+        UserToken = getCookie("token");
+        console.log(UserToken);
+    }
+    displayUser();
 };
+
+async function getToken() {
+    // Simulating an async operation to get a token
+    return UserToken; // Replace with actual logic
+}
+
+async function displayUser()
+{
+    let tempToken = await getToken();
+
+    if (!tempToken) 
+        return ;
+
+    setCookie("token", tempToken, 42)
+    console.log(tempToken);
+    const options = {
+        method: 'GET', // HTTP method
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${tempToken}`
+        }
+        
+    };
+
+    const response = await fetch('http://localhost:8000/auth/test_token', options);
+    const UserInformation = await response.json();
+    console.log(UserInformation);
+    document.getElementById('user').textContent = UserInformation.Username;
+
+
+}
 
 // Listen for popstate event and trigger router
 window.addEventListener("popstate", router);

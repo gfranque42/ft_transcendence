@@ -79,10 +79,8 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-]
-
-CORS_EXPOSE_HEADERS = [
-    'Content-Disposition',
+    'token',
+    'Authorization',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
