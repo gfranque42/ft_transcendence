@@ -3,8 +3,8 @@
 import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Register from "../views/register.js";
-import csrfToken from "../views/register.js";
 
+let UserToken = null;
 
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -68,14 +68,20 @@ const router = async () => {
             const username = document.querySelector('input[name="username"]');
             const password1 = document.querySelector('input[name="password1"]');
             const password2 = document.querySelector('input[name="password2"]');
-            let data = view.registerUser(username, password1, password2)
-            console.log(data.form);
-            setTimeout(1000);
+            let UserToken = view.registerUser(username, password1, password2);
             navigateTo("/");
         });
+    } else if (match.route.path == "/login/") {
+        console.log("post awaited");
+        const loginForm = document.querySelector('form.form-login');
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
 
-    } else {
-        console.log("nothing to post");
+            const username = document.querySelector('input[name="username"]');
+            const password = document.querySelector('input[name="password"]');
+            let UserToken = view.loginUser(username, password);
+            navigateTo("/");
+        });
     }
 };
 

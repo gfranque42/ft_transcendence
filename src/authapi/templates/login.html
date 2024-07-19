@@ -1,0 +1,33 @@
+{%extends "base.html" %}
+{% load static %}
+{% block content %}
+<body class="index-body-login">
+
+    <div class="title-login-half">  
+        <div class="title-login">
+        <div>LOGIN</div>
+        </div>
+        <p class="register-login">Are you a member? Log in now</p>
+    </div>  
+    <div class="form-login-half">  
+        <form method="POST" class="form-login">
+            {% csrf_token %}
+                {% for field in form %}
+                    {{field}}
+                    {% for error in field.errors%}
+                        <div class="row">
+                            <div class="small-12 columns val-error-msg error margin-below">
+                                {{ error }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+        
+            <button type="submit" class="btn btn-login">Submit</button>
+        </form>
+    </div>
+
+</body>
+{% endblock content %}
+
+<!-- <p class="register-login">Not a member? <a href="/register/" id="register" data-link>Register Now</a></p> -->

@@ -12,22 +12,30 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .forms import CreateUserForm
+from .forms import CreateUserForm, GetUserForm
 from .serializers import UserSerializer
 
-@api_view(['POST'])
-def login(request):
-    try:
-        user = User.objects.get(username=request.data['username'])
-        if not user.check_password(request.data['password']):
-            return Response({"detail": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-        token, created = Token.objects.get_or_create(user=user)
-        serializer = UserSerializer(instance=user)
-        return Response({"token": token.key, "user": serializer.data})
-    except User.DoesNotExist:
-        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-    except KeyError:
-        return Response({"detail": "Username and password required."}, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginForm(APIView):
+    # renderer_classes = [TemplateHTMLRenderer]
+    # template_name = 'register/register.html'
+
+    def get(self, request):
+        form = GetUserForm()
+        return render(request, "login.html", {"form":form})
+
+    def post(self, request):
+        try:
+            user = User.objects.get(username=request.data['username'])
+            if not user.check_password(request.data['password']):
+                return Response({"detail": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
+            token, created = Token.objects.get_or_create(user=user)
+            serializer = UserSerializer(instance=user)
+            return Response({"token": token.key, "user": serializer.data})
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        except KeyError:
+            return Response({"detail": "Username and password required."}, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterForm(APIView):
     # renderer_classes = [TemplateHTMLRenderer]

@@ -107,7 +107,7 @@ export default class extends abstractviews {
 
         const data = await response.json();
         // if (data.form.username)
-        return data;
+        return data.token;
     }
 
     setTitle(title) {
