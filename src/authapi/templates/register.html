@@ -8,7 +8,7 @@
         <div>SIGN</div>
         <div>UP</div>
         </div>
-        <p class="register-login">Are you a member? <a href="/login/" data-link>Log in now</a></p>
+        <p class="register-login">Are you a member? <a class="auth-link" href="/login/" data-link>Log in now</a></p>
     </div>  
     <div class="form-register-half">  
         <form method="POST" class="form-register">
@@ -23,7 +23,12 @@
                         </div>
                     {% endfor %}
                 {% endfor %}
-        
+                <div class="error-container">
+                    <div class="error"></div>
+                    <div class="error"></div>
+                    <div class="error"></div>
+                    <div class="error"></div>
+                </div>
             <button type="submit" class="btn btn-register">Submit</button>
         </form>
     </div>

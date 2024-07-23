@@ -7,7 +7,7 @@
         <div class="title-login">
         <div>LOGIN</div>
         </div>
-        <p class="register-login">Not a member? <a href="/register/" data-link>Register Now</a></p>
+        <p class="register-login">Not a member? <a class="auth-link" href="/register/" data-link>Register Now</a></p>
     </div>  
     <div class="form-login-half">  
         <form method="POST" class="form-login">
@@ -22,7 +22,9 @@
                         </div>
                     {% endfor %}
                 {% endfor %}
-        
+                <div class="error-container">
+                    <div class="error"></div>
+                </div>
             <button type="submit" class="btn btn-login">Submit</button>
         </form>
     </div>

@@ -47,6 +47,7 @@
 .form-register {
     display: flex;
     padding: 10vw;
+    padding-top: 21vh;
     align-content: flex-start;
     flex-direction: column;
 }
@@ -79,6 +80,16 @@
     width: 38vw;
     align-self: center;
     border-radius: 12px;
-    margin-top: 10vh;
+    margin-top: 5vh;
     font: 2.3rem oswald;
+}
+
+.error-container {
+    width: 37vw;
+    align-self: center;
+    font: 1rem oswald;
+    color: rgb(248, 51, 60, 70%);
+}
+.error {
+    height: 2.6vh;
 }

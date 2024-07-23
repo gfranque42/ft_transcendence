@@ -27,6 +27,36 @@ const navigateTo = url => {
     router();
 };
 
+function JSONItirator(FullForm) {
+    const form =  FullForm.form;
+    const valuesArray = [];
+
+    console.log(form);
+    for(const key in form) {
+        for (const value in form[key]) {
+            console.log(form[key][value]);
+            valuesArray.push(form[key][value]);
+        }        
+        console.log(form[key]);
+    }
+
+    const errorElements = document.querySelectorAll(".error");
+
+    if (errorElements.length === 1) {
+        errorElements[0].textContent = "Incorrect username or password";
+        return ;
+    }
+
+    errorElements.forEach((element, index) => {
+        if (valuesArray[index])
+            element.textContent = valuesArray[index];
+        else
+            element.textContent = "";
+        console.log(element);
+    });
+    
+}
+
 // Router function
 const router = async () => {
     // Define routes
@@ -56,10 +86,27 @@ const router = async () => {
             result: [location.pathname]
         };
     }
-
+    
     // Instantiate the view and render it
     const view = new match.route.view(getParams(match));
     document.documentElement.innerHTML = await view.getHtml();
+    
+    async function checkForm(form) {
+        const FullForm = await form;
+        if (FullForm)
+            JSONItirator(FullForm);
+        console.log("FullForm: ", FullForm);
+        if (FullForm.token)
+            return await FullForm.token;
+        return await null;
+    }
+
+    async function navigateAfterPost(UserToken) {
+        // console.log("UserToken: ", UserToken.form);
+        const token = await UserToken;
+        if (token)
+            navigateTo("/");
+    }
 
     if (match.route.path == "/register/") {
         console.log("post awaited");
@@ -70,38 +117,41 @@ const router = async () => {
             const username = document.querySelector('input[name="username"]');
             const password1 = document.querySelector('input[name="password1"]');
             const password2 = document.querySelector('input[name="password2"]');
-            UserToken = view.registerUser(username, password1, password2);
-            navigateTo("/");
+            UserToken = checkForm(view.registerUser(username, password1, password2));
+
+            navigateAfterPost(UserToken);
         });
     } else if (match.route.path == "/login/") {
         console.log("post awaited");
         const loginForm = document.querySelector('form.form-login');
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault();
-
+            
             const username = document.querySelector('input[name="username"]');
             const password = document.querySelector('input[name="password"]');
-            UserToken = view.loginUser(username, password);
-            navigateTo("/");
+            UserToken = checkForm(view.loginUser(username, password));
+            // checkForm(form)
+            navigateAfterPost(UserToken);
         });
     }
     console.log(UserToken);
     if (!UserToken)
-    {
-        UserToken = getCookie("token");
-        console.log(UserToken);
+        {
+            UserToken = getCookie("token");
+            console.log(UserToken);
+        }
+        displayUser();
+    };
+    
+    
+    async function getToken() {
+        // Simulating an async operation to get a token
+        return UserToken; // Replace with actual logic
     }
-    displayUser();
-};
-
-async function getToken() {
-    // Simulating an async operation to get a token
-    return UserToken; // Replace with actual logic
-}
-
-async function displayUser()
-{
-    let tempToken = await getToken();
+    
+    async function displayUser()
+    {
+        let tempToken = await getToken();
 
     if (!tempToken) 
         return ;
@@ -118,11 +168,18 @@ async function displayUser()
     };
 
     const response = await fetch('http://localhost:8000/auth/test_token', options);
+    console.log(response);
+    if (!response.ok)
+    {
+        eraseCookie("token");
+        return ;
+    }
     const UserInformation = await response.json();
     console.log(UserInformation);
-    document.getElementById('user').textContent = UserInformation.Username;
-
-
+    document.getElementById('user').outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
+        <div class="art-marg"></div>
+        <div class="disconnect" id="disconnect">Log out</div>
+    </div>`;
 }
 
 // Listen for popstate event and trigger router
@@ -131,14 +188,24 @@ window.addEventListener("popstate", router);
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM fully loaded and parsed");
-
-
+    
+    
     document.addEventListener('click', function(event) {
         if (event.target.matches('a[data-link]')) {
             event.preventDefault();
             console.log('Clicked on a link with data-link attribute');
             // Perform your navigation or other actions here
             navigateTo(event.target);
+        }
+    });
+    document.addEventListener("click", function(event) {
+        const UserTest = document.querySelector(".navbar-content.user-present")
+        if (event.target.matches('#disconnect'))
+        {
+            eraseCookie("token");
+            console.log("User logged out");
+            UserToken = null;
+            document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
         }
     });
     console.log("Initial router call");

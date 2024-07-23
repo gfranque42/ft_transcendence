@@ -73,16 +73,3 @@
     border: none;
     outline: none;
 }
-
-.btn {
-    background-color: #2E2C2F;
-    color: #FFFBFC;
-    height: 10vh;
-    width: 38vw;
-    align-self: center;
-    border-radius: 12px;
-    margin-top: 10vh;
-    font: 2.3rem oswald;
-}
-
-
