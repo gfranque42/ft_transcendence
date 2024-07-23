@@ -44,10 +44,10 @@ export default class {
     async getHtml() {
         const response = await fetch('/');
         const tempContentHtml = await response.text();
-        const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = tempContentHtml;
-        const homeContentHtml = tempContainer.querySelector('#app').innerHTML;
-        return homeContentHtml;
+        // const tempContainer = document.createElement('div');
+        // tempContainer.innerHTML = tempContentHtml;
+        // const homeContentHtml = tempContainer.querySelector('#app').innerHTML;
+        return tempContentHtml;
     }
 
     setTitle(title) {

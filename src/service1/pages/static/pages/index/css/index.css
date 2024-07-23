@@ -11,10 +11,6 @@ a {
     color: #131112;
     cursor: pointer;
     text-decoration: none;
-
-    overflow: hidden;
-    width: 100vw;
-    padding: 1vh 3vw;
 }
 
 a:hover {
@@ -103,4 +99,34 @@ a:hover {
     height: 45vh;
     margin-bottom: 10vh;
     margin-right: 5vw;
+}
+
+
+
+
+
+.disconnect {
+    position: absolute;
+    right: -100%;
+    border-radius: 11px 0 0 11px;
+    width: 13vw;
+    font-size: 1.2vw;
+    height: 6vh;
+    align-content: center;
+    padding-left: 3vw;
+    background-color: #b0dbdf;
+    transition: right 0.7s ease-in-out;
+}
+
+.art-marg {
+    height: 2vh;
+}
+
+.user-present:hover .disconnect {
+    right: -3vw;
+    cursor: pointer;
+}
+  
+.auth-link {
+    text-decoration: underline;
 }

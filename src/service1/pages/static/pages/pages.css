@@ -1,2 +1,4 @@
 @import "index/css/index.css";
 @import "index/css/navbar.css";
+@import "index/css/auth/register.css";
+@import "index/css/auth/login.css";

@@ -1,38 +1,45 @@
 ### Login request
-POST http://127.0.0.1:8000/auth/login/
+POST http://localhost:8000/auth/login
 Content-Type: application/json
 
 {
-    "username": "stan4",
+    "username": "stan1",
     "password": "Pass1234!"
 }
 
 ### Signup request
-POST http://127.0.0.1:8000/auth/register/
+POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
-    "username": "stan4",
+    "username": "stan1",
     "password1": "Pass1234!",
     "password2": "Pass1234!"
 }
 ###
 
-GET http://127.0.0.1:8000/auth/test_token/
+GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token 666222362038c7fc8e82681265e056470ec79f02
+Authorization: Token 8e7b4872b72641439fbdced35058a25c536a38a4
 
 {
 }
 
 ###
 
-GET http://127.0.0.1:8000/auth/register/
+GET http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
 }
 
+###
+
+GET http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+}
 
 
 

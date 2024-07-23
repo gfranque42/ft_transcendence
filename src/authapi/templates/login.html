@@ -1,17 +1,16 @@
 {%extends "base.html" %}
 {% load static %}
 {% block content %}
-<body class="index-body-register">
+<body class="index-body-login">
 
-    <div class="title-register-half">  
-        <div class="title-register">
-        <div>SIGN</div>
-        <div>UP</div>
+    <div class="title-login-half">  
+        <div class="title-login">
+        <div>LOGIN</div>
         </div>
-        <p class="register-login">Are you a member? <a class="auth-link" href="/login/" data-link>Log in now</a></p>
+        <p class="register-login">Not a member? <a class="auth-link" href="/register/" data-link>Register Now</a></p>
     </div>  
-    <div class="form-register-half">  
-        <form method="POST" class="form-register">
+    <div class="form-login-half">  
+        <form method="POST" class="form-login">
             {% csrf_token %}
                 {% for field in form %}
                     {{field}}
@@ -25,13 +24,12 @@
                 {% endfor %}
                 <div class="error-container">
                     <div class="error"></div>
-                    <div class="error"></div>
-                    <div class="error"></div>
-                    <div class="error"></div>
                 </div>
-            <button type="submit" class="btn btn-register">Submit</button>
+            <button type="submit" class="btn btn-login">Submit</button>
         </form>
     </div>
 
 </body>
 {% endblock content %}
+
+<!-- <p class="register-login">Not a member? <a href="/register/" id="register" data-link>Register Now</a></p> -->
