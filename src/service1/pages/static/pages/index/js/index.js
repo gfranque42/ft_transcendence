@@ -31,13 +31,10 @@ function JSONItirator(FullForm) {
     const form =  FullForm.form;
     const valuesArray = [];
 
-    console.log(form);
     for(const key in form) {
         for (const value in form[key]) {
-            console.log(form[key][value]);
             valuesArray.push(form[key][value]);
         }        
-        console.log(form[key]);
     }
 
     const errorElements = document.querySelectorAll(".error");
@@ -52,7 +49,6 @@ function JSONItirator(FullForm) {
             element.textContent = valuesArray[index];
         else
             element.textContent = "";
-        console.log(element);
     });
     
 }
@@ -95,7 +91,6 @@ const router = async () => {
         const FullForm = await form;
         if (FullForm)
             JSONItirator(FullForm);
-        console.log("FullForm: ", FullForm);
         if (FullForm.token)
             return await FullForm.token;
         return await null;
@@ -134,12 +129,8 @@ const router = async () => {
             navigateAfterPost(UserToken);
         });
     }
-    console.log(UserToken);
     if (!UserToken)
-        {
             UserToken = getCookie("token");
-            console.log(UserToken);
-        }
         displayUser();
     };
     
@@ -157,7 +148,6 @@ const router = async () => {
         return ;
 
     setCookie("token", tempToken, 42)
-    console.log(tempToken);
     const options = {
         method: 'GET', // HTTP method
         headers: {
@@ -168,14 +158,12 @@ const router = async () => {
     };
 
     const response = await fetch('http://localhost:8000/auth/test_token', options);
-    console.log(response);
     if (!response.ok)
     {
         eraseCookie("token");
         return ;
     }
     const UserInformation = await response.json();
-    console.log(UserInformation);
     document.getElementById('user').outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
@@ -187,14 +175,11 @@ window.addEventListener("popstate", router);
 
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded and parsed");
     
     
     document.addEventListener('click', function(event) {
         if (event.target.matches('a[data-link]')) {
             event.preventDefault();
-            console.log('Clicked on a link with data-link attribute');
-            // Perform your navigation or other actions here
             navigateTo(event.target);
         }
     });
@@ -203,11 +188,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target.matches('#disconnect'))
         {
             eraseCookie("token");
-            console.log("User logged out");
             UserToken = null;
             document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
         }
     });
-    console.log("Initial router call");
     router();
 });
