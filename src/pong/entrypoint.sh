@@ -17,7 +17,7 @@ EOF
 
 cp ./pg_hba.conf /etc/postgresql/15/main
 
-python manage.py makemigrations
+python manage.py makemigrations game
 
 echo "makemigrations done"
 
