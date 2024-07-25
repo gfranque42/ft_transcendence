@@ -1,0 +1,6 @@
+Django
+psycopg2-binary
+channels
+channels_redis
+daphne
+djangorestframework
