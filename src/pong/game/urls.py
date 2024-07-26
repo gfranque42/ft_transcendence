@@ -6,4 +6,6 @@ urlpatterns = [
 	# path("", views.chat, name="chat"),
 	path("bob/", views.bob, name="bob"),
 	path("chat/<str:room_name>/", views.room, name="room"),
+	path("data/", views.getData),
+	path("post/", views.postData),
 ]

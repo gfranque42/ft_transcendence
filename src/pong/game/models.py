@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -67,3 +66,11 @@ from django.contrib.auth.models import User
 class	Bob(models.Model):
 	name = models.CharField(max_length=255)
 	refreshtime = models.IntegerField(default = 0)
+
+class	Player(models.Model):
+	username = models.CharField(max_length=255)
+	game_played = models.IntegerField(default=0)
+	game_wined = models.IntegerField(default=0)
+
+	def __str__(self):
+		return (self.username)
