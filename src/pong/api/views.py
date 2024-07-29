@@ -20,7 +20,8 @@ def	postPlayer(request):
 	serializer = PlayerSerializer(data=request.data)
 	if serializer.is_valid():
 		serializer.save()
-	return (Response(serializer.data))
+		return (Response(serializer.data))
+	return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
 def	updatePlayer(request, pk):
@@ -28,7 +29,8 @@ def	updatePlayer(request, pk):
 	serializer = PlayerSerializer(instance=player, data=request.data)
 	if serializer.is_valid():
 		serializer.save()
-	return (Response(serializer.data))
+		return (Response(serializer.data))
+	return Response(serializer.errors, status=400)
 
 @api_view(['DELETE'])
 def	deletePlayer(request, pk):
@@ -53,7 +55,8 @@ def	postRoom(request):
 	serializer = RoomSerializer(data=request.data)
 	if serializer.is_valid():
 		serializer.save()
-	return (Response(serializer.data))
+		return (Response(serializer.data))
+	return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
 def	updateRoom(request, pk):
@@ -61,7 +64,8 @@ def	updateRoom(request, pk):
 	serializer = RoomSerializer(instance=room, data=request.data)
 	if serializer.is_valid():
 		serializer.save()
-	return (Response(serializer.data))
+		return (Response(serializer.data))
+	return Response(serializer.errors, status=400)
 
 @api_view(['DELETE'])
 def	deleteRoom(request, pk):
