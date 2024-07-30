@@ -130,6 +130,8 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ALLOWED_HOSTS = ['paul-f4Ar5s3', 'localhost']

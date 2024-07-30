@@ -7,7 +7,7 @@ game modes:
 	3 = pva hard
 */
 
-let	gamemode = -1;
+let	gameMode = -1;
 
 function PvA()
 {
@@ -26,7 +26,7 @@ function PvA()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
-	gamemode = -1;
+	gameMode = -1;
 }
 
 function PvP()
@@ -46,7 +46,7 @@ function PvP()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
-	gamemode = 0;
+	gameMode = 0;
 }
 
 function Easy()
@@ -57,7 +57,7 @@ function Easy()
 	easy.style.fontSize = '4vh';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
-	gamemode = 1;
+	gameMode = 1;
 }
 
 function Medium()
@@ -68,7 +68,7 @@ function Medium()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '4vh';
 	hard.style.fontSize = '';
-	gamemode = 2;
+	gameMode = 2;
 }
 
 function Hard()
@@ -79,12 +79,78 @@ function Hard()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '4vh';
-	gamemode = 3;
+	gameMode = 3;
 }
 
-function Start()
+function generateRandomUrl()
 {
-	if (gamemode == -1)
+	let str = '';
+    let i = 0;
+	
+    while (i < 10)
+		{
+			const n = Math.floor(Math.random() * 127);
+			
+			if (n > 32)
+				{
+					str += String.fromCharCode(n);
+					i++;
+				}
+			}
+			return str;
+		}
+
+function getCookie(name)
+{
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '')
+	{
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++)
+		{
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === `${name}=`)
+			{
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
+
+async	function Start()
+{
+	if (gameMode == -1)
 		return ;
+	const roomUrl = generateRandomUrl();
+	const roomData = {
+		url: roomUrl,
+		difficulty: gameMode,
+	};
+	try
+	{
+		const response = await fetch('http://paul-f4ar5s3:8082/api_pong/postroom/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken'),
+			},
+			body: JSON.stringify(roomData),
+		});
+		if (response.ok)
+		{
+			const responseData = await response.json();
+			console.log('Room created: ', responseData);
+		}
+		else
+		{
+			console.error('Failed to create a room: ', response.statusText);
+		}
+	}
+	catch (error)
+	{
+		console.error('Error: ',error);
+	}
 	console.log("Start !");
 }

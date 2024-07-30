@@ -18,8 +18,13 @@ class	Room(models.Model):
 	url = models.CharField(max_length=255)
 	difficulty = models.IntegerField(default=-1)
 	players = models.ManyToManyField(Player, blank=True)
-	stats = models.ForeignKey(Game, blank=True, on_delete=models.CASCADE)
+	stats = models.ForeignKey(Game, blank=True, null=True, on_delete=models.CASCADE)
 	maxPlayers = models.IntegerField(default=1) 
+
+	# def save(self, *args, **kwargs):
+	# 	if not self.stats_id:
+	# 		self.stats = Game.objects.first()
+	# 	super(Room, self).save(*args, **kwargs)
 
 	def __str__(self):
 		return (self.url)

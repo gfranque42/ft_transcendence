@@ -56,6 +56,10 @@ def	postRoom(request):
 	if serializer.is_valid():
 		serializer.save()
 		return (Response(serializer.data))
+	print(serializer.is_valid())
+	print(serializer.errors)
+	print(serializer.data)
+	print(request.data)
 	return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
