@@ -1,6 +1,7 @@
 all: up
 
 up:
+	@bash ./host.sh ./src/pong/pong/settings.py
 	docker-compose -f ./src/docker-compose.yml up -d --build
 
 v:
