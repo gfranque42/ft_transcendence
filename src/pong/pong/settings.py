@@ -33,6 +33,7 @@ DEBUG = True
 INSTALLED_APPS = [
 	'rest_framework',
 	'app',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,6 +88,12 @@ DATABASES = {
     }
 }
 
+CORS_ALLOWED_ORIGINS = [
+	'http://localhost:8002',
+	'http://paul-f4ar8s7:8002',
+	'http://localhost:8082',
+	'http://paul-f4ar8s7:8082',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
