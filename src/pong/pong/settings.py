@@ -134,4 +134,4 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ALLOWED_HOSTS = ['paul-f4Ar5s3', 'localhost']
+ALLOWED_HOSTS = ['paul-f4Ar8s7', 'localhost']

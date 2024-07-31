@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='room',
             name='stats',
-            field=models.ForeignKey(default=app.models.Game, on_delete=django.db.models.deletion.CASCADE, to='app.game'),
+            field=models.ForeignKey(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to='app.Game'),
         ),
     ]

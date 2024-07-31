@@ -130,7 +130,7 @@ async	function Start()
 	};
 	try
 	{
-		const response = await fetch('http://paul-f4ar5s3:8082/api_pong/postroom/', {
+		const response = await fetch('http://paul-f4Ar8s7:8082/api_pong/postroom/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -151,6 +151,7 @@ async	function Start()
 	catch (error)
 	{
 		console.error('Error: ',error);
+		return ;
 	}
 	console.log("Start !");
 }
