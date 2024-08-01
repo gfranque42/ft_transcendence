@@ -12,6 +12,8 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
+    env_file:
+      - .env
   backend_service1:
     container_name: backend_service1
     build:
@@ -21,6 +23,8 @@ services:
       - Transcendence
     ports:
       - "8001:8001"
+    env_file:
+      - .env
   
   # backend_service2:
   #   container_name: backend_service2
@@ -54,6 +58,8 @@ services:
     depends_on:
       - backend_authapi
       - backend_service1
+    env_file:
+      - .env
 
 networks:
   Transcendence:

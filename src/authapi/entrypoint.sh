@@ -1,21 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 
-service postgresql start
+mkdir /run/postgresql
+chown postgres:postgres /run/postgresql
+echo "DATABASEUSER=$DATABASEUSER" > /user.sh
+echo "DATABASEPWD=$DATABASEPWD" >> /user.sh
+echo "MYDATABASE=$MYDATABASE" >> /user.sh
+su - postgres -c bash << EOF
+source /user.sh
+export DATABASEUSER
+export DATABASEPWD
+export MYDATABASE
+mkdir /var/lib/postgresql/data/
+chmod /var/lib/postgresql/data/
+initdb /var/lib/postgresql/data/
+echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
+echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
+pg_ctl start -D /var/lib/postgresql/data/
+createuser -e -s -d -R $DATABASEUSER
+psql -c "ALTER USER $DATABASEUSER WITH PASSWORD '$DATABASEPWD';"
+createdb -O $DATABASEUSER $MYDATABASE
 
-su - postgres << EOF
-psql -c "CREATE DATABASE mydatabase;"
-psql -c "CREATE USER username WITH PASSWORD 'password';"
-psql -c "ALTER ROLE username SET client_encoding TO 'utf8';"
-psql -c "ALTER ROLE username SET default_transaction_isolation TO 'read committed';"
-psql -c "ALTER ROLE username SET timezone TO 'UTC';"
-psql -c "GRANT postgres TO username;"
-psql -c "GRANT ALL PRIVILEGES ON DATABASE mydatabase TO username;"
-psql -c "GRANT ALL PRIVILEGES ON SCHEMA public TO username;"
-psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO username;"
-psql -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO username;"
 EOF
-
-cp ./pg_hba.conf /etc/postgresql/15/main
 
 python manage.py makemigrations
 
