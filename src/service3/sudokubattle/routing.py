@@ -1,17 +1,8 @@
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from django.urls import path
+# chat/routing.py
+from django.urls import re_path
+
 from . import consumers
 
 websocket_urlpatterns = [
-    path('ws/sudoku_battle/', consumers.SudokuConsumer.as_asgi()),
+    re_path(r"ws/sudokubattle/(?P<room_name>\w+)/$", consumers.SudokuConsumer.as_asgi()),
 ]
-
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            websocket_urlpatterns
-        )
-    ),
-})

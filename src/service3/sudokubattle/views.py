@@ -5,14 +5,22 @@ from .utils import generate_sudoku
 from django.utils import timezone
 # Create your views here.
 
-def home(request):
-	return render(request, "sudoku.html")
+rooms = {}
 
-def sudoku_board(request):
-	board = generate_sudoku()
-	start_time = timezone.now().isoformat()
+def home(request):
+	return render(request, "sudokubattle/room.html")
+
+def sudoku_board(request, room_name):
+	if room_name not in rooms:
+		board = generate_sudoku()
+		start_time = timezone.now().isoformat()
+		rooms[room_name] = {'board': board, 'start_time': start_time}
+	else:
+		board = rooms[room_name]['board']
+		start_time = rooms[room_name]['start_time']
+	
 	context = {
 		'board': json.dumps(board),
 		'start_time': start_time
 	}
-	return render(request, 'sudoku.html', context)
+	return render(request, 'sudokubattle/sudoku.html', context)

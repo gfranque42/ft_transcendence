@@ -3,7 +3,7 @@ import { isValidSudoku, isBoardComplete } from './valid.js';
 var numSelected = null;
 var tileSelected = null;
 
-export function setGame() {
+export function setGame(sudokuSocket) {
 	//Digits 1-9
 
 	for (let i = 1; i<=9; i++) {
@@ -101,6 +101,10 @@ function selectTile() {
 	// Vérifier si le jeu est terminé
 	if (isBoardComplete(board) && isValidSudoku(board)) {
 		alert("Game Completed!");
+		sudokuSocket.send(JSON.stringify({
+			'type': 'board_complete',
+			'message': 'Board completed!'
+		}));
 	}
 
 	if (tileSelected != null) {
