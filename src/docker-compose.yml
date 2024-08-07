@@ -53,6 +53,7 @@ services:
     container_name: nginx_proxy
     ports:
       - 8082:80
+      - 8083:443
     networks:
       - Transcendence
     depends_on:
