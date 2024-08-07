@@ -1,9 +1,7 @@
 FROM nginx:1.27-alpine
 
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-COPY ./cert /etc/nginx/cert
-
-EXPOSE 80/tcp
+COPY certs /etc/nginx/certs
 
 CMD ["nginx", "-g", "daemon off;"]
