@@ -2,17 +2,6 @@
 
 services:
 
-  
-  # backend_service2:
-  #   container_name: backend_service2
-  #   build:
-  #     context: ./service2/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8002:8002"
-  #   networks:
-  #     - Transcendence
-
   pong:
     container_name: pong
     build:
