@@ -1,0 +1,60 @@
+body {
+	background-color: #53917E;
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+h1 {
+	font-size: 4vh;
+	font-family: "Oswald", sans-serif;
+	text-align: center;
+	color: #FFFBFC;
+	/* border: 3px dashed #111111; */
+	position: absolute;
+	top: 12.6vh;
+	width: 20vw;
+}
+
+#player1Score {
+	position: absolute;
+	left: 30vw;
+	display: none;
+}
+
+#player2Score {
+	position: absolute;
+	left: 50vw;
+	display: none;
+}
+
+#player1Name {
+	position: absolute;
+	left: 10vw;
+	display: none;
+}
+
+#player2Name {
+	position: absolute;
+	left: 70vw;
+	display: none;
+}
+
+h2 {
+	width: 0px;
+	position: absolute;
+	left: 50vw;
+	height: 45vh;
+	bottom: 17.5vh;
+	border: 0.22vw dashed #FFFBFC;
+}
+
+canvas {
+	width: 80vw;
+	height: 70vh;
+	position: absolute;
+	top: 20vh;
+	left: 10vw;
+	border: 0.22vw solid #FFFBFC;
+	border-radius: 1.5vw;
+	display: none;
+}

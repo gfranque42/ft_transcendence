@@ -33,6 +33,7 @@ DEBUG = True
 INSTALLED_APPS = [
 	'rest_framework',
 	'app',
+	'daphne',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -73,6 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pong.wsgi.application'
 
+ASGI_APPLICATION = 'pong.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -142,4 +144,4 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ALLOWED_HOSTS = ['paul-f4Ar8s7', 'localhost']
+ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
