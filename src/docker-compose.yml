@@ -13,6 +13,8 @@ services:
       - Transcendence
     volumes:
       - ./pong:/project
+    env_file:
+      - ./.env
 
   nginx:
     build:
