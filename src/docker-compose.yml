@@ -21,6 +21,8 @@ services:
       - Transcendence
     ports:
       - "8001:8001"
+    volumes:
+      - ./service1:/project
   
   # backend_service2:
   #   container_name: backend_service2

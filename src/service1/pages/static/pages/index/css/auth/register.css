@@ -47,7 +47,7 @@
 .form-register {
     display: flex;
     padding: 10vw;
-    padding-top: 21vh;
+    padding-top: 16vh;
     align-content: flex-start;
     flex-direction: column;
 }

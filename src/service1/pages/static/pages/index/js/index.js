@@ -2,6 +2,7 @@
 // Import the Home view class
 import Home from "../views/home.js";
 import Login from "../views/login.js";
+import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
@@ -11,7 +12,6 @@ let UserToken = null;
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
-// Function to extract parameters from a match
 const getParams = match => {
     const values = match.result.slice(1);
     const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
@@ -27,35 +27,69 @@ const navigateTo = url => {
     router();
 };
 
-function JSONItirator(FullForm) {
-    const form =  FullForm.form;
+function JSONItirator(form) {
+    console.log(form.detail);
     const valuesArray = [];
 
+    
     for(const key in form) {
         for (const value in form[key]) {
             valuesArray.push(form[key][value]);
         }        
     }
-
+    
     const errorElements = document.querySelectorAll(".error");
+    
+    
+    if (errorElements.length === 1 && form.detail) {
 
-    if (errorElements.length === 1) {
         errorElements[0].textContent = "Incorrect username or password";
         return ;
-    }
-
+    } else if (errorElements.length === 1)
+        return ;
+    
+    
     errorElements.forEach((element, index) => {
         if (valuesArray[index])
             element.textContent = valuesArray[index];
         else
-            element.textContent = "";
-    });
-    
+        element.textContent = "";
+});
+
+}
+async function navigateAfterPost(UserToken) {
+    const token = await UserToken;
+
+    if (token)
+        navigateTo("/");
 }
 
-// Router function
+async function checkOTP(status, token) {
+    const tmp = await status;
+    if (tmp.error)
+    {
+        const errorElements = document.querySelector(".error");
+        errorElements.innerHTML = "Invalide verification code";
+        return false;
+    }
+    UserToken = token;
+    navigateAfterPost(UserToken);
+    return true;
+}
+
+function VerificationEvent(verification, token) {
+    document.addEventListener('submit', function(event){
+        event.preventDefault();
+        if (event.target.id == 'form-otp') {
+            console.log("VerificationForm: ", event.target);
+            const otp = document.querySelector('input[name="otp"]');
+            const status = verification.verifactionUser(otp, token);
+            return checkOTP(status, token);
+        }
+    });
+}
+
 const router = async () => {
-    // Define routes
     console.log("Router function called");
     const routes = [
         { path: "/", view: Home },
@@ -63,8 +97,8 @@ const router = async () => {
         { path: "/register/", view: Register }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
-
-    // Test each route for potential match
+    
+    
     const potentialMatches = routes.map(route => {
         return {
             route: route,
@@ -72,10 +106,8 @@ const router = async () => {
         };
     });
 
-    // Find the first matching route
     let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
 
-    // If no match found, default to the first route
     if (!match) {
         match = {
             route: routes[0],
@@ -83,24 +115,41 @@ const router = async () => {
         };
     }
     
-    // Instantiate the view and render it
     const view = new match.route.view(getParams(match));
     document.documentElement.innerHTML = await view.getHtml();
     
     async function checkForm(form) {
         const FullForm = await form;
+        // console.log(FullForm);
         if (FullForm)
             JSONItirator(FullForm);
+        // console.log("form has been ititrated");
         if (FullForm.token)
-            return await FullForm.token;
-        return await null;
+            return FullForm.token;
+        return null;
     }
 
-    async function navigateAfterPost(UserToken) {
-        // console.log("UserToken: ", UserToken.form);
-        const token = await UserToken;
-        if (token)
-            navigateTo("/");
+    async function navigateToOTP(verification, token) {
+        const otptoken = await token;
+        if (otptoken) {
+            document.documentElement.innerHTML = await verification.getHtml(otptoken);
+            return true
+        }
+        return false;
+    }
+
+    async function VerificationRoute(tempToken) {
+        const verification = new Verification();
+        const token = await tempToken;
+        if (token === null)
+            return ;
+        UserToken = null;
+        const navStatus = await navigateToOTP(verification, token);
+        if (navStatus) {
+            if (VerificationEvent(verification, token));
+            return ;
+        }
+        VerificationRoute();
     }
 
     if (match.route.path == "/register/") {
@@ -109,11 +158,11 @@ const router = async () => {
         registrationForm.addEventListener('submit', (event) => {
             event.preventDefault();
 
+            const email = document.querySelector('input[name="email"]');
             const username = document.querySelector('input[name="username"]');
             const password1 = document.querySelector('input[name="password1"]');
             const password2 = document.querySelector('input[name="password2"]');
-            UserToken = checkForm(view.registerUser(username, password1, password2));
-
+            UserToken = checkForm(view.registerUser(email, username, password1, password2));
             navigateAfterPost(UserToken);
         });
     } else if (match.route.path == "/login/") {
@@ -121,12 +170,17 @@ const router = async () => {
         const loginForm = document.querySelector('form.form-login');
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault();
-            
+            console.log("1");
             const username = document.querySelector('input[name="username"]');
+            console.log("2");
+            
             const password = document.querySelector('input[name="password"]');
-            UserToken = checkForm(view.loginUser(username, password));
+            console.log("3");
+            console.log("here");
+            VerificationRoute(checkForm(view.loginUser(username, password)));
             // checkForm(form)
-            navigateAfterPost(UserToken);
+            // navigateAfterPost(UserToken);
+
         });
     }
     if (!UserToken)
@@ -136,8 +190,7 @@ const router = async () => {
     
     
     async function getToken() {
-        // Simulating an async operation to get a token
-        return UserToken; // Replace with actual logic
+        return UserToken;
     }
     
     async function displayUser()

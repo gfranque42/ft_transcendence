@@ -73,3 +73,15 @@
     border: none;
     outline: none;
 }
+
+
+.code-btn {
+    background-color: #2E2C2F;
+    color: #FFFBFC;
+    margin-top: 2vh;
+    align-self: center;
+    width: 20vw;
+    height: 8vh;
+    border-radius: 12px;
+    font: 2.3rem oswald;
+}

@@ -9,10 +9,12 @@ RUN apt-get update && \
 
 WORKDIR /project
 
-COPY ./ /project/
+COPY requirements.txt /project/requirements.txt
+
+COPY entrypoint.sh /project/entrypoint.sh
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN chmod +x /project/entrypoint.sh
 
-ENTRYPOINT ["/project/entrypoint.sh"]
+ENTRYPOINT ["bash", "/project/entrypoint.sh"]

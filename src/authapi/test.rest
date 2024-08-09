@@ -13,6 +13,7 @@ Content-Type: application/json
 
 {
     "username": "stan1",
+    "email": "baneg23235@eixdeal.com",
     "password1": "Pass1234!",
     "password2": "Pass1234!"
 }
@@ -20,7 +21,7 @@ Content-Type: application/json
 
 GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token 8e7b4872b72641439fbdced35058a25c536a38a4
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzIyMzQ5MTAzLCJpYXQiOjE3MjIzNDY1ODN9.kPhLR9onUM6T8FMq8FEDhsDwxuFXGBV0OF8zCfLHbF0
 
 {
 }
@@ -41,8 +42,23 @@ Content-Type: application/json
 {
 }
 
+###
 
+GET http://localhost:8000/auth/verification
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIyOTUyMDIwLCJpYXQiOjE3MjI5NDk1MDB9.ijHz6OU-NSAeU-L8Jv4AjC1zk82k6um0ewy9akZKKg8
 
+{
+}
 
+###
+
+POST http://localhost:8000/auth/verification
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIyOTUyMDIwLCJpYXQiOjE3MjI5NDk1MDB9.ijHz6OU-NSAeU-L8Jv4AjC1zk82k6um0ewy9akZKKg8",
+    "otp": 070467
+}
 
 # Authorization: token xxx
