@@ -21,6 +21,7 @@ def sudoku_board(request, room_name):
 	
 	context = {
 		'board': json.dumps(board),
-		'start_time': start_time
+		'start_time': start_time,
+		'room_name': room_name
 	}
 	return render(request, 'sudokubattle/sudoku.html', context)

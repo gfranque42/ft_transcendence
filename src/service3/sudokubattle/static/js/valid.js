@@ -1,7 +1,6 @@
 export function isValidSudoku(board) {
     // Helper function to check if an array has duplicates
     function hasDuplicates(arr) {
-        console.log('Checking array:', arr);
         let seen = new Set();
         for (let num of arr) {
             if (num !== '-' && num !== '' && num !== 0 && seen.has(num)) {

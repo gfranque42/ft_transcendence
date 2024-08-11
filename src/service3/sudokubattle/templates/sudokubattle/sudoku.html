@@ -14,14 +14,14 @@
 		let startTime = new Date('{{ start_time }}');
 	</script>
 	<script type="module">
-		import { setGame } from '{% static 'js/board.js' %}';
-		import { startTimer } from '{% static 'js/timer.js' %}';
-		import { initializeWebSocket } from '{% static 'js/sudoku.js' %}';
+		import { setGame } from '../../static/js/board.js';
+		import { startTimer } from '../../static/js/timer.js';
+		import { initializeWebSocket } from '../../static/js/sudoku.js';
 
 		document.addEventListener("DOMContentLoaded", function() {
 			const roomName = "{{ room_name }}";
 			const sudokuSocket = initializeWebSocket(roomName);
-			setGame(sudokuSocket);
+			//setGame(sudokuSocket);
 			startTimer();
 		});
 	</script>
