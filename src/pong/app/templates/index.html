@@ -17,6 +17,9 @@
 	<button class="Easy Difficulty" onclick="Easy()">Easy</button>
 	<button class="Medium Difficulty" onclick="Medium()">Medium</button>
 	<button class="Hard Difficulty" onclick="Hard()">Hard</button>
+	<script>
+		const dns = "{{ dns|escapejs }}";
+	</script>
 	<script src="{% static 'index.js' %}" defer></script>
 </body>
 </html>

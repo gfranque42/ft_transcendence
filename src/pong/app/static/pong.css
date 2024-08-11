@@ -39,6 +39,16 @@ h1 {
 	display: none;
 }
 
+#waitingForPlayers {
+	position: absolute;
+	left: 30vw;
+	width: 40vw;
+	height: 20vh;
+	top: 40vh;
+	text-align: center;
+	font-size: 10vh;
+}
+
 h2 {
 	width: 0px;
 	position: absolute;

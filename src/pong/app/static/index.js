@@ -130,7 +130,10 @@ async	function Start()
 	};
 	try
 	{
-		const response = await fetch('http://paul-f4Ar8s7:8082/api_pong/postroom/', {
+		console.log('dns: ', dns);
+		const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+		console.log('fetchurl: ', fetchurl);
+		const response = await fetch(fetchurl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -154,4 +157,5 @@ async	function Start()
 		return ;
 	}
 	console.log("Start !");
+	window.location.pathname = '/pong/' + roomUrl + '/';
 }

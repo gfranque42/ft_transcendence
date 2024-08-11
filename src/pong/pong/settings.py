@@ -92,9 +92,9 @@ DATABASES = {
 
 CORS_ALLOWED_ORIGINS = [
 	'http://localhost:8002',
-	'http://paul-f4ar8s7:8002',
+	'http://paul-f4ar7s2:8002',
 	'http://localhost:8082',
-	'http://paul-f4ar8s7:8082',
+	'http://paul-f4ar7s2:8082',
 ]
 
 # Password validation
@@ -144,4 +144,5 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+print(os.getenv('DNS'))
 ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
