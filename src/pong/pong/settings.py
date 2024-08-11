@@ -75,6 +75,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'pong.wsgi.application'
 
 ASGI_APPLICATION = 'pong.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -145,4 +153,5 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 print(os.getenv('DNS'))
+
 ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
