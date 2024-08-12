@@ -26,9 +26,9 @@ def solve_sudoku(board):
 				return False
 	return True
 
-def remove_elements(board, difficulty='medium'):
+def remove_elements(board, difficulty='easy'):
 	if difficulty == 'easy':
-		removals = 20
+		removals = 1
 	elif difficulty == 'hard':
 		removals = 50
 	else:

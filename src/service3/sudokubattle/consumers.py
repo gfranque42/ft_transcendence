@@ -27,6 +27,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get('type')
         
+        print(message_type)
         if message_type == 'board_complete':
             # Broadcast the completion message to the room group
             await self.channel_layer.group_send(

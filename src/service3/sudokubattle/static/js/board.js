@@ -1,4 +1,5 @@
 import { isValidSudoku, isBoardComplete } from './valid.js';
+import { sudokuSocket } from './sudoku.js';
 
 var numSelected = null;
 var tileSelected = null;

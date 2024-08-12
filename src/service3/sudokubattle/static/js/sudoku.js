@@ -32,7 +32,7 @@ export function initializeWebSocket(roomName) {
 }
 
 const roomName = document.getElementById('room-name').value;  // Assume you have an element with the room name
-const sudokuSocket = initializeWebSocket(roomName);
+export const sudokuSocket = initializeWebSocket(roomName);
 
 window.onload = function() {
 	setGame(sudokuSocket);
