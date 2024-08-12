@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -81,11 +82,11 @@ WSGI_APPLICATION = 'pong.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'username',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('MYDATABASE'),
+        'USER': os.getenv('DATABASEUSER'),
+        'PASSWORD': os.getenv('DATABASEPWD'),
+        'HOST': os.getenv('DATABASEHOST'),
+        'PORT': os.getenv('DATABASEPORT'),
     }
 }
 
@@ -130,3 +131,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ALLOWED_HOSTS = ['localhost',
+]

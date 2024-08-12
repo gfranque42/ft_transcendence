@@ -1,6 +1,7 @@
 all: up
 
 up:
+	./host.sh
 	docker-compose -f ./src/docker-compose.yml up -d --build
 
 v:
@@ -12,8 +13,12 @@ stop:
 down:
 	docker-compose -f ./src/docker-compose.yml down
 
-log:
-	docker-compose -f ./src/docker-compose.yml logs
+logs:
+	# docker-compose -f ./src/docker-compose.yml logs
+	bash ./logs.sh
+
+ps:
+	docker-compose -f ./src/docker-compose.yml ps
 
 clean: stop
 
@@ -22,4 +27,4 @@ fclean: clean down
 
 re: fclean all
 
-.PHONY: up stop down clean fclean all log v 
+.PHONY: up stop down clean fclean all logs v ps
