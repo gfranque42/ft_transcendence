@@ -88,17 +88,22 @@ function generateRandomUrl()
     let i = 0;
 	
     while (i < 10)
+	{
+		const n = Math.floor(Math.random() * 127);
+		
+		if (n > 47 && n < 91)
 		{
-			const n = Math.floor(Math.random() * 127);
-			
-			if (n > 32)
-				{
-					str += String.fromCharCode(n);
-					i++;
-				}
-			}
-			return str;
+			str += String.fromCharCode(n);
+			i++;
 		}
+		else if (n > 96 && n < 123)
+		{
+			str += String.fromCharCode(n);
+			i++;
+		}
+	}
+	return str;
+}
 
 function getCookie(name)
 {
