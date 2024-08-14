@@ -11,6 +11,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import render, redirect
 
 
+from .urls import CheckForTFA
 from .models import UserProfile
 from .forms import CreateUserForm, GetUserForm, Get2faForm
 from .serializers import UserSerializer
@@ -22,6 +23,17 @@ from django.conf import settings
 import jwt, datetime, pyotp
 
 
+class Profile(APIView):
+    # renderer_classes = [TemplateHTMLRenderer]
+    # template_name = 'register/register.html'
+
+    def get(self, request):
+        return render(request, "profile.html")
+    
+    def patch(self, request)
+        
+# PATCH nothing is forced add it and save it some cgecks ie avatar 
+
 class VerifyOTPView(APIView):
     def get(self, request):
         form = Get2faForm()
@@ -32,22 +44,13 @@ class VerifyOTPView(APIView):
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
-            totp = pyotp.TOTP(userProfile.otp_secret)
-            
-            # print("Email verification")
-            # print(userProfile.otp_secret)
+            if (CheckForTFA(userProfile)):
+                return render(request, "2fa.html", {"form":form})
             # print(totp.now())
-            send_mail(
-                "Verifiaction",
-                totp.now(),
-                settings.EMAIL_HOST_USER,
-                [userProfile.user.email],
-                fail_silently=False,
-            )
-            # print(totp.now())
+            print("Check\n\n\n\n")
+            return Response({'Success': 'No Verification'}, status=status.HTTP_404_NOT_FOUND)
 
             # print("Email verification sent")
-            return render(request, "2fa.html", {"form":form})
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 

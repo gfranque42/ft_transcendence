@@ -22,6 +22,9 @@ export default class extends abstractviews {
         const response = await fetch('http://localhost:8082/auth/verification', options);
         const tempContentHtml = await response.text();
 
+        console.log(tempContentHtml);
+        if (tempContentHtml == '{"Success":"No Verification"}')
+            return false
         // Extract CSRF token from HTML form
         const parser = new DOMParser();
         const doc = parser.parseFromString(tempContentHtml, 'text/html');

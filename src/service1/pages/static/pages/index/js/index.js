@@ -132,10 +132,12 @@ const router = async () => {
     async function navigateToOTP(verification, token) {
         const otptoken = await token;
         if (otptoken) {
+            if (otptoken)
+                return 2
             document.documentElement.innerHTML = await verification.getHtml(otptoken);
-            return true
+            return 1
         }
-        return false;
+        return 3;
     }
 
     async function VerificationRoute(tempToken) {
@@ -145,8 +147,13 @@ const router = async () => {
             return ;
         UserToken = null;
         const navStatus = await navigateToOTP(verification, token);
-        if (navStatus) {
+        if (navStatus == 1) {
             if (VerificationEvent(verification, token));
+                return ;
+        }
+        else if (navStatus == 2) {
+            UserToken = token
+            navigateAfterPost(token);
             return ;
         }
         VerificationRoute();
