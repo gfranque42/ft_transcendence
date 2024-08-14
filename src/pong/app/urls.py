@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
 	path('', views.index),
-	path("<str:uri>/", views.pong),
+	path("<str:room_name>/", views.pong),
 ] 
