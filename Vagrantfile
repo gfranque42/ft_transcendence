@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
 		export DEBIAN_FRONTEND=noninteractive
 
 		apt-get update
-apt-get install -y curl git python3 python3-pip zsh postgresql postgresql-contrib libpq-dev		pip3 install -r /vagrant/requirements.txt
+		apt-get install -y curl git python3 python3-pip zsh postgresql postgresql-contrib libpq-dev		pip3 install -r /vagrant/requirements.txt
 
 		su -l vagrant -s "/bin/sh" -c "curl -fsSO https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh; chmod 755 install.sh; ./install.sh --unattended"
 		chsh -s /bin/zsh vagrant

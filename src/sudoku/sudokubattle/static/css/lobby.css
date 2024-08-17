@@ -1,0 +1,85 @@
+body {
+	background-color: #585481;
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+#Title {
+	color: #FFFBFC;
+	position: absolute;
+	left: 35vw;
+	width: 30vw;
+	height: 10vh;
+	top: 5vh;
+	text-align: center;
+	font-size: 5vh;
+	font-family: "Oswald", sans-serif;
+	cursor: default;
+}
+
+.Button {
+	width: 20vw;
+	height: 10vh;
+	border: 2px solid #FFFBFC;
+	background-color: #585481;
+	color: #FFFBFC;
+	border-radius: 10vw;
+	text-align: center;
+	font-size: 5vh;
+	font-family: "Oswald", sans-serif;
+	position: absolute;
+	transition-duration: 0.4s;
+	cursor: pointer;
+}
+
+.Button:hover {
+	border: 2px solid #FFFBFC;
+	background-color: #FFFBFC;
+	color: #726DA8;
+	cursor: pointer;
+}
+
+.PvP {
+	left: 20vw;
+	top: 35vh;
+}
+
+.PvA {
+	right: 20vw;
+	top: 35vh;
+}
+
+.Start {
+	bottom: 25vh;
+	left: 39vw;
+}
+
+.Difficulty {
+	font-size: 3vh;
+	font-family: "Oswald", sans-serif;
+	color: #FFFBFC;
+	background-color: #585481;
+	width: 6vw;
+	height: 7vh;
+	text-align: center;
+	transition-duration: 0.2s;
+	border: none;
+	position: absolute;
+	cursor: pointer;
+	display: none;
+}
+
+.Easy {
+	right: 60vw;
+	top: 49vh;
+}
+
+.Medium {
+	right: 50vw;
+	top: 49vh;
+}
+
+.Hard {
+	right: 37vw;
+	top: 49vh;
+}

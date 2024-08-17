@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sudoku</title>
+	<link href="{% static 'css/lobby.css' %}" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
+	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
+</head>
+<body>
+	<h1 id="Title">Sudoku Game</h1>
+	<button class="PvP Button" onclick="PvP()">Player vs Player</button>
+	<button class="PvA Button" onclick="PvA()">Player vs AI</button>
+	<button class="Start Button" onclick="Start()">Start Game</button>
+	<button class="Easy Difficulty" onclick="Easy()">Easy</button>
+	<button class="Medium Difficulty" onclick="Medium()">Medium</button>
+	<button class="Hard Difficulty" onclick="Hard()">Hard</button>
+	<script>
+		const dns = "{{ dns|escapejs }}";
+	</script>
+	<script src="{% static 'js/lobby.js' %}" defer></script>
+</body>
+</html>

@@ -8,7 +8,7 @@ from django.utils import timezone
 rooms = {}
 
 def home(request):
-	return render(request, "sudokubattle/room.html")
+	return render(request, "sudokubattle/lobby.html")
 
 def sudoku_board(request, room_name):
 	if room_name not in rooms:
