@@ -100,9 +100,9 @@ DATABASES = {
 
 CORS_ALLOWED_ORIGINS = [
 	'http://localhost:8002',
-	'http://made-f0br6s9:8002',
+	'http://paul-f4ar7s2:8002',
 	'http://localhost:8082',
-	'http://made-f0br6s9:8082',
+	'http://paul-f4ar7s2:8082',
 ]
 
 # Password validation

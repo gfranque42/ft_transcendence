@@ -9,5 +9,5 @@ def index(request):
 	}
 	return (render(request, "index.html", dns))
 
-def	pong(request, uri):
-	return (render(request, "pong.html", {"uri": uri}))
+def	pong(request, room_name):
+	return (render(request, "pong.html", {"room_name": room_name}))

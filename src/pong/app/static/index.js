@@ -91,7 +91,12 @@ function generateRandomUrl()
 	{
 		const n = Math.floor(Math.random() * 127);
 		
-		if (n > 47 && n < 91)
+		if (n > 47 && n < 58)
+		{
+			str += String.fromCharCode(n);
+			i++;
+		}
+		else if (n > 64 && n < 91)
 		{
 			str += String.fromCharCode(n);
 			i++;
