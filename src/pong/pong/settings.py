@@ -155,3 +155,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 print(os.getenv('DNS'))
 
 ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
+ALLOWED_HOSTS = ['pop-os', 'localhost']
