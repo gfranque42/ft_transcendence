@@ -1,20 +1,19 @@
 /*
 game modes:
 	-1 = no modes
-	0 = pvp
-	1 = pva easy
-	2 = pva medium
-	3 = pva hard
+	0 = easy
+	1 = medium
+	2 = hard
 */
 
 let	gameMode = -1;
 
-function PvA()
+function Solo()
 {
-	let pva = document.querySelector('.PvA');
+	let solo = document.querySelector('.Solo');
 	let pvp = document.querySelector('.PvP');
-	pva.style.backgroundColor = '#FFFBFC';
-	pva.style.color = '#726DA8';
+	solo.style.backgroundColor = '#FFFBFC';
+	solo.style.color = '#726DA8';
 	pvp.style.backgroundColor = '';
 	pvp.style.color = '';
 	let easy = document.querySelector('.Easy');
@@ -32,11 +31,11 @@ function PvA()
 function PvP()
 {
 	let pvp = document.querySelector('.PvP');
-	let pva = document.querySelector('.PvA');
+	let solo = document.querySelector('.Solo');
 	pvp.style.backgroundColor = '#FFFBFC';
 	pvp.style.color = '#726DA8';
-	pva.style.backgroundColor = '';
-	pva.style.color = '';
+	solo.style.backgroundColor = '';
+	solo.style.color = '';
 	let easy = document.querySelector('.Easy');
 	let medium = document.querySelector('.Medium');
 	let hard = document.querySelector('.Hard');
@@ -46,7 +45,7 @@ function PvP()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
-	gameMode = 0;
+	gameMode = -1;
 }
 
 function Easy()
@@ -57,7 +56,7 @@ function Easy()
 	easy.style.fontSize = '4vh';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
-	gameMode = 1;
+	gameMode = 0;
 }
 
 function Medium()
@@ -68,7 +67,7 @@ function Medium()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '4vh';
 	hard.style.fontSize = '';
-	gameMode = 2;
+	gameMode = 1;
 }
 
 function Hard()
@@ -79,15 +78,15 @@ function Hard()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '4vh';
-	gameMode = 3;
+	gameMode = 2;
 }
 
 function generateRandomUrl()
 {
 	let str = '';
-    let i = 0;
+	let i = 0;
 	
-    while (i < 10)
+	while (i < 10)
 	{
 		const n = Math.floor(Math.random() * 127);
 		
@@ -135,10 +134,10 @@ async	function Start()
 	};
 	try
 	{
-		console.log('dns: ', dns);
-		const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-		console.log('fetchurl: ', fetchurl);
-		const response = await fetch(fetchurl, {
+		// console.log('dns: ', dns);
+		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+		// console.log('fetchurl: ', fetchurl);
+		const response = await fetch('/sudokubattle/api/sudoku/create/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -146,6 +145,7 @@ async	function Start()
 			},
 			body: JSON.stringify(roomData),
 		});
+
 		if (response.ok)
 		{
 			const responseData = await response.json();

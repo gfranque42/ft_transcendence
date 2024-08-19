@@ -26,10 +26,10 @@ def solve_sudoku(board):
 				return False
 	return True
 
-def remove_elements(board, difficulty='easy'):
-	if difficulty == 'easy':
+def remove_elements(board, difficulty):
+	if difficulty == 0:
 		removals = 1
-	elif difficulty == 'hard':
+	elif difficulty == 2:
 		removals = 50
 	else:
 		removals = 36
@@ -42,7 +42,7 @@ def remove_elements(board, difficulty='easy'):
 			removals -= 1
 	return board
 
-def generate_sudoku():
+def generate_sudoku(difficulty):
 	board = [[0 for _ in range(9)] for _ in range(9)]
 	# Remplir aléatoirement quelques cellules pour générer des grilles différentes
 	for _ in range(10):
@@ -56,5 +56,5 @@ def generate_sudoku():
 		board[row][col] = num
 	
 	solve_sudoku(board)
-	board = remove_elements(board)
+	board = remove_elements(board, difficulty)
 	return board

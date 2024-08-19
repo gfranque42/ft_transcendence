@@ -7,8 +7,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no">
 	<title>Sudoku</title>
+	<link href="{% static 'css/sudoku.css' %}" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
+	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
 
-	<link rel="stylesheet" href="{% static 'css/sudoku.css' %}">
 	<script>
 		let board = JSON.parse('{{ board|escapejs }}');
 		let startTime = new Date('{{ start_time }}');
@@ -19,8 +21,8 @@
 		import { initializeWebSocket } from '../../static/js/sudoku.js';
 
 		document.addEventListener("DOMContentLoaded", function() {
-			const roomName = "{{ room_name }}";
-			const sudokuSocket = initializeWebSocket(roomName);
+			const roomUrl = "{{ room_url }}";
+			const sudokuSocket = initializeWebSocket(roomUrl);
 			//setGame(sudokuSocket);
 			startTimer();
 		});
