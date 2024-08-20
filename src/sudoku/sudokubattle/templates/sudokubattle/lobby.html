@@ -8,6 +8,7 @@
 	<link href="{% static 'css/lobby.css' %}" rel="stylesheet">
 	<link href="http://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
+	<meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
 	<h1 id="Title">Sudoku Game</h1>

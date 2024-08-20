@@ -4,6 +4,8 @@ import random
 from .utils import generate_sudoku
 from django.utils import timezone
 from .models import SudokuRoom
+from urllib.parse import quote
+from django.http import JsonResponse
 # Create your views here.
 
 rooms = {}
@@ -48,6 +50,6 @@ def sudoku_board(request, room_url):
 	context = {
 		'board': json.dumps(board),
 		'start_time': start_time,
-		'room_url': room_url
+		'room_url': quote(room_url, safe=''),
 	}
 	return render(request, 'sudokubattle/sudoku.html', context)

@@ -15,24 +15,13 @@
 		let board = JSON.parse('{{ board|escapejs }}');
 		let startTime = new Date('{{ start_time }}');
 	</script>
-	<script type="module">
-		import { setGame } from '../../static/js/board.js';
-		import { startTimer } from '../../static/js/timer.js';
-		import { initializeWebSocket } from '../../static/js/sudoku.js';
-
-		document.addEventListener("DOMContentLoaded", function() {
-			const roomUrl = "{{ room_url }}";
-			const sudokuSocket = initializeWebSocket(roomUrl);
-			//setGame(sudokuSocket);
-			startTimer();
-		});
-	</script>
+	<script type="module" src="{% static 'js/sudoku.js' %}" defer></script>
 </head>
 
 <body>
 	<h1>Sudoku</h1>
 	<div id="timer">00:00:00</div>
-	<input type="hidden" id="room-name" value="{{ room_name }}">
+	<input type="hidden" id="room-name" value="{{ room_url }}">
 	<br>
 
 	<!-- 9x9 board -->

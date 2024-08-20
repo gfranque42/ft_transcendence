@@ -1,5 +1,6 @@
 import { setGame } from './board.js';
 import { startTimer } from './timer.js';
+let sudokuSocket = null;
 
 export function initializeWebSocket(roomName) {
 
@@ -31,10 +32,22 @@ export function initializeWebSocket(roomName) {
 	return socket;
 }
 
-const roomName = document.getElementById('room-name').value;  // Assume you have an element with the room name
-export const sudokuSocket = initializeWebSocket(roomName);
+function initialize() {
+	const roomName = document.getElementById('room-name').value;  // Retrieve the room name from the hidden input
+	if (!roomName) {
+		console.error("Room name is not available in the HTML!");
+		return;
+	}
+	console.log('Room name:', roomName);
 
-window.onload = function() {
-	setGame(sudokuSocket);
-	startTimer();
+	// Initialize WebSocket and assign to sudokuSocket
+	sudokuSocket = initializeWebSocket(roomName);
+	if (sudokuSocket) {
+		setGame(sudokuSocket);
+		startTimer();
+	}
 }
+
+export {sudokuSocket};
+
+document.addEventListener('DOMContentLoaded', initialize);

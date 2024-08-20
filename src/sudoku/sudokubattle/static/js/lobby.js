@@ -81,25 +81,12 @@ function Hard()
 	gameMode = 2;
 }
 
-function generateRandomUrl()
-{
+function generateRandomUrl() {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let str = '';
-	let i = 0;
-	
-	while (i < 10)
-	{
-		const n = Math.floor(Math.random() * 127);
-		
-		if (n > 47 && n < 91)
-		{
-			str += String.fromCharCode(n);
-			i++;
-		}
-		else if (n > 96 && n < 123)
-		{
-			str += String.fromCharCode(n);
-			i++;
-		}
+	for (let i = 0; i < 10; i++) {
+		const randomIndex = Math.floor(Math.random() * characters.length);
+		str += characters[randomIndex];
 	}
 	return str;
 }
@@ -125,9 +112,11 @@ function getCookie(name)
 
 async	function Start()
 {
+	console.log('Start button clicked');
 	if (gameMode == -1)
 		return ;
 	const roomUrl = generateRandomUrl();
+	console.log('Room URL: ', roomUrl);
 	const roomData = {
 		url: roomUrl,
 		difficulty: gameMode,
