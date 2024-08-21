@@ -29,20 +29,28 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         
         print(message_type)
         if message_type == 'board_complete':
+            time_used = data.get('time_used')
+            is_winner = data.get('is_winner')
             # Broadcast the completion message to the room group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'board_complete',
-                    'message': data['message']
+                    'message': data['message'],
+                    'time_used': time_used,
+                    'is_winner': is_winner
                 }
             )
 
     async def board_complete(self, event):
         message = event['message']
+        time_used = event.get('time_used')
+        is_winner = event.get('is_winner')
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'type': 'board_complete',
-            'message': message
+            'message': message,
+            'time_used': time_used,
+            'is_winner': event.get('is_winner')
         }))

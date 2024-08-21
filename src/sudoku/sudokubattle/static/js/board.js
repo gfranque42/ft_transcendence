@@ -1,10 +1,11 @@
 import { isValidSudoku, isBoardComplete } from './valid.js';
 import { sudokuSocket } from './sudoku.js';
+import { showModal } from './modal.js';
 
 var numSelected = null;
 var tileSelected = null;
 
-export function setGame(sudokuSocket) {
+export function setGame() {
 	//Digits 1-9
 
 	for (let i = 1; i<=9; i++) {
@@ -79,47 +80,49 @@ function selectNumber() {
 }
 
 function selectTile() {
-	if (numSelected) {
-		if (this.classList.contains("tile-start")) {
-			return ;
+		if (numSelected) {
+			if (this.classList.contains("tile-start")) {
+				return;
+			}
+			this.innerText = numSelected.id;
+			// Mettre à jour la grille de jeu
+			const [row, col] = this.id.split('-').map(Number);
+			board[row][col] = Number(numSelected.id); // Met à jour le tableau board
+			numSelected.classList.remove("number-selected");
+			numSelected = null;
+			this.classList.remove("tile-selected");
+			tileSelected = null;
+			clearHighlights();
 		}
-		this.innerText = numSelected.id;
-		// Mettre à jour la grille de jeu
-		const [row, col] = this.id.split('-').map(Number);
-        board[row][col] = Number(numSelected.id); // Met à jour le tableau board
-		numSelected.classList.remove("number-selected");
-		numSelected = null;
-		this.classList.remove("tile-selected");
-		tileSelected = null;
-		clearHighlights();
-	}
 
-	// Vérifier la validité de la grille
-	if (!isValidSudoku(board)) {
-		console.log("Grille invalide");
-	}
+		// Vérifier la validité de la grille
+		if (!isValidSudoku(board)) {
+			console.log("Grille invalide");
+		}
 
-	// Vérifier si le jeu est terminé
-	if (isBoardComplete(board) && isValidSudoku(board)) {
-		alert("Game Completed!");
-		sudokuSocket.send(JSON.stringify({
-			'type': 'board_complete',
-			'message': 'Board completed!'
-		}));
-	}
+		// Vérifier si le jeu est terminé
+		if (isBoardComplete(board) && isValidSudoku(board)) {
+			const timeUsed = document.getElementById("timer").innerText;
+			sudokuSocket.send(JSON.stringify({
+				'type': 'board_complete',
+				'message': 'Board completed!',
+				'time_used': timeUsed,
+				"is_winner": true
+			}));
+			showModal(true, timeUsed);
+		}
 
-	if (tileSelected != null) {
-		tileSelected.classList.remove("tile-selected");
-		clearHighlights();
-	}
-	tileSelected = this;
-	tileSelected.classList.add("tile-selected");
-	highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
-	let number = tileSelected.innerText;
-	if (number != 0) {
-		highlightSameNumberTiles(number); // Mettre en évidence les chiffres similaires
-	}
-	
+		if (tileSelected != null) {
+			tileSelected.classList.remove("tile-selected");
+			clearHighlights();
+		}
+		tileSelected = this;
+		tileSelected.classList.add("tile-selected");
+		highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
+		let number = tileSelected.innerText;
+		if (number != 0) {
+			highlightSameNumberTiles(number); // Mettre en évidence les chiffres similaires
+		}
 }
 
 function handleKeyPress(event) {
