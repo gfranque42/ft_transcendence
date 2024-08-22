@@ -1,18 +1,14 @@
-FROM python:3.12-slim-bookworm
+FROM alpine:3.19
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+RUN apk update
 
-RUN apt-get update && \
-    apt-get install -y postgresql postgresql-contrib vim redis-server php-redis && \
-    apt-get clean
+RUN apk add build-base postgresql bash \
+	python3-dev py3-pip redis --no-cache doas
 
 WORKDIR /project
 
-COPY ./ /project/
+COPY requirements.txt /project/
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
-RUN chmod +x /project/entrypoint.sh
-
-ENTRYPOINT ["/project/entrypoint.sh"]
+ENTRYPOINT ["sh", "entrypoint.sh"]

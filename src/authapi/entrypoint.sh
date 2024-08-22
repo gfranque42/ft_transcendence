@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir /run/postgresql
 chown postgres:postgres /run/postgresql
@@ -21,6 +21,7 @@ psql -c "ALTER USER $DATABASEUSER WITH PASSWORD '$DATABASEPWD';"
 createdb -O $DATABASEUSER $MYDATABASE
 
 EOF
+
 
 python manage.py makemigrations
 

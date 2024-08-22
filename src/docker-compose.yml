@@ -12,19 +12,17 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
-    env_file:
-      - .env
-  # backend_service1:
-  #   container_name: backend_service1
-  #   build:
-  #     context: ./service1/
-  #     dockerfile: Dockerfile
-  #   networks:
-  #     - Transcendence
-  #   ports:
-  #     - "8001:8001"
-  #   env_file:
-  #     - .env
+  backend_service1:
+    container_name: backend_service1
+    build:
+      context: ./service1/
+      dockerfile: Dockerfile
+    networks:
+      - Transcendence
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./service1:/project
   
   # backend_service2:
   #   container_name: backend_service2
@@ -50,22 +48,30 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
-    # image: nginx:1.27-alpine3.19-slim
     container_name: nginx_proxy
     ports:
       - 8082:80
-      - 8083:443
     networks:
       - Transcendence
     depends_on:
       - backend_authapi
-      # - backend_service1
+      - backend_service1
+
+  backend_sudoku:
+    container_name: backend_sudoku
+    build:
+      context: ./sudoku/
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    networks:
+      - Transcendence
+    volumes:
+      - ./sudoku:/project
     env_file:
       - .env
-    # volumes:
-    #   - ./src/nginx:/etc/nginx
-    restart: always
 
 networks:
   Transcendence:
     name: Transcendence
+
