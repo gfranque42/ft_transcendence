@@ -9,17 +9,39 @@
     <a href="/" class="navbar-content" id="home" data-link>HOME</a>
     <a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
 </div>
-<form method="POST" class="form-login">
-    {% csrf_token %}
-    {{ formAvatar.avatar }}
-    
-    {{ formUsername.username }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <form method="POST" class="form-profile">
+                {% csrf_token %}
+                {{ formAvatar.avatar }}
+                
+                {{ formUsername.username }}
 
-    <div class="error-container">
-        <div class="error"></div>
+                <div class="profile-error-container error-container">
+                    <div class="profile-error error"></div>
+                </div>
+                <button type="submit" class="btn-profile">Save Changes</button>
+            </form>
+            </div>
+
+            <div class="col-sm">
+                heyt
+            </div>
+
+
+            <div class="col-sm">
+              hey  
+            </div>
+
+
+            <div class="col-sm">
+                hey
+            </div> 
+        </div>
     </div>
-    <button type="submit" class="btn btn-login">Save Changes</button>
-</form>
+</div>
+
 
 
 {% endblock content %}

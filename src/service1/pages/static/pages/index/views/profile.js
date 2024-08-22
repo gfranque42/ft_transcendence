@@ -28,25 +28,18 @@ export default class extends abstractviews {
             }
         };
 
-        console.log(options);
         const response = await fetch('http://localhost:8082/auth/profile', options);
-        console.log("reposne :", response);
         const tempContentHtml = await response.text();
 
-        console.log(tempContentHtml);
         // Extract CSRF token from HTML form
         const parser = new DOMParser();
         const doc = parser.parseFromString(tempContentHtml, 'text/html');
         csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
-        console.log(csrfToken);
 
         return tempContentHtml;
     }
 
     async profileUser(token, username, avatar) {
-        console.log(username);
-        console.log(avatar);
-        console.log(csrfToken);
         if (csrfToken === null) {
             throw new Error('CSRF token not available');
         }

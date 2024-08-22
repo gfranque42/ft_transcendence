@@ -132,6 +132,8 @@ const router = async () => {
         // console.log("form has been ititrated");
         if (FullForm.token)
             return FullForm.token;
+        if (FullForm.Success)
+            return true;
         return null;
     }
 
@@ -165,6 +167,13 @@ const router = async () => {
         VerificationRoute();
     }
 
+    async function PostProfile(TmpIsCorrect) {
+        const IsCorrect = await TmpIsCorrect;
+        if (IsCorrect)
+            navigateTo("/profile/")
+
+    } 
+
     if (!UserToken)
         UserToken = getCookie("token");
 
@@ -196,12 +205,12 @@ const router = async () => {
         });
     } else if (match.route.path == "/profile/") {
         console.log("post awaited profile");
-        const profileForm = document.querySelector('form.form-login');
+        const profileForm = document.querySelector('form.form-profile');
         profileForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const username = document.querySelector('input[name="username"]');
             const avatar = document.querySelector('input[name="avatar"]');
-            checkForm(view.profileUser(UserToken, username, avatar));
+            PostProfile(checkForm(view.profileUser(UserToken, username, avatar)))
             // checkForm(form)
             // navigateAfterPost(UserToken);
 
