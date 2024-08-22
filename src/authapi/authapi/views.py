@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect
 
 from .urls import CheckForTFA
 from .models import UserProfile
-from .forms import CreateUserForm, GetUserForm, Get2faForm
+from .forms import CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -28,9 +28,49 @@ class Profile(APIView):
     # template_name = 'register/register.html'
 
     def get(self, request):
-        return render(request, "profile.html")
+        formAvatar = changeAvatar()
+        formUsername = changeUsername()
+        print(request.headers)
+        auth_header = request.headers.get('Authorization')
+        print (auth_header)
+        try: 
+            print (auth_header)
+            print ("\n\n\n\n\n")
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            userProfile = UserProfile.objects.get(id=user_id)
+            return render(request, "profile.html", {"formAvatar":formAvatar, "formUsername":formUsername})
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
     
-    def patch(self, request)
+    def patch(self, request):
+        print (request.data)
+        new_username = request.data['username']
+        new_avatar = request.data['avatar']
+        token = request.data['token']
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=decoded['id'])
+        print ("\n\n\n\n\n")
+
+        print (new_username)
+        if new_username:
+            print ("string is true")
+            if User.objects.filter(username=new_username).exists():
+                return Response({'detail': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
+            userProfile.user.username = new_username
+            userProfile.user.save()
+            # userProfile.save
+        print (userProfile.user.username)
+        if new_avatar:
+            userProfile.avatar = new_avatar
+            userProfile.save()
+        
+            
+        
+        return Response({'Success': 'No Verification'}, status=status.HTTP_200_OK)
+
         
 # PATCH nothing is forced add it and save it some cgecks ie avatar 
 
@@ -48,7 +88,7 @@ class VerifyOTPView(APIView):
                 return render(request, "2fa.html", {"form":form})
             # print(totp.now())
             print("Check\n\n\n\n")
-            return Response({'Success': 'No Verification'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Success': 'No Verification'}, status=status.HTTP_200_OK)
 
             # print("Email verification sent")
         except UserProfile.DoesNotExist:
@@ -136,4 +176,5 @@ def test_token(request):
     token = auth_header.split(' ')[1]
     payload = jwt.decode(token, 'secret', algorithms=['HS256'])
     userProfile = UserProfile.objects.get(id=payload['id'])
+    print(userProfile.user.username)
     return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})

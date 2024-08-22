@@ -84,18 +84,13 @@ class Get2faForm(forms.Form):
         return cleaned_data
 
 
-class ChangeAvatar(forms.Form):
-    avatar = forms.ImageField(upload_to="images/", blank=True, null=True)
-    username = forms.CharField(max_length=254, unique=True)
+class changeAvatar(forms.Form):
+    avatar = forms.ImageField(required=False)
 
-    def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get('username')
-        password = cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if not user:
-            raise forms.ValidationError("Invalid username or password.")
-        return cleaned_data
+
+
+class changeUsername(forms.Form):
+    username = forms.CharField(required=False)
 
 
 

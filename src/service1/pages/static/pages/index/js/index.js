@@ -4,6 +4,7 @@ import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
+import Profile from "../views/profile.js";
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
@@ -22,13 +23,13 @@ const getParams = match => {
 };
 
 // Function to navigate to a URL
-const navigateTo = url => {
+export const navigateTo = url => {
     history.pushState(null, null, url);
     router();
 };
 
 function JSONItirator(form) {
-    console.log(form.detail);
+    console.log(form);
     const valuesArray = [];
 
     
@@ -39,8 +40,12 @@ function JSONItirator(form) {
     }
     
     const errorElements = document.querySelectorAll(".error");
+    console.log(errorElements);
     
-    
+    if (form.detail == "Username is taken") {
+        errorElements[0].textContent = form.detail;
+        return ;        
+    }
     if (errorElements.length === 1 && form.detail) {
 
         errorElements[0].textContent = "Incorrect username or password";
@@ -94,6 +99,7 @@ const router = async () => {
     const routes = [
         { path: "/", view: Home },
         { path: "/login/", view: Login },
+        { path: "/profile/", view: Profile },
         { path: "/register/", view: Register }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
@@ -120,7 +126,7 @@ const router = async () => {
     
     async function checkForm(form) {
         const FullForm = await form;
-        // console.log(FullForm);
+        console.log(FullForm);
         if (FullForm)
             JSONItirator(FullForm);
         // console.log("form has been ititrated");
@@ -159,6 +165,9 @@ const router = async () => {
         VerificationRoute();
     }
 
+    if (!UserToken)
+        UserToken = getCookie("token");
+
     if (match.route.path == "/register/") {
         console.log("post awaited");
         const registrationForm = document.querySelector('form.form-register');
@@ -177,19 +186,28 @@ const router = async () => {
         const loginForm = document.querySelector('form.form-login');
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault();
-            console.log("1");
             const username = document.querySelector('input[name="username"]');
-            console.log("2");
             
             const password = document.querySelector('input[name="password"]');
-            console.log("3");
-            console.log("here");
             VerificationRoute(checkForm(view.loginUser(username, password)));
             // checkForm(form)
             // navigateAfterPost(UserToken);
 
         });
+    } else if (match.route.path == "/profile/") {
+        console.log("post awaited profile");
+        const profileForm = document.querySelector('form.form-login');
+        profileForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const username = document.querySelector('input[name="username"]');
+            const avatar = document.querySelector('input[name="avatar"]');
+            checkForm(view.profileUser(UserToken, username, avatar));
+            // checkForm(form)
+            // navigateAfterPost(UserToken);
+
+        });
     }
+
     if (!UserToken)
             UserToken = getCookie("token");
         displayUser();
