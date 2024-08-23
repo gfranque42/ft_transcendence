@@ -44,7 +44,7 @@ function initialize() {
 	// Initialize WebSocket and assign to sudokuSocket
 	sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {
-		sudokuSocket.onmessage = handleSocketMessage;
+		sudokuSocket.onmessage = handleSocketMessage();
 		setGame(sudokuSocket);
 		startTimer();
 	}

@@ -141,3 +141,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
+ALLOWED_HOSTS = ['pop-os', 'localhost']

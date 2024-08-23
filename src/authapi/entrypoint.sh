@@ -22,7 +22,6 @@ createdb -O $DATABASEUSER $MYDATABASE
 
 EOF
 
-
 python manage.py makemigrations
 
 echo "makemigrations done"
