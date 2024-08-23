@@ -12,6 +12,9 @@ services:
       - "8000:8000"
     volumes:
       - ./authapi:/project
+    env_file:
+      - .env
+  
   backend_service1:
     container_name: backend_service1
     build:
@@ -23,6 +26,8 @@ services:
       - "8001:8001"
     volumes:
       - ./service1:/project
+    env_file:
+      - .env
   
   # backend_service2:
   #   container_name: backend_service2
