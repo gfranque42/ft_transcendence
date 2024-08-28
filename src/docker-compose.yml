@@ -14,6 +14,20 @@ services:
     env_file:
       - .env
 
+  pong:
+    container_name: pong
+    build:
+      context: ./pong/
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    networks:
+      - Transcendence
+    volumes:
+      - ./pong:/project
+    env_file:
+      - ./.env
+
   nginx:
     build:
       context: ./nginx
@@ -26,7 +40,7 @@ services:
       - Transcendence
     depends_on:
       - backend_authapi
-      # - backend_service1
+      - pong
     env_file:
       - .env
     # volumes:
