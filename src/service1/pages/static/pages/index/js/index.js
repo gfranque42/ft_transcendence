@@ -29,7 +29,7 @@ export const navigateTo = url => {
 };
 
 function JSONItirator(form) {
-    console.log(form);
+    // console.log(form);
     const valuesArray = [];
 
     
@@ -94,6 +94,19 @@ function VerificationEvent(verification, token) {
     });
 }
 
+function hidePopstate() {
+    var qrCode = document.getElementById('qr-code');
+    var emailCode = document.getElementById('email-code');
+    var smsCode = document.getElementById('sms-code');
+    var clickOff = document.getElementById('click-off');
+
+    qrCode.style.display = 'none';
+    emailCode.style.display = 'none';
+    smsCode.style.display = 'none';
+    clickOff.style.filter = 'none';
+}
+
+
 const router = async () => {
     console.log("Router function called");
     const routes = [
@@ -126,7 +139,6 @@ const router = async () => {
     
     async function checkForm(form) {
         const FullForm = await form;
-        console.log(FullForm);
         if (FullForm)
             JSONItirator(FullForm);
         // console.log("form has been ititrated");
@@ -136,7 +148,7 @@ const router = async () => {
             return true;
         return null;
     }
-
+    
     async function navigateToOTP(verification, token) {
         const otptoken = await token;
         if (otptoken) {
@@ -147,7 +159,7 @@ const router = async () => {
         }
         return 3;
     }
-
+    
     async function VerificationRoute(tempToken) {
         const verification = new Verification();
         const token = await tempToken;
@@ -167,7 +179,7 @@ const router = async () => {
         VerificationRoute();
     }
 
-    async function PostProfile(TmpIsCorrect) {
+    async function FollowingProfile(TmpIsCorrect) {
         const IsCorrect = await TmpIsCorrect;
         if (IsCorrect)
             navigateTo("/profile/")
@@ -199,18 +211,37 @@ const router = async () => {
             
             const password = document.querySelector('input[name="password"]');
             VerificationRoute(checkForm(view.loginUser(username, password)));
-            // checkForm(form)
-            // navigateAfterPost(UserToken);
-
         });
     } else if (match.route.path == "/profile/") {
         console.log("post awaited profile");
-        const profileForm = document.querySelector('form.form-profile');
-        profileForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const username = document.querySelector('input[name="username"]');
-            const avatar = document.querySelector('input[name="avatar"]');
-            PostProfile(checkForm(view.profileUser(UserToken, username, avatar)))
+        const profileForm = document.querySelectorAll('form');
+        profileForm.forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const username = document.querySelector('input[name="username"]');
+                const avatar = document.querySelector('input[name="avatar"]');
+                if (username.value || avatar.value) {
+                    FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
+                } else {
+                    const email = document.querySelector('input[name="email"]');
+                    const sms = document.querySelector('input[name="sms"]');
+                    const otp = document.querySelector('input[name="otp"]');
+                    console.log(email);
+                    console.log(sms);
+                    console.log(otp);
+                    // console.log(email);
+                    // profileUserPost(UserToken, email, sms, otp)
+                    const verif = view.profileUserPost(UserToken, email, sms, otp);
+                    const isOkay = FollowingProfile(checkForm(verif));
+                    if (isOkay) {
+                        LastCheckAddVerification(view.profileUserPost(UserToken, email, sms, otp), UserToken);
+                    } else {
+                        console.log("is not okay") // add to this
+                    }
+
+                }
+            });
+            
             // checkForm(form)
             // navigateAfterPost(UserToken);
 
@@ -278,6 +309,30 @@ document.addEventListener("DOMContentLoaded", () => {
             UserToken = null;
             document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
         }
+    });
+    document.addEventListener('click', function(event) {
+        // Get references to the elements
+        var qrCode = document.getElementById('qr-code');
+        var emailCode = document.getElementById('email-code');
+        var smsCode = document.getElementById('sms-code');
+        var clickOff = document.getElementById('click-off');
+        var popup = document.querySelectorAll('#simple-popup');
+        const ispopup = Array.from(popup).some(div =>  div.contains(event.target));
+
+        !(event.target.matches('.popup'))
+        if (event.target.matches('#setup-email')) {
+            emailCode.style.display = 'block';
+            clickOff.style.filter = 'blur(5px)';
+        } else if (event.target.matches('#setup-sms')) {
+            smsCode.style.display = 'block';
+            clickOff.style.filter = 'blur(5px)';
+        } else if (event.target.matches('#setup-app')) {
+            qrCode.style.display = 'block';
+            clickOff.style.filter = 'blur(5px)';
+        } else if (!ispopup) {
+            hidePopstate();
+        }
+
     });
     router();
 });

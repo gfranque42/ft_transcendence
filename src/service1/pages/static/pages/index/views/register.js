@@ -108,9 +108,9 @@ export default class extends abstractviews {
         });
         
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         // if (data.form.username)
-        console.log(await data);
+        // console.log(await data);
         return data;
     }
 

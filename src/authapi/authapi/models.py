@@ -21,6 +21,6 @@ class UserProfile(models.Model):
 
     tfa = models.JSONField(default=default_preferences)
 
-    sms = models.CharField(max_length=15, blank=True, validators=[phone_regex])
+    sms = models.CharField(max_length=12, blank=True, validators=[phone_regex])
     def __str__(self):
         return self.user.username

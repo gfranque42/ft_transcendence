@@ -46,7 +46,6 @@
 }
 
 .form-profile {
-	width: 0;
     display: flex;
     align-content: flex-start;
     flex-direction: column;
@@ -86,9 +85,8 @@
 }
 
 button, input, optgroup, select, textarea {
-    margin: 0;
     font-family: inherit;
-	margin: 1vw;
+	margin: 1vw 0;
     font-size: inherit;
     line-height: inherit;
     width: fit-content;
@@ -110,7 +108,89 @@ button, input, optgroup, select, textarea {
 .btn-profile {
 	width: max-content;
     border-radius: 12px;
-    font: 2.3rem oswald;
+    font: 1.7rem oswald;
     color: #FFFBFC;
+    padding: 1vh 1vw;
     background-color: #2E2C2F;
+}
+
+.add-2fa {
+    width: 100%;
+    margin-top: 6vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+.btn-verifi {
+    background-color: #2E2C2F;
+    color: #FFFBFC;
+    font: 1.7rem oswald;
+    border-radius: 12px;
+	width: max-content;
+    margin-top: 1vh;
+    padding: 1vh 1vw;
+}
+
+.btn-verifi:hover {
+    cursor: pointer;
+}
+
+.popup {
+    position: fixed;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    background-color: #FFFBFC;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.form-verification-profile {
+    display: flex;
+    padding: 10vw;
+    padding-top: 15vh;
+    align-content: flex-start;
+    flex-direction: column;
+}
+
+#qr-code {
+    display: none;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 3vw;
+    max-width: min-content;
+}
+
+#sms-code {
+    display: none;
+}
+
+#email-code {
+    display: none;
+}
+
+#profile-otp-code {
+    display: none;
+}
+
+.input-span-sms {
+    border-radius: 12px;
+    background: unset;
+}
+
+.phone_number_form {
+    border: unset;
+    width: 100%;
+    margin: 1vh 1vw;
+}
+
+#click-off {
+    height: 100vh;
+}
+
+.btn-qr-code {
+    width: 100%;
 }

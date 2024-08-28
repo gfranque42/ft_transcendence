@@ -22,7 +22,7 @@ export default class extends abstractviews {
     }
 
     async loginUser(username, password) {
-        console.log("here");
+
         console.log(username + ' ' + password);
         if (csrfToken === null) {
             throw new Error('CSRF token not available');

@@ -21,7 +21,7 @@ Content-Type: application/json
 
 GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzIyMzQ5MTAzLCJpYXQiOjE3MjIzNDY1ODN9.kPhLR9onUM6T8FMq8FEDhsDwxuFXGBV0OF8zCfLHbF0
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwjoxNzI0ODU4MjI4LCJpYXQiOjE3MjQ4NTU3MDh9.JWk6t9Smiop_CfZikeYHuHdRFSfxDAE3cqSDXo4sl2Q
 
 {
 }
@@ -80,4 +80,14 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNz
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzIzNzMxMjg1LCJpYXQiOjE3MjM3Mjg3NjV9.AgKp7McTjXfiFE77LQnqp7EIlzmdSM8eA7EnuOuUEXo"
 }
 
+###
+
+POST http://localhost:8000/auth/verification-add
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI0ODU0NDI2LCJpYXQiOjE3MjQ4NTE5MDZ9.-PD6wDTqDwKSMiwZCl-RWX2R4LJvW9wYzkElwlWolKE
+
+{  
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI0ODU0NDI2LCJpYXQiOjE3MjQ4NTE5MDZ9.-PD6wDTqDwKSMiwZCl-RWX2R4LJvW9wYzkElwlWolKE",
+    "email": "baneg232315@eixdeal.com"
+}
 

@@ -9,7 +9,79 @@
     <a href="/" class="navbar-content" id="home" data-link>HOME</a>
     <a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
 </div>
-<div class="container">
+
+<!-- QR CODE -->
+<div class="popup" id="simple-popup">
+    <div id="qr-code">
+        <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR Code">
+        <button type="submit" class="btn-qr-code btn btn-login" id="verification-form-validation">Submit</button>
+    </div> 
+</div>
+
+<!-- PHONE NUMBER FILED -->
+<div class="popup" id="simple-popup">
+
+    <form method="POST" class="form-verification-profile" id="sms-code">
+        {% csrf_token %}
+                <span class="input-span-sms input-group-text">+33
+                    {{ formSMS.phone_number}}
+                </span>
+                {% for error in field.errors%}
+                    <div class="row">
+                        <div class="small-12 columns val-error-msg error margin-below">
+                            {{ error }}
+                        </div>
+                    </div>
+            {% endfor %}
+        <button type="submit" class=" btn btn-login" id="verification-form-validation">Submit</button>
+    </form>
+</div>
+
+
+<!-- EMAIL NUMBER FILED -->
+<div class="popup" id="simple-popup">
+    <form method="POST" class="form-verification-profile" id="email-code">
+        {% csrf_token %}
+                {{ formEmail.email}}
+                {% for error in field.errors%}
+                    <div class="row">
+                        <div class="small-12 columns val-error-msg error margin-below">
+                            {{ error }}
+                        </div>
+                    </div>
+                {% endfor %}
+        <button type="submit" class="btn btn-login" id="verification-form-validation">Submit</button>
+    </form>
+</div>
+
+<!-- FINAL VERIFICATION FIELD -->
+
+<div class="popup">
+    <form method="POST" class="form-verification-profile" id="profile-otp-code">
+        {% csrf_token %}
+            {% for field in formOTP %}
+                {{field}}
+                {% for error in field.errors%}
+                    <div class="row">
+                        <div class="small-12 columns val-error-msg error margin-below">
+                            {{ error }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <div class="error-container">
+                <div id="countdown">The code will be valid for 30s after which you will need to ask for another.</div>
+                <div class="error"></div>
+            </div>
+        <button type="submit" class="btn btn-login">Submit</button>
+        <button type="submit" class="code-btn">Resend Code</button>
+    </form>
+</div>
+
+
+<!-- VISIBLE PAGE -->
+
+<div class="container" id="click-off">
     <div class="row">
         <div class="col-sm">
             <form method="POST" class="form-profile">
@@ -22,6 +94,12 @@
                     <div class="profile-error error"></div>
                 </div>
                 <button type="submit" class="btn-profile">Save Changes</button>
+                <div class="add-2fa     ">
+                    Add 2 factor authentication
+                    <div class="btn-verifi" id="setup-email">Email</div>
+                    <div class="btn-verifi" id="setup-sms">SMS</div>
+                    <div class="btn-verifi" id="setup-app">APP</div>
+                </div>
             </form>
             </div>
 
