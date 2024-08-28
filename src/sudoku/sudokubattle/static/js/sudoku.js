@@ -10,8 +10,11 @@ export function initializeWebSocket(roomName) {
 		return;
 	}
 
+	const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+
+	// Initialize the WebSocket with the correct protocol
 	const socket = new WebSocket(
-		'ws://' + window.location.host + '/ws/sudokubattle/' + roomName + '/'
+		`${wsProtocol}://${window.location.host}/ws/sudokubattle/${roomName}/`
 	);
 
 	socket.onclose = function(e) {
