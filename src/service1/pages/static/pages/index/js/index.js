@@ -100,10 +100,10 @@ function hidePopstate() {
     var smsCode = document.getElementById('sms-code');
     var clickOff = document.getElementById('click-off');
 
-    qrCode.style.display = 'none';
-    emailCode.style.display = 'none';
-    smsCode.style.display = 'none';
-    clickOff.style.filter = 'none';
+    if (qrCode) qrCode.style.display = 'none';
+    if (emailCode) emailCode.style.display = 'none';
+    if (smsCode) smsCode.style.display = 'none';
+    if (clickOff) clickOff.style.filter = 'none';
 }
 
 
@@ -282,10 +282,13 @@ const router = async () => {
         return ;
     }
     const UserInformation = await response.json();
-    document.getElementById('user').outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
+    const userElement = document.getElementById('user');
+    if (userElement) {
+        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
     </div>`;
+    }
 }
 
 // Listen for popstate event and trigger router
