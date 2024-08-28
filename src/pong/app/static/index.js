@@ -143,7 +143,8 @@ async	function Start()
 	{
 		getCookie('token');
 		console.log('dns: ', dns);
-		const fetchurl = 'https://' + 'localhost' + ':8083/api_pong/postroom/';
+		const fetchurl = 'https://localhost:8083/api_pong/postroom/';
+		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		console.log('fetchurl: ', fetchurl);
 		const response = await fetch(fetchurl, {
 			method: 'POST',
