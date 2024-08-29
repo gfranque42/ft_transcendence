@@ -146,7 +146,7 @@ const router = async () => {
 
     if (!tempToken) 
         return ;
-
+    console.log("pass through here");
     setCookie("token", tempToken, 42)
     const options = {
         method: 'GET', // HTTP method
@@ -157,7 +157,7 @@ const router = async () => {
         
     };
 
-    const response = await fetch('http://localhost:8000/auth/test_token', options);
+    const response = await fetch('https://localhost:8083/auth/test_token', options);
     if (!response.ok)
     {
         eraseCookie("token");

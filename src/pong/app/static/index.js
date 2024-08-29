@@ -126,6 +126,7 @@ function getCookie(name)
 			}
 		}
 	}
+	console.log("cookie: ", cookieValue);
 	return cookieValue;
 }
 
@@ -140,14 +141,15 @@ async	function Start()
 	};
 	try
 	{
+		getCookie('token');
 		console.log('dns: ', dns);
-		const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+		const fetchurl = 'https://' + 'localhost' + ':8083/api_pong/postroom/';
 		console.log('fetchurl: ', fetchurl);
 		const response = await fetch(fetchurl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-CSRFToken': getCookie('csrftoken'),
+				// 'X-CSRFToken': getCookie('csrftoken'),
 			},
 			body: JSON.stringify(roomData),
 		});
