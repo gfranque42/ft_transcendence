@@ -1,23 +1,17 @@
-var	roomSocket;
+var socketProtocol = 'ws://';
+console.log(window.location.protocol);
+if (window.location.protocol === 'https:')
+{
+	console.log('protocol https');
+	socketProtocol = 'wss://';
+}
 
-if (window.location.protocol === 'http')
-{
-	roomSocket = new WebSocket(
-		'ws://'
-		+ window.location.host
-		+ '/ws'
-		+ window.location.pathname
-	);
-}
-else if (window.location.protocol === 'https')
-{
-	roomSocket = new WebSocket(
-		'wss://'
-		+ window.location.host
-		+ '/ws'
-		+ window.location.pathname
-	);
-}
+const roomSocket = new WebSocket(
+	socketProtocol
+	+ window.location.host
+	+ '/ws'
+	+ window.location.pathname
+);
 
 function getCookie(name)
 {
