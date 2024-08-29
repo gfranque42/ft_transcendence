@@ -28,6 +28,20 @@ services:
     env_file:
       - ./.env
 
+  home:
+    container_name: home
+    build:
+      context: ./home/
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    networks:
+      - Transcendence
+    volumes:
+      - ./home:/project
+    env_file:
+      - ./.env
+
   nginx:
     build:
       context: ./nginx
@@ -41,10 +55,9 @@ services:
     depends_on:
       - backend_authapi
       - pong
+      - home
     env_file:
       - .env
-    # volumes:
-    #   - ./src/nginx:/etc/nginx
     restart: always
 
 networks:
