@@ -13,7 +13,6 @@ const roomSocket = new WebSocket(
 	+ window.location.pathname
 );
 
-console.log('WebSocket connected');
 function getCookie(name)
 {
 	let cookieValue = null;
@@ -34,40 +33,40 @@ function getCookie(name)
 	return cookieValue;
 }
 
-function waitForSocketConnection(){
+function waitForSocketConnection()
+{
 
 	setTimeout(
 		function () {
-			if (roomSocket.readyState === 1) {
+			if (roomSocket.readyState === 1)
+			{
 				console.log("Connection is made")
-			} else {
+			}
+			else
+			{
 				console.log("wait for connection...")
 				waitForSocketConnection(roomSocket);
 			}
 
 		}, 5);
 }
-	
-	function sleep(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	}
-	
-	async function testToken()
-	{
-		cookie = getCookie('token');
-		
-		const options = {
+
+async function testToken()
+{
+	cookie = getCookie('token');
+
+	const options = {
 		method: 'GET', // HTTP method
 		headers: {
 			'Content-Type': 'application/json',
 			'Authorization': `Token ${cookie}`
 		}
-		
+
 	};
-	
+
 	const response = await fetch('https://localhost:8083/auth/test_token', options);
 	const UserInformation = await response.json();
-	
+
 	console.log(UserInformation);
 	console.log(UserInformation.Username);
 	roomSocket.send(JSON.stringify({
@@ -75,15 +74,17 @@ function waitForSocketConnection(){
 		'username': UserInformation.Username
 	}));
 }
+
 waitForSocketConnection();
 testToken();
 
-roomSocket.onmessage = function(e) {
+roomSocket.onmessage = function (e)
+{
 	const data = JSON.parse(e.data);
 	console.log('data.message: ', data.message);
 };
 
-roomSocket.onclose = function(e) {
+roomSocket.onclose = function (e)
+{
 	console.error('Chat socket closed unexpectedly');
 };
-
