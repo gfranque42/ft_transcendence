@@ -32,11 +32,12 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				self.room_group_name, {"type": "chat_message", "message": message}
 			)
 		if (type_data == "username"):
-			message = text_data_json["username"]
-			print('username: ', message)
+			username = text_data_json["username"]
+			print('username: ', username)
+			self.username = username
 			await self.send(text_data=json.dumps({
 				"type": "username",
-				"message": message
+				"username": username
 			}))
 
 	# Receive message from room group
