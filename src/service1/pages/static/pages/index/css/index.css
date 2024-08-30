@@ -101,9 +101,9 @@ a:hover {
     margin-right: 5vw;
 }
 
-
-
-
+.navbar{
+    width: 100%;
+}
 
 .disconnect {
     position: absolute;
