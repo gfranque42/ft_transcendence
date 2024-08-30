@@ -22,12 +22,22 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	# Receive message from WebSocket
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
-		message = text_data_json["message"]
+		type_data = text_data_json["type"]
+		if (type_data == "message"):
+			text_data_json["message"]
+			message = text_data_json["message"]
 
-		# Send message to room group
-		await self.channel_layer.group_send(
-			self.room_group_name, {"type": "chat_message", "message": message}
-		)
+			# Send message to room group
+			await self.channel_layer.group_send(
+				self.room_group_name, {"type": "chat_message", "message": message}
+			)
+		if (type_data == "username"):
+			message = text_data_json["username"]
+			print('username: ', message)
+			await self.send(text_data=json.dumps({
+				"type": "username",
+				"message": message
+			}))
 
 	# Receive message from room group
 	async def chat_message(self, event):
