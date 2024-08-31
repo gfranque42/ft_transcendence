@@ -5,11 +5,16 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Pong</title>
-	<link href="{% static 'pong.css'%}" rel="stylesheet" type="text/css"> 
+	{% comment %} <link href="{% static 'pong.css'%}" rel="stylesheet" type="text/css">  {% endcomment %}
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'pages/pages.css'%}"> {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/pages.css'%}">
+
+
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link rel="icon" type="image/x-icon" href="{% static 'pong.svg'%}">
 </head>
 <body>
+	{% csrf_token %}
 	<!-- <h1>PONG</h1> -->
 	<canvas id="canvas"></canvas>
 	<h1 id="player1Score">0</h1>

@@ -6,6 +6,7 @@ game modes:
 	2 = pva medium
 	3 = pva hard
 */
+import Pong from "../views/pong.js";
 
 let	gameMode = -1;
 
@@ -130,19 +131,23 @@ function getCookie(name)
 	return cookieValue;
 }
 
-export async	function Start(csrfToken)
+export async	function Start(csrftoken)
 {
 	if (gameMode == -1)
 		return ;
+	let maxPlayers = 1;
+	if (gameMode == 0)
+		maxPlayers = 2;
 	const roomUrl = generateRandomUrl();
 	const roomData = {
 		url: roomUrl,
 		difficulty: gameMode,
+		maxPlayers: maxPlayers,
 	};
 	try
 	{
 		getCookie('token');
-		console.log('dns: ', dns);
+		// console.log('dns: ', dns);
 		const fetchurl = 'https://localhost:8083/api_pong/postroom/';
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		console.log('fetchurl: ', fetchurl);
@@ -150,7 +155,7 @@ export async	function Start(csrfToken)
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-CSRFToken': csrfToken,
+				'X-CSRFToken': csrftoken,
 			},
 			body: JSON.stringify(roomData),
 		});
@@ -170,6 +175,48 @@ export async	function Start(csrfToken)
 		return ;
 	}
 	console.log("Start !");
-	window.location.pathname = '/pong/' + roomUrl + '/';
-	return roomUrl;
+	// window.location.pathname = '/pong/' + roomUrl + '/';
+	// const link = document.createElement('a');
+	// link.href = '/pong/' + roomUrl + '/';
+	// document.body.appendChild(link);
+	// window.location.href = '/pong/' + roomUrl + '/';
+	
+	const link = document.createElement('a');
+	link.href = '/pong/' + roomUrl + '/';
+	link.setAttribute('data-link', '');
+	document.body.appendChild(link);
+	console.log(link);
+	link.click();
+	document.body.removeChild(link);
+}
+
+export function eventPong(view)
+{
+	document.addEventListener('click', function(event)
+	{
+		if (event.target.matches('.Start'))
+		{
+			view.PongLobbyCreation();
+		}
+		else if (event.target.matches('.PvP'))
+		{
+			PvP();
+		}
+		else if (event.target.matches('.PvA'))
+		{
+			PvA();
+		}
+		else if (event.target.matches('.Easy'))
+		{
+			Easy();
+		}
+		else if (event.target.matches('.Medium'))
+		{
+			Medium();
+		}
+		else if (event.target.matches('.Hard'))
+		{
+			Hard();
+		}
+	});
 }

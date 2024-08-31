@@ -2,6 +2,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from app.models import Player, Room
 from .serializers import PlayerSerializer, RoomSerializer
+import os
+from django.shortcuts import render
 
 @api_view(['GET'])
 def	getPlayer(request):
@@ -76,3 +78,16 @@ def	deleteRoom(request, pk):
 	room = Room.objects.get(url=pk)
 	room.delete()
 	return (Response('Room succesfully delete !'))
+
+@api_view(['GET'])
+def	getIndex(request):
+	dns = {
+		'dns': os.getenv('DNS'),
+	}
+	return (render(request, "index.html", dns))
+
+@api_view(['GET'])
+def	getLobby(request, pk):
+	# room_name = request.headers.get["room_name"]
+	return (render(request, "pong.html", {"room_name": pk}))
+

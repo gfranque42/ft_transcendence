@@ -12,4 +12,7 @@ urlpatterns = [
 	path('postroom/', views.postRoom),
 	path('updateroom/<str:pk>', views.updateRoom),
 	path('deleteroom/<str:pk>', views.deleteRoom),
+	path('getindex/', views.getIndex),
+	path('getlobby/<str:pk>', views.getLobby),
+
 ]

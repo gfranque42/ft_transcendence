@@ -3,6 +3,11 @@
 import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Register from "../views/register.js";
+import Pong from "../views/pong.js";
+import PongLobby from "../views/pong_lobby.js";
+import {vec2, paddle, ball, game, waitForSocketConnection, testToken} from  "../pong/pong.js";
+import {eventPong} from "../pong/index.js";
+
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
@@ -50,7 +55,6 @@ function JSONItirator(FullForm) {
         else
             element.textContent = "";
     });
-    
 }
 
 // Router function
@@ -60,7 +64,9 @@ const router = async () => {
     const routes = [
         { path: "/", view: Home },
         { path: "/login/", view: Login },
-        { path: "/register/", view: Register }
+        { path: "/register/", view: Register },
+        { path: "/pong/", view: Pong },
+        { path: '/pong/[A-Za-z0-9]{10}/', view: PongLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
 
@@ -102,7 +108,7 @@ const router = async () => {
         if (token)
             navigateTo("/");
     }
-
+    console.log(view);
     if (match.route.path == "/register/") {
         console.log("post awaited");
         const registrationForm = document.querySelector('form.form-register');
@@ -128,6 +134,42 @@ const router = async () => {
             // checkForm(form)
             navigateAfterPost(UserToken);
         });
+    } else if (match.route.path == "/pong/") {
+        eventPong(view);
+
+    } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
+        var socketProtocol = 'ws://';
+        console.log(window.location.protocol);
+        if (window.location.protocol === 'https:')
+        {
+        	console.log('protocol https');
+        	socketProtocol = 'wss://';
+        }
+
+        const roomSocket = new WebSocket(
+        	socketProtocol
+        	+ window.location.host
+        	+ '/ws'
+        	+ window.location.pathname
+        );
+        
+        waitForSocketConnection(roomSocket);
+
+        let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
+        console.log('my game is ready: ', myGame.gameState);
+        roomSocket.onmessage = function (e)
+        {
+        	const data = JSON.parse(e.data);
+        	if (data.type === "username")
+        	{
+        		console.log('username from serveur: ', data.username);
+        	}
+        };
+
+        roomSocket.onclose = function (e)
+        {
+        	console.error('Chat socket closed unexpectedly');
+        };
     }
     if (!UserToken)
             UserToken = getCookie("token");
