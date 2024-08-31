@@ -1,0 +1,107 @@
+body {
+	background-color: #585481;
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+#Title {
+	color: #FFFBFC;
+	position: absolute;
+	left: 35vw;
+	width: 30vw;
+	height: 10vh;
+	top: 5vh;
+	text-align: center;
+	font-size: 5vh;
+	font-family: "Oswald", sans-serif;
+	cursor: default;
+	z-index: 1;
+}
+
+.Button {
+	width: 20vw;
+	height: 10vh;
+	border: 2px solid #FFFBFC;
+	background-color: #585481;
+	color: #FFFBFC;
+	border-radius: 10vw;
+	text-align: center;
+	font-size: 5vh;
+	font-family: "Oswald", sans-serif;
+	position: absolute;
+	transition-duration: 0.4s;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.Button:hover {
+	border: 2px solid #FFFBFC;
+	background-color: #FFFBFC;
+	color: #726DA8;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.PvP {
+	left: 20vw;
+	top: 35vh;
+	z-index: 1;
+}
+
+.Solo {
+	right: 20vw;
+	top: 35vh;
+	z-index: 1;
+}
+
+.Start {
+	bottom: 25vh;
+	left: 39vw;
+	z-index: 1;
+}
+
+.Difficulty {
+	font-size: 3vh;
+	font-family: "Oswald", sans-serif;
+	color: #FFFBFC;
+	background-color: #585481;
+	width: 6vw;
+	height: 7vh;
+	text-align: center;
+	transition-duration: 0.2s;
+	border: none;
+	position: absolute;
+	cursor: pointer;
+	display: none;
+	z-index: 1;
+}
+
+.Easy {
+	right: 60vw;
+	top: 49vh;
+	z-index: 1;
+}
+
+.Medium {
+	right: 50vw;
+	top: 49vh;
+	z-index: 1;
+}
+
+.Hard {
+	right: 37vw;
+	top: 49vh;
+	z-index: 1;
+}
+
+.background-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20vw; /* Adjust size as needed */
+    font-family: 'Oswald', sans-serif; /* Font as per your design */
+    color: rgba(19, 17, 18, 51); /* White color with transparency */
+    z-index: 0;
+    pointer-events: none; /* Makes sure the text does not interfere with user interaction */
+}

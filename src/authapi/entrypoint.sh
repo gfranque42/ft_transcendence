@@ -22,17 +22,13 @@ createdb -O $DATABASEUSER $MYDATABASE
 
 EOF
 
-python manage.py makemigrations
-
-echo "makemigrations done"
-
-python manage.py migrate
-
-echo "migrate done"
-
-python manage.py collectstatic -y
+python manage.py collectstatic --noinput
 
 echo "static files collected"
+
+python manage.py makemigrations
+
+python manage.py migrate
 
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 

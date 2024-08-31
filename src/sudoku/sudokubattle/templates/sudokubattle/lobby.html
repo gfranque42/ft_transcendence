@@ -11,7 +11,11 @@
 	<meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
-	<h1 id="Title">Sudoku Game</h1>
+	<div class="header-band">
+		<span class="left">Sudoku</span>
+		<span class="center">HOME</span>
+		<span class="right">THX 1001</span>
+	</div>
 	<button class="PvP Button" onclick="PvP()">Player vs Player</button>
 	<button class="Solo Button" onclick="Solo()">Solo Play</button>
 	<button class="Start Button" onclick="Start()">Start Game</button>
@@ -23,4 +27,7 @@
 	</script>
 	<script src="{% static 'js/lobby.js' %}" defer></script>
 </body>
+<footer>
+	<div class="background-text">Sudoku</div>
+</footer>
 </html>

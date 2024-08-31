@@ -60,4 +60,4 @@ class RegisterForm(APIView):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def test_token(request):
-    return Response({"Username": format(request.user.username)})
+    return Response({"Username": format(request.user.username), "ID": format(request.user.id)})

@@ -11,7 +11,7 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-        const response = await fetch('http://localhost:8082/auth/login');
+        const response = await fetch('https://localhost:8083/auth/login');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
@@ -26,7 +26,7 @@ export default class extends abstractviews {
         if (csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-        let response = await fetch('http://localhost:8082/auth/login', {
+        let response = await fetch('https://localhost:8083/auth/login', {
             method: 'POST',
             body: JSON.stringify({ 
                 "csrfmiddlewaretoken": csrfToken, 
