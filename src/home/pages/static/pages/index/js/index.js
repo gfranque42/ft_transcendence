@@ -163,6 +163,7 @@ const router = async () => {
         	if (data.type === "username")
         	{
         		console.log('username from serveur: ', data.username);
+                console.log('room: ', window.location.pathname);
         	}
         };
 

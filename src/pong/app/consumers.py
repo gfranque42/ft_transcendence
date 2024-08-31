@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.generic.websocket import WebsocketConsumer
+from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from .models import Room, Player
 from .pong import *
@@ -33,8 +34,10 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			)
 		if (type_data == "username"):
 			username = text_data_json["username"]
-			print('username: ', username)
+			print('username: ', username, flush=True)
 			self.username = username
+			self.add_player()
+			print("j'essaie de faire marcher cette merde", flush=True)
 			await self.send(text_data=json.dumps({
 				"type": "username",
 				"username": username
@@ -46,3 +49,10 @@ class	PongConsumer(AsyncWebsocketConsumer):
 
 		# Send message to WebSocket
 		await self.send(text_data=json.dumps({"message": message}))
+
+	@database_sync_to_async
+	def add_player(self):
+		if (self.username):
+			user = Player.objects.create(username=self.username)
+			room = Room.objects.all()[self.room_name]
+			room.players.add(user)
