@@ -138,6 +138,7 @@ export async	function Start(csrftoken, url)
 	let maxPlayers = 1;
 	if (gameMode == 0)
 		maxPlayers = 2;
+	let roomExist = 0;
 	let roomUrl = generateRandomUrl();
 	try
 	{
@@ -160,6 +161,7 @@ export async	function Start(csrftoken, url)
 				roomUrl = rooms[i].url;
 				i = rooms.length;
 				console.log('room found: ', roomUrl);
+				roomExist = 1;
 			}
 		}
 	}
@@ -175,27 +177,30 @@ export async	function Start(csrftoken, url)
 	};
 	try
 	{
-		getCookie('token');
-		// console.log('dns: ', dns);
-		const fetchurl = 'https://localhost:8083/api_pong/postroom/';
-		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-		console.log('fetchurl: ', fetchurl);
-		const response = await fetch(fetchurl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': csrftoken,
-			},
-			body: JSON.stringify(roomData),
-		});
-		if (response.ok)
+		if (roomExist == 0)
 		{
-			const responseData = await response.json();
-			console.log('Room created: ', responseData);
-		}
-		else
-		{
-			console.error('Failed to create a room: ', response.statusText);
+			getCookie('token');
+			// console.log('dns: ', dns);
+			const fetchurl = 'https://localhost:8083/api_pong/postroom/';
+			// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+			console.log('fetchurl: ', fetchurl);
+			const response = await fetch(fetchurl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken,
+				},
+				body: JSON.stringify(roomData),
+			});
+			if (response.ok)
+			{
+				const responseData = await response.json();
+				console.log('Room created: ', responseData);
+			}
+			else
+			{
+				console.error('Failed to create a room: ', response.statusText);
+			}
 		}
 	}
 	catch (error)
