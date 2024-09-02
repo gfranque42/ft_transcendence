@@ -139,8 +139,35 @@ export async	function Start(csrftoken, url)
 	if (gameMode == 0)
 		maxPlayers = 2;
 	let roomUrl = generateRandomUrl();
-	if (url != "blop")
-		roomUrl = url;
+	try
+	{
+		const cookie = getCookie('token');
+
+		const options = {
+			method: 'GET', // HTTP method
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Token ${cookie}`
+			}
+			};
+
+		const response = await fetch('https://localhost:8083/api_pong/getroom', options);
+		const rooms = await response.json();
+		for (let i = 0; i < rooms.length; i++)
+		{
+			if (rooms[i].maxPlayers > rooms[i].players.length)
+			{
+				roomUrl = rooms[i].url;
+				i = rooms.length;
+				console.log('room found: ', roomUrl);
+			}
+		}
+	}
+	catch (error)
+	{
+		console.error('Error: ',error);
+		return ;
+	}
 	const roomData = {
 		url: roomUrl,
 		difficulty: gameMode,
