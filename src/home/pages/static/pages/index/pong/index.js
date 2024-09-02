@@ -131,14 +131,16 @@ function getCookie(name)
 	return cookieValue;
 }
 
-export async	function Start(csrftoken)
+export async	function Start(csrftoken, url)
 {
 	if (gameMode == -1)
 		return ;
 	let maxPlayers = 1;
 	if (gameMode == 0)
 		maxPlayers = 2;
-	const roomUrl = generateRandomUrl();
+	let roomUrl = generateRandomUrl();
+	if (url != "blop")
+		roomUrl = url;
 	const roomData = {
 		url: roomUrl,
 		difficulty: gameMode,

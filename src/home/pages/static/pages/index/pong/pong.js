@@ -120,5 +120,14 @@ export async function testToken(roomSocket)
 		'username': UserInformation.Username
 	}));
 }
-
+export function wsonmessage(data)
+{
+	console.log('data onmessage: ', data.type);
+	if (data.type === "connected")
+	{
+		console.log('player connected!');
+	}
+	else if (data.type === "ready for playing")
+		console.log('game loading');
+}
 

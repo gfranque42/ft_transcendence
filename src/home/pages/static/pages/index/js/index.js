@@ -5,7 +5,7 @@ import Login from "../views/login.js";
 import Register from "../views/register.js";
 import Pong from "../views/pong.js";
 import PongLobby from "../views/pong_lobby.js";
-import {vec2, paddle, ball, game, waitForSocketConnection, testToken} from  "../pong/pong.js";
+import {vec2, paddle, ball, game, waitForSocketConnection, wsonmessage} from  "../pong/pong.js";
 import {eventPong} from "../pong/index.js";
 
 
@@ -152,7 +152,7 @@ const router = async () => {
         	+ '/ws'
         	+ window.location.pathname
         );
-        
+
         waitForSocketConnection(roomSocket);
 
         let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
@@ -160,11 +160,7 @@ const router = async () => {
         roomSocket.onmessage = function (e)
         {
         	const data = JSON.parse(e.data);
-        	if (data.type === "username")
-        	{
-        		console.log('username from serveur: ', data.username);
-                console.log('room: ', window.location.pathname);
-        	}
+			wsonmessage(data);
         };
 
         roomSocket.onclose = function (e)

@@ -84,7 +84,19 @@ def	getIndex(request):
 	dns = {
 		'dns': os.getenv('DNS'),
 	}
-	return (render(request, "index.html", dns))
+	rooms = Room.objects.all()
+	size = Room.objects.count()
+	blop = "blop"
+	if size > 0:
+		for x in range(1, size):
+			print('x = ', x, flush=True)
+			if rooms[x].maxPlayers > rooms[x].players.count():
+				blop = rooms[x].url
+				url = {
+					'url': blop,
+				}
+				x = size + 1
+	return (render(request, "index.html", dns, url))
 
 @api_view(['GET'])
 def	getLobby(request, pk):

@@ -24,35 +24,56 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
 		type_data = text_data_json["type"]
-		if (type_data == "message"):
-			text_data_json["message"]
-			message = text_data_json["message"]
+		# if (type_data == "message"):
+		# 	text_data_json["message"]
+		# 	message = text_data_json["message"]
 
-			# Send message to room group
-			await self.channel_layer.group_send(
-				self.room_group_name, {"type": "chat_message", "message": message}
-			)
+		# 	# Send message to room group
+		# 	await self.channel_layer.group_send(
+		# 		self.room_group_name, {"type": "chat_message", "message": message}
+		# 	)
 		if (type_data == "username"):
 			username = text_data_json["username"]
-			print('username: ', username, flush=True)
 			self.username = username
-			self.add_player()
-			print("j'essaie de faire marcher cette merde", flush=True)
-			await self.send(text_data=json.dumps({
-				"type": "username",
-				"username": username
-			}))
+			try:
+				print('bisous de receive', flush=True)
+				ready = await self.add_player()
+				await self.send(text_data=json.dumps({
+					"type": "connected"
+				}))
+				if (ready == 1):
+					await self.channel_layer.group_send(
+						self.room_group_name, {"type": "update", "message": "ready for playing"}
+					)
+			except Exception as e:
+				print(f"Exception from receive: {e}", flush=True)
 
 	# Receive message from room group
-	async def chat_message(self, event):
+	async def update(self, event):
+		print('bisous de update', flush=True)
 		message = event["message"]
+		print(message, flush=True)
+		if (message == "ready for playing"):
+			await self.send(text_data=json.dumps({"type": message}))
+		# message = event["message"]
 
-		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message}))
+		# # Send message to WebSocket
+		# await self.send(text_data=json.dumps({"message": message}))
 
 	@database_sync_to_async
 	def add_player(self):
+		print('bisous de add_player', flush=True)
 		if (self.username):
-			user = Player.objects.create(username=self.username)
-			room = Room.objects.all()[self.room_name]
-			room.players.add(user)
+			try:
+				user = Player.objects.get(username=self.username)
+			except Player.DoesNotExist:
+				user = Player.objects.create(username=self.username)
+			try:
+				room = Room.objects.get(url=self.room_name)
+				room.players.add(user)
+				print("player added to ", self.room_name)
+				if (room.players.count() == room.maxPlayers):
+					return 1
+			except Exception as e:
+				print(f"Exception form add_player: {e}", flush=True)
+		return 0
