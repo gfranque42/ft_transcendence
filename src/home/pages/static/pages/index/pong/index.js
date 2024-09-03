@@ -131,6 +131,21 @@ function getCookie(name)
 	return cookieValue;
 }
 
+async function checkRoom(options)
+{
+	const response = await fetch('https://localhost:8083/api_pong/getroom', options);
+	const rooms = await response.json();
+	for (let i = 0; i < rooms.length; i++)
+	{
+		if (rooms[i].maxPlayers > rooms[i].players.length)
+		{
+			console.log('room found: ', rooms[i].url);
+			return rooms[i].url;
+		}
+	}
+	return "None";
+}
+
 export async	function Start(csrftoken, url)
 {
 	if (gameMode == -1)
@@ -151,18 +166,11 @@ export async	function Start(csrftoken, url)
 				'Authorization': `Token ${cookie}`
 			}
 			};
-
-		const response = await fetch('https://localhost:8083/api_pong/getroom', options);
-		const rooms = await response.json();
-		for (let i = 0; i < rooms.length; i++)
+		const str = await checkRoom(options);
+		if (str != "None")
 		{
-			if (rooms[i].maxPlayers > rooms[i].players.length)
-			{
-				roomUrl = rooms[i].url;
-				i = rooms.length;
-				console.log('room found: ', roomUrl);
-				roomExist = 1;
-			}
+			roomExist = 1;
+			roomUrl = str;
 		}
 	}
 	catch (error)
@@ -209,11 +217,6 @@ export async	function Start(csrftoken, url)
 		return ;
 	}
 	console.log("Start !");
-	// window.location.pathname = '/pong/' + roomUrl + '/';
-	// const link = document.createElement('a');
-	// link.href = '/pong/' + roomUrl + '/';
-	// document.body.appendChild(link);
-	// window.location.href = '/pong/' + roomUrl + '/';
 	
 	const link = document.createElement('a');
 	link.href = '/pong/' + roomUrl + '/';

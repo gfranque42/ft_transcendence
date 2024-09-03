@@ -68,3 +68,14 @@ canvas {
 	border-radius: 1.5vw;
 	display: none;
 }
+
+#comptearebour {
+	width: 20vw;
+	height: 10vh;
+	top: 45vh;
+	left: 40vw;
+	text-align: center;
+	font-size: 6vh;
+	display: none;
+	transition-duration: 1s;
+}

@@ -160,7 +160,7 @@ const router = async () => {
         roomSocket.onmessage = function (e)
         {
         	const data = JSON.parse(e.data);
-			wsonmessage(data);
+			wsonmessage(data, myGame);
         };
 
         roomSocket.onclose = function (e)

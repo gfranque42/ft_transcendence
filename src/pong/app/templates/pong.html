@@ -22,23 +22,7 @@
 	<h1 id="player1Name">{{ ply.0.username }}</h1>
 	<h1 id="player2Name">{{ ply.1.username }}</h1>
 	<h1 id="waitingForPlayers">Waiting for players...</h1>
+	<h1 id="comptearebour"></h1>
 	<script src="{% static 'pong.js'%}" defer></script>
-    {{ room_name|json_script:"room-name" }}
-    <script>
-        // const roomSocket = new WebSocket(
-        // 	'ws://'
-        // 	+ window.location.host
-        // 	+ '/ws'
-        // 	+ window.location.pathname
-        // );
-        // roomSocket.onmessage = function(e) {
-        //     const data = JSON.parse(e.data);
-        //     console.log('data.message: ', data.message);
-        // };
-
-        // roomSocket.onclose = function(e) {
-        //     console.error('Chat socket closed unexpectedly');
-        // };
-    </script>
 </body>
 </html>

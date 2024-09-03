@@ -20,6 +20,10 @@ class	Ball:
 		return (self.coor.x)
 	def	getXMax(self):
 		return (self.coor.x + self.size.x)
+	def getSizeX(self):
+		return (self.size.x)
+	def getSizeY(self):
+		return (self.size.y)
 	def	getYMin(self):
 		return (self.coor.y)
 	def	getYMax(self):
@@ -61,6 +65,10 @@ class	Paddle:
 		return (self.coor.y)
 	def	getYMax(self):
 		return (self.coor.y + self.size.y)
+	def getSizeX(self):
+		return (self.size.x)
+	def getSizeY(self):
+		return (self.size.y)
 	def	getAi(self):
 		return (self.ai)
 	def	setXMin(self, x):
