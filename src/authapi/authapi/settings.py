@@ -71,7 +71,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8000', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082' 
+    'http://localhost:8000', 'https://localhost:8083', 'http://127.0.0.1:8000', 'https://127.0.0.1:8083' 
 ]
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082']
@@ -138,11 +138,11 @@ WSGI_APPLICATION = 'authapi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'username',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('MYDATABASE'),
+        'USER': os.getenv('DATABASEUSER'),
+        'PASSWORD': os.getenv('DATABASEPWD'),
+        'HOST': os.getenv('DATABASEHOST'),
+        'PORT': os.getenv('DATABASEPORT'),
     }
 }
 

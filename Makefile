@@ -1,6 +1,7 @@
 all: up
 
 up:
+	./host.sh
 	docker-compose -f ./src/docker-compose.yml up -d --build
 
 v:
