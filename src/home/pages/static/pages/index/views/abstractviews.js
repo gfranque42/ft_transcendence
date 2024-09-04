@@ -8,7 +8,7 @@ export default class {
     async LastCheckAddVerification(tmpToken) { 
         const token = await tmpToken;
 
-        let response = await fetch('http://localhost:8082/auth/send-otp', {
+        let response = await fetch('https://localhost:8083/auth/send-otp', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

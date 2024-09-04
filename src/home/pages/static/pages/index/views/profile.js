@@ -31,7 +31,7 @@ export default class extends abstractviews {
             }
         };
         
-        const response = await fetch('http://localhost:8082/auth/profile', options);
+        const response = await fetch('https://localhost:8083/auth/profile', options);
         const tempContentHtml = await response.text();
         
         // Extract CSRF token from HTML form
@@ -46,7 +46,7 @@ export default class extends abstractviews {
         if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-        let response = await fetch('http://localhost:8082/auth/profile', {
+        let response = await fetch('https://localhost:8083/auth/profile', {
             method: 'PATCH',
             body: JSON.stringify({
                 "csrfmiddlewaretoken": this.csrfToken, 
@@ -85,7 +85,7 @@ export default class extends abstractviews {
             body["otp"] = otp.value;
         if (app !== null && !isEmptyOrWhitespace(app.value))
             body["app"] = app.value;
-        let response = await fetch('http://localhost:8082/auth/verification-add', {
+        let response = await fetch('https://localhost:8083/auth/verification-add', {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
