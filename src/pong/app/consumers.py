@@ -42,6 +42,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 						self.room_group_name, {"type": "update", "message": "ready for playing", "player1Name": self.player1Name, "player2Name": self.player2Name})
 			except Exception as e:
 				print(f"Exception from receive: {e}", flush=True)
+		elif (type_data == "ping"):
+			await self.channel_layer.group_send(
+						self.room_group_name, {"type": "game_update", "message": "in playing"})
 
 	# Receive message from room group
 	async def update(self, event):
@@ -60,7 +63,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def game_update(self, event):
 		print(self.username, ': bisous de game_update', flush=True)
 		message = event["message"]
-
+		print(self.username, ': ', message, flush=True)
+		await self.send_updated_game()
 
 	@database_sync_to_async
 	def add_player(self):
@@ -114,9 +118,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		try:
 			print(self.username, ': bisous de set_game', flush=True)
 			room = Room.objects.get(url=self.room_name)
-			self.ball = Ball(Vec2(45, 45), Vec2(10, 10), Vec2(1, 0), 1)
-			self.paddleL = Paddle(Vec2(5, 30), Vec2(10, 40), 0)
-			self.paddleR = Paddle(Vec2(5, 30), Vec2(10, 40), room.difficulty)
+			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), Vec2(1, 0), 1)
+			self.paddleL = Paddle(Vec2(3, 30), Vec2(3, 40), 0)
+			self.paddleR = Paddle(Vec2(94, 30), Vec2(3, 40), room.difficulty)
 			self.scoreL = 0
 			self.scoreR = 0
 		except Exception as e:
@@ -136,5 +140,6 @@ class	PongConsumer(AsyncWebsocketConsumer):
 										"paddleRcy": self.paddleR.getYMin(),
 										"paddleRsx": self.paddleR.getSizeX(),
 										"paddleRsy": self.paddleR.getSizeY(),
-										"scoreL": self.scoreL,
-										"scoreR": self.scoreR}))
+										"scoreL": 4,
+										"scoreR": 3}))
+										# "scoreL": self.scoreL,

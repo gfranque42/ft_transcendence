@@ -152,15 +152,20 @@ const router = async () => {
         	+ '/ws'
         	+ window.location.pathname
         );
-
+		
         waitForSocketConnection(roomSocket);
-
+		
         let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
         console.log('my game is ready: ', myGame.gameState);
+		
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth * 0.8;
+		canvas.height = window.innerHeight * 0.7;
         roomSocket.onmessage = function (e)
         {
         	const data = JSON.parse(e.data);
-			wsonmessage(data, myGame);
+			wsonmessage(data, myGame, roomSocket, canvas, ctx);
         };
 
         roomSocket.onclose = function (e)

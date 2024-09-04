@@ -28,15 +28,12 @@ export class paddle
 		this.size.update(paddlesx, paddlesy);
 	};
 
-	draw()
+	draw(canvas, ctx, color)
 	{
-		const canvas = document.getElementById('canvas');
-		const ctx = canvas.getContext('2d');
-		var element = document.getElementById('canvas');
-		var positionInfo = element.getBoundingClientRect();
-		var width = positionInfo.width;
-		ctx.fillStyle = "#FFFBFC";
-		ctx.fillRect(this.pos.x / 100 * width, this.pos.y / 100 * width, this.size.x / 100 * width, this.size.y / 100 * width);
+		var width = canvas.width;
+		var height = canvas.height;
+		ctx.fillStyle = color;
+		ctx.fillRect(this.pos.x / 100 * width, this.pos.y / 100 * height, this.size.x / 100 * width, this.size.y / 100 * height);
 	};
 }
 
@@ -50,23 +47,21 @@ export class ball
 
 	update(ballcx, ballcy, ballsx, ballsy)
 	{
-		this.pos.update(ballcx, ballcy);
+		this.pos.update(ballcx + ballsx / 2, ballcy + ballsy / 2);
 		this.size.update(ballsx, ballsy);
 	};
 
-	draw()
+	draw(canvas, ctx, color)
 	{
-		const canvas = document.getElementById('canvas');
-		const ctx = canvas.getContext('2d');
-		var element = document.getElementById('canvas');
-		var positionInfo = element.getBoundingClientRect();
-		var width = positionInfo.width;
+		var width = canvas.width;
+		var height = canvas.height;
 		ctx.beginPath();
-		ctx.arc(this.pos.x / 100 * width, this.pos.y / 100 * width, this.size.x / 100 * width, 0, Math.PI * 2);
-		ctx.fillStyle = "#FFFBFC";
-		ctx.strokeStyle = "#FFFBFC";
+		ctx.arc(this.pos.x / 100 * width, this.pos.y / 100 * height, this.size.x / 100 * height, 0, Math.PI * 2);
+		ctx.fillStyle = color;
+		ctx.strokeStyle = color;
 		ctx.fill();
 		ctx.stroke();
+		
 	};
 }
 
@@ -89,11 +84,12 @@ export class game
 		this.ball.update(ballcx, ballcy, ballsx, ballsy);
 	};
 
-	draw()
+	draw(canvas, ctx)
 	{
-		this.paddleL.draw();
-		this.paddleR.draw();
-		this.ball.draw();
+		this.paddleL.draw(canvas, ctx, "#FFFBFC");
+		this.paddleR.draw(canvas, ctx, "#FFFBFC");
+		this.ball.draw(canvas, ctx, "#FFFBFC");
+		console.log('I am drawing');
 	};
 }
 
@@ -128,9 +124,9 @@ function gameUpdate(data, game)
 	console.log('game updated');
 }
 
-function gameDraw(game, s1, s2)
+function gameDraw(game, s1, s2, canvas, ctx)
 {
-	game.draw;
+	game.draw(canvas, ctx);
 	document.getElementById('player1Score').innerHTML = s1;
 	document.getElementById('player2Score').innerHTML = s2;
 }
@@ -188,6 +184,17 @@ export async function testToken(roomSocket)
 	};
 
 	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	if (!response.ok)
+	{
+		const link = document.createElement('a');
+		link.href = '/login/';
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+
 	const UserInformation = await response.json();
 
 	console.log(UserInformation);
@@ -198,7 +205,7 @@ export async function testToken(roomSocket)
 	}));
 }
 
-export function wsonmessage(data, game)
+export function wsonmessage(data, game, roomSocket, canvas, ctx)
 {
 	console.log('data onmessage: ', data.type);
 	if (data.type === "connected")
@@ -220,14 +227,18 @@ export function wsonmessage(data, game)
 		console.log(data);
 		let comptearebour = document.getElementById('comptearebour');
 		comptearebour.style.display = '';
+		roomSocket.send(JSON.stringify({
+			'type': "ping",
+		}));
 	}
 	else if (data.type === "game update")
 	{
 		console.log(data);
 		gameUpdate(data, game);
-		const canvas = document.getElementById('canvas');
-		const ctx = canvas.getContext('2d');
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		gameDraw(game, data.scoreL, data.scoreR);
+		gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
+		// roomSocket.send(JSON.stringify({
+		// 	'type': "ping",
+		// }));
 	}
 }
