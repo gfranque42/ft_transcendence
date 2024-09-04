@@ -10,6 +10,9 @@ import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
 
+function isEmptyOrWhitespace(str) {
+    return !str || /^\s*$/.test(str);
+}
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -40,7 +43,7 @@ function JSONItirator(form) {
     }
     
     const errorElements = document.querySelectorAll(".error");
-    console.log(errorElements);
+    // console.log(errorElements);
     
     if (form.detail == "Username is taken") {
         errorElements[0].textContent = form.detail;
@@ -64,7 +67,6 @@ function JSONItirator(form) {
 }
 async function navigateAfterPost(UserToken) {
     const token = await UserToken;
-
     if (token)
         navigateTo("/");
 }
@@ -83,10 +85,11 @@ async function checkOTP(status, token) {
 }
 
 function VerificationEvent(verification, token) {
+    // console.log("verification event");
     document.addEventListener('submit', function(event){
         event.preventDefault();
         if (event.target.id == 'form-otp') {
-            console.log("VerificationForm: ", event.target);
+            // console.log("VerificationForm: ", event.target);
             const otp = document.querySelector('input[name="otp"]');
             const status = verification.verifactionUser(otp, token);
             return checkOTP(status, token);
@@ -100,15 +103,25 @@ function hidePopstate() {
     var smsCode = document.getElementById('sms-code');
     var clickOff = document.getElementById('click-off');
 
-    qrCode.style.display = 'none';
-    emailCode.style.display = 'none';
-    smsCode.style.display = 'none';
-    clickOff.style.filter = 'none';
+    // console.log(qrCode);
+    // console.log(emailCode);
+    // console.log(smsCode);
+    // console.log(clickOff);
+
+
+    if (qrCode)
+        qrCode.style.display = 'none';
+    if(emailCode)
+        emailCode.style.display = 'none';
+    if(smsCode)
+        smsCode.style.display = 'none';
+    if (clickOff)  
+        clickOff.style.filter = 'none';
 }
 
 
 const router = async () => {
-    console.log("Router function called");
+    ("Router function called");
     const routes = [
         { path: "/", view: Home },
         { path: "/login/", view: Login },
@@ -133,10 +146,10 @@ const router = async () => {
             result: [location.pathname]
         };
     }
-    
+
     const view = new match.route.view(getParams(match));
     document.documentElement.innerHTML = await view.getHtml();
-    
+
     async function checkForm(form) {
         const FullForm = await form;
         if (FullForm)
@@ -144,52 +157,91 @@ const router = async () => {
         // console.log("form has been ititrated");
         if (FullForm.token)
             return FullForm.token;
-        if (FullForm.Success)
+        if (FullForm.success)
             return true;
         return null;
     }
-    
+
     async function navigateToOTP(verification, token) {
         const otptoken = await token;
         if (otptoken) {
-            if (otptoken)
+            const sendableCode = await verification.isVerification(token);
+            if (!sendableCode.method)
                 return 2
+            // console.log(sendableCode);
             document.documentElement.innerHTML = await verification.getHtml(otptoken);
             return 1
         }
         return 3;
     }
-    
+
     async function VerificationRoute(tempToken) {
         const verification = new Verification();
         const token = await tempToken;
         if (token === null)
             return ;
-        UserToken = null;
         const navStatus = await navigateToOTP(verification, token);
+        UserToken = token
         if (navStatus == 1) {
             if (VerificationEvent(verification, token));
-                return ;
+            return ;
         }
         else if (navStatus == 2) {
-            UserToken = token
             navigateAfterPost(token);
             return ;
         }
+        UserToken = null;
         VerificationRoute();
     }
 
-    async function FollowingProfile(TmpIsCorrect) {
+    async function FollowingProfile(TmpIsCorrect, isOTP) {
         const IsCorrect = await TmpIsCorrect;
         if (IsCorrect)
-            navigateTo("/profile/")
+        {
+            if (!isOTP)
+                navigateTo("/profile/")
+            return true;
+        }
+        return false;
+    }
 
-    } 
+    function UnFinishedOTP() {
+        window.addEventListener('beforeunload', function () {
+            const otpPopup = document.getElementById('profile-otp-code');
+        
+            if (window.getComputedStyle(otpPopup).display == 'block') {
+                view.profileUserPost(UserToken, "", "", "00");
+            }
+        
+        });
+    }
+
+    async function profileUtils(isOkay, view) {
+        const status = await isOkay;
+        const token = await UserToken;
+        if (status) {
+            var data = await view.LastCheckAddVerification(token);
+        }
+        if (data.success)
+        {
+            // console.log("all good");
+            hidePopstate();
+            const otpPopup = document.getElementById('profile-otp-code');
+            const clickOff = document.getElementById('click-off');
+
+            otpPopup.style.display = 'block';
+            clickOff.style.filter = 'blur(5px)';
+        }
+        UnFinishedOTP(view);
+    }
+
 
     if (!UserToken)
         UserToken = getCookie("token");
 
     if (match.route.path == "/register/") {
+                                                                            // REGISTER     It send the information given by the user to the authapi and adds a cookie
+
         console.log("post awaited");
         const registrationForm = document.querySelector('form.form-register');
         registrationForm.addEventListener('submit', (event) => {
@@ -202,17 +254,26 @@ const router = async () => {
             UserToken = checkForm(view.registerUser(email, username, password1, password2));
             navigateAfterPost(UserToken);
         });
+
+
     } else if (match.route.path == "/login/") {
+                                                                            // LOGIN    sends credentials to authapi, and gets verification if user has verification finally sends the code inpiuted by the user also adds a cookie with token
+
         console.log("post awaited");
         const loginForm = document.querySelector('form.form-login');
         loginForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const username = document.querySelector('input[name="username"]');
-            
-            const password = document.querySelector('input[name="password"]');
-            VerificationRoute(checkForm(view.loginUser(username, password)));
+        event.preventDefault();
+        const username = document.querySelector('input[name="username"]');
+        
+        const password = document.querySelector('input[name="password"]');
+        VerificationRoute(checkForm(view.loginUser(username, password)));
         });
+
+
     } else if (match.route.path == "/profile/") {
+                                                                            // PROFILE      capable of putting an avatar and change username, capabale of adding verification method
+
+
         console.log("post awaited profile");
         const profileForm = document.querySelectorAll('form');
         profileForm.forEach((form) => {
@@ -224,27 +285,18 @@ const router = async () => {
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
                 } else {
                     const email = document.querySelector('input[name="email"]');
-                    const sms = document.querySelector('input[name="sms"]');
+                    const phone_number = document.querySelector('input[name="phone_number"]');
                     const otp = document.querySelector('input[name="otp"]');
-                    console.log(email);
-                    console.log(sms);
-                    console.log(otp);
-                    // console.log(email);
-                    // profileUserPost(UserToken, email, sms, otp)
-                    const verif = view.profileUserPost(UserToken, email, sms, otp);
-                    const isOkay = FollowingProfile(checkForm(verif));
-                    if (isOkay) {
-                        LastCheckAddVerification(view.profileUserPost(UserToken, email, sms, otp), UserToken);
-                    } else {
-                        console.log("is not okay") // add to this
-                    }
+                    const app = document.querySelector('input[name="app"]');
 
+                    const verif = view.profileUserPost(UserToken, email, phone_number, otp, app);
+                    // console.log(verif);
+                    const isOkay = FollowingProfile(checkForm(verif), isEmptyOrWhitespace(otp.value));
+                    if (isEmptyOrWhitespace(otp.value))
+                        profileUtils(isOkay, view);
+                    // const otpPopup = document.getElementById('profile-otp-code');
                 }
             });
-            
-            // checkForm(form)
-            // navigateAfterPost(UserToken);
-
         });
     }
 
@@ -309,8 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
             UserToken = null;
             document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
         }
-    });
-    document.addEventListener('click', function(event) {
         // Get references to the elements
         var qrCode = document.getElementById('qr-code');
         var emailCode = document.getElementById('email-code');
@@ -319,7 +369,6 @@ document.addEventListener("DOMContentLoaded", () => {
         var popup = document.querySelectorAll('#simple-popup');
         const ispopup = Array.from(popup).some(div =>  div.contains(event.target));
 
-        !(event.target.matches('.popup'))
         if (event.target.matches('#setup-email')) {
             emailCode.style.display = 'block';
             clickOff.style.filter = 'blur(5px)';
@@ -327,12 +376,17 @@ document.addEventListener("DOMContentLoaded", () => {
             smsCode.style.display = 'block';
             clickOff.style.filter = 'blur(5px)';
         } else if (event.target.matches('#setup-app')) {
-            qrCode.style.display = 'block';
+            qrCode.style.display = 'flex';
             clickOff.style.filter = 'blur(5px)';
         } else if (!ispopup) {
             hidePopstate();
         }
 
+        if (event.target.matches('.code-btn')) {
+            const verification = new Verification();
+            verification.LastCheckAddVerification(UserToken);
+        }
     });
     router();
 });
+

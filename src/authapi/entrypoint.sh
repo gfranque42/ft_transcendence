@@ -40,4 +40,9 @@ echo "migrate done"
 
 # python manage.py migrate --list
 
+
+mkdir -p /project/media/images/
+
+mv ../default_avatar.jpg ./media/images/default_avatar.jpg
+
 python manage.py runserver 0.0.0.0:8000

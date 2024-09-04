@@ -3,7 +3,7 @@ POST http://localhost:8000/auth/login
 Content-Type: application/json
 
 {
-    "username": "stan1",
+    "username": "stan",
     "password": "Pass1234!"
 }
 
@@ -12,10 +12,36 @@ POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
-    "username": "stan1",
-    "email": "baneg23235@eixdeal.com",
+    "username": "stn",
+    "email": "baneg2335@eixdeal.com",
     "password1": "Pass1234!",
     "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stan",
+    "email": "baneg2a335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+POST http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+
+{
+    "from_user_id": "1",
+    "to_user_id": "2"
+}
+###
+GET http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI1MzgzNTYyLCJpYXQiOjE3MjUzODEwNDJ9.vNqtMXI1c_aZI0aNVfXIDxm_oqiSQd2DiDE5KFbzruo
+
+{
 }
 ###
 

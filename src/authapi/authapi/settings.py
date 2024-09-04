@@ -35,6 +35,10 @@ EMAIL_HOST_USER = 'stanislas.barrage@gmail.com'
 EMAIL_HOST_PASSWORD = 'uees wujd bwwz mohu'
 
 
+SMS_BACKEND = 'sms.backends.dummy.SmsBackend'
+SMS_HOST_USER = '+123456789'
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +54,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     'bootstrap5',
+	
+    'sms',
 
 ]
 
@@ -186,7 +192,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APPEND_SLASH = False
 
-MEDIA_ROOT = '/media/'
+MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

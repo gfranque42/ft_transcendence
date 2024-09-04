@@ -5,6 +5,8 @@ from django.core.mail import send_mail
 import pyotp, qrcode
 from io import BytesIO
 from django.http import HttpResponse
+from sms import send_sms
+
 import base64
 
 def JsonItieator(json_data):
@@ -20,8 +22,9 @@ def SendOTPbyEmail(userProfile):
         totp.now(),
         settings.EMAIL_HOST_USER,
         [userProfile.user.email],
-        fail_silently=False,
+        fail_silently=False
     )
+    print("email sent")
 
 
 
@@ -42,21 +45,34 @@ def generate_qr_code(userProfile):
     return img_base64
 
 
-# def SendOTPbySMS(userProfile):
+def SendOTPbySMS(userProfile):
+    totp = pyotp.TOTP(userProfile.otp_secret)
+    print(userProfile.sms)
+    send_sms(
+        "Verifiaction",
+        totp.now(),
+        settings.SMS_HOST_USER,
+        [userProfile.sms],
+        # fail_silently=False
+    )
 
 
-# def SendOTPbyApp(userProfile):
+def SendOTPbyApp(userProfile):
+    return True
 
 
 def CheckForTFA(userprofile):
+    print("Checking for TFA...")
+    return_value = False
     otp_methods = {
         'email': SendOTPbyEmail,
-        # 'sms': SendOTPbySMS,
-        # 'app': SendOTPbyApp,
+        'sms': SendOTPbySMS,
+        'app': SendOTPbyApp,
     }
     methode = JsonItieator(userprofile.tfa)
     if (methode):
         otp_methods[methode](userprofile)
-        return True
-    return False    
+        print(methode)
+        return_value = True
+    return return_value
 

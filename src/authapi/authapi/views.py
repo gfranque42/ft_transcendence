@@ -8,21 +8,78 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from django.db import IntegrityError
+
 from django.shortcuts import render, redirect
 
 from django.http import JsonResponse    
 
 from .urls import CheckForTFA
 from .utils import generate_qr_code
-from .models import UserProfile
-from .forms import verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
-from .serializers import UserSerializer
+from .models import UserProfile, Friend_request
+from .forms import verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
+from .serializers import UserSerializer, FriendRequestSerializer
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
 
 import jwt, datetime, pyotp
+
+
+
+class FriendRequest(APIView):
+    def post(self, request):
+        from_user_id = request.data['from_user_id']
+        to_user_id = request.data['to_user_id']
+        try:
+            from_user = UserProfile.objects.get(id=from_user_id)
+            to_user = UserProfile.objects.get(id=to_user_id)
+            friend_request = Friend_request(from_user=from_user, to_user=to_user)
+            friend_request.save()
+            return Response({'success': 'Invite sent'}, status=status.HTTP_201_CREATED)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except IntegrityError:
+            return Response({'success': 'Invite already sent'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    def get(self, request):
+        auth_header = request.headers.get('Authorization')
+        try: 
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            userProfile = UserProfile.objects.get(id=user_id)
+            friend_requests = Friend_request.objects.filter(to_user=userProfile)
+            serializer = FriendRequestSerializer(friend_requests, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request):
+        from_user_id = request.data['from_user_id']
+        to_user_id = request.data['to_user_id']
+        try:
+            from_user = UserProfile.objects.get(id=from_user_id)
+            to_user = UserProfile.objects.get(id=to_user_id)
+            friend_request = Friend_request.objects.filter(to_user=to_user, from_user=from_user)
+            friend_request.delete()
+            to_user.friends = from_user
+            from_user.friends = to_user
+            to_user.save()
+            from_user.save()
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except friend_request.DoesNotExist:
+            return Response({'error': 'friend request not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+            
+
+
 
 class sendOTP(APIView):
     def get(self, request):
@@ -32,6 +89,7 @@ class sendOTP(APIView):
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
+            print("is verification on?")
             if CheckForTFA(userProfile):
                 return Response({'success': True})
             else :
@@ -54,26 +112,32 @@ class AddVerification(APIView):
         token = request.data['token']
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=decoded['id'])
+        print("57: ",request.data)
 
         formSMS = verificationSMS(request.data)
         formEmail = verificationEmail(request.data)
+        formApp = verificationApp(request.data)
         formOTP = Get2faForm(request.data)
+        # print (formSMS.cleaned_data)
         if formSMS.is_valid() and formSMS.cleaned_data['phone_number']:
+            print("65: ",formSMS.cleaned_data['phone_number'])
             userProfile.sms = formSMS.cleaned_data['phone_number']
             userProfile.tfa['sms'] = True
             userProfile.save()
             return JsonResponse({'success': True})
-
         elif formEmail.is_valid():
             userProfile.tfa['email'] = True
             userProfile.save()
             return JsonResponse({'success': True})
 
+        elif formApp.is_valid() and formApp.cleaned_data['app']:
+            print("75: ",formApp.cleaned_data['app'])
+            userProfile.tfa['app'] = True
+            return JsonResponse({'success': True})
+
         elif formOTP.is_valid() and (formOTP.cleaned_data['otp']):
             totp = pyotp.TOTP(userProfile.otp_secret)
             if (totp.verify(formOTP.cleaned_data['otp'])):
-                if (not userProfile.tfa['email'] and not userProfile.tfa['sms']):
-                    userProfile.tfa['app'] = True
                 return JsonResponse({'success': True})
             else:
                 userProfile.tfa['email'] = False
@@ -89,23 +153,28 @@ class AddVerification(APIView):
 class Profile(APIView):
 
     def get(self, request):
-        formAvatar = changeAvatar()
-        formUsername = changeUsername()
-        formEmail = verificationEmail()
-        formSMS = verificationSMS()
-        formOTP = Get2faForm()
-        # print("here\n\n\n\n", formEmail)
-        # print("here\n\n\n\n", formSMS)
         auth_header = request.headers.get('Authorization')
         try: 
             token = auth_header.split(' ')[1]
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
-            qr_code_base64 = generate_qr_code(userProfile)
-            return render(request, "profile.html", {"formSMS":formSMS, "formEmail":formEmail, "formOTP":formOTP, "formAvatar":formAvatar, "formUsername":formUsername, 'qr_code_base64': qr_code_base64})
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+        initial_data = {'username': userProfile.user.username}
+
+        formAvatar = changeAvatar()
+        formUsername = changeUsername(initial=initial_data)
+        formEmail = verificationEmail()
+        formSMS = verificationSMS()
+        formApp = verificationApp()
+        formOTP = Get2faForm()
+        # print("here\n\n\n\n", formEmail)
+        # print("here\n\n\n\n", formSMS)
+        qr_code_base64 = generate_qr_code(userProfile)
+        return render(request, "profile.html", {"user": userProfile, "formApp":formApp, "formSMS":formSMS, "formEmail":formEmail, "formOTP":formOTP, "formAvatar":formAvatar, "formUsername":formUsername, 'qr_code_base64': qr_code_base64})
             
     
     def patch(self, request):
@@ -124,8 +193,8 @@ class Profile(APIView):
         if new_avatar:
             userProfile.avatar = new_avatar
             userProfile.save()
-        return Response({'Success': 'No Verification'}, status=status.HTTP_200_OK)
-        
+        return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
+
 # !VERIFICATION
 
 class VerifyOTPView(APIView):
@@ -133,16 +202,17 @@ class VerifyOTPView(APIView):
         form = Get2faForm()
         auth_header = request.headers.get('Authorization')
 
-        try: 
+        try:
             token = auth_header.split(' ')[1]
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
+            print("is verificatiom turned on?")
             if (CheckForTFA(userProfile)):
                 return render(request, "2fa.html", {"form":form})
             # print(totp.now())
             # print("Check\n\n\n\n")
-            return Response({'Success': 'No Verification'}, status=status.HTTP_200_OK)
+            return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
 
             # print("Email verification sent")
         except UserProfile.DoesNotExist:
@@ -232,5 +302,14 @@ def test_token(request):
     token = auth_header.split(' ')[1]
     payload = jwt.decode(token, 'secret', algorithms=['HS256'])
     userProfile = UserProfile.objects.get(id=payload['id'])
-    # print(userProfile.user.username)
     return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
+
+@api_view(['GET'])
+def test_OTP(request):
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(' ')[1]
+    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+    userProfile = UserProfile.objects.get(id=payload['id'])
+    print(userProfile.tfa)
+    print(any(userProfile.tfa.values()))
+    return Response({"method": any(userProfile.tfa.values())})

@@ -13,8 +13,17 @@ COPY requirements.txt /project/requirements.txt
 
 COPY entrypoint.sh /project/entrypoint.sh
 
+
 RUN pip install -r requirements.txt
 
 RUN chmod +x /project/entrypoint.sh
+
+# WORKDIR /project/media/images/
+
+# WORKDIR /project/media/
+
+# RUN mkdir -p /project/media/images/
+
+COPY ./authapi/static/pages/Avatar.jpg /default_avatar.jpg
 
 ENTRYPOINT ["bash", "/project/entrypoint.sh"]

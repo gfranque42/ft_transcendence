@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const indexPong = document.querySelector('.index-pong');
     const indexSudoku = document.querySelector('.index-sudoku');
     
-    console.log("indexPong:", indexPong);
-    console.log("indexSudoku:", indexSudoku);
+    // console.log("indexPong:", indexPong);
+    // console.log("indexSudoku:", indexSudoku);
     
     if (indexSudoku && indexPong) {
-        console.log("Event listeners are being attached");
+        // console.log("Event listeners are being attached");
         
         indexSudoku.addEventListener('mouseover', function() {
             console.log("Mouseover Sudoku");

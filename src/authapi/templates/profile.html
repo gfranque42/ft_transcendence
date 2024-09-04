@@ -12,10 +12,14 @@
 
 <!-- QR CODE -->
 <div class="popup" id="simple-popup">
-    <div id="qr-code">
+    <form method="POST" class="form-verification-profile" id="qr-code">
         <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR Code">
+        <div class="checkbox-container">
+            {{ formApp.app }}
+            <label class="qr-code-label">I have scanned the QR code using an appropriate authenticatior application</label>
+        </div>
         <button type="submit" class="btn-qr-code btn btn-login" id="verification-form-validation">Submit</button>
-    </div> 
+    </form>
 </div>
 
 <!-- PHONE NUMBER FILED -->
@@ -85,20 +89,35 @@
     <div class="row">
         <div class="col-sm">
             <form method="POST" class="form-profile">
-                {% csrf_token %}
-                {{ formAvatar.avatar }}
-                
-                {{ formUsername.username }}
+                <div style="display: flex;">
+                    <img src="http://localhost:8000{{ user.avatar.url }}" alt="User Avatar" class="avatar">
+                    
+                    {% csrf_token %}
+                    {{ formAvatar.avatar }}
+                    
+                    <div>
 
-                <div class="profile-error-container error-container">
-                    <div class="profile-error error"></div>
+                        <div class="profile-username">
+                            <div class="profile-label-username">
+                                {{ formUsername.username.label_tag }}
+                            </div>
+                            {{ formUsername.username }}
+                        </div>
+                        
+                        <div class="profile-error-container error-container">
+                            <div class="profile-error error"></div>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn-profile">Save Changes</button>
+                        <button type="submit" class="btn-profile">Save Changes</button>
                 <div class="add-2fa     ">
                     Add 2 factor authentication
-                    <div class="btn-verifi" id="setup-email">Email</div>
-                    <div class="btn-verifi" id="setup-sms">SMS</div>
-                    <div class="btn-verifi" id="setup-app">APP</div>
+                    <div style="display: flex;width: 100%">
+                        <div class="btn-verifi left-right-trapezoid" id="setup-email">Email</div>
+                        <div class="btn-verifi paralelogram" id="setup-sms">SMS</div>
+                        
+                        <div class="btn-verifi right-right-trapezoid" id="setup-app">APP</div>
+                    </div>
                 </div>
             </form>
             </div>
