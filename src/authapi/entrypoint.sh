@@ -22,22 +22,31 @@ createdb -O $DATABASEUSER $MYDATABASE
 
 EOF
 
-python manage.py makemigrations
-
-echo "makemigrations done"
-
-python manage.py migrate
-
-echo "migrate done"
-
 python manage.py collectstatic -y
 
 echo "static files collected"
 
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
-python manage.py makemigrations
 
-python manage.py migrate
+python manage.py makemigrations authapi
+
+echo "makemigrations done"
+
+
+python manage.py migrate 
+
+python manage.py migrate --fake authapi 0002_alter_userprofile_otp_secret
+
+python manage.py migrate 
+
+echo "migrate done"
+
+# python manage.py migrate --list
+
+
+mkdir -p /project/media/images/
+
+mv ../default_avatar.jpg ./media/images/default_avatar.jpg
 
 python manage.py runserver 0.0.0.0:8000

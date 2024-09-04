@@ -65,7 +65,7 @@
 
 import abstractviews from "./abstractviews.js";
 
-export let csrfToken = null;
+// export let csrfToken = null;
 
 export default class extends abstractviews {
     constructor() 
@@ -82,32 +82,34 @@ export default class extends abstractviews {
         // Extract CSRF token from HTML form
         const parser = new DOMParser();
         const doc = parser.parseFromString(tempContentHtml, 'text/html');
-        csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
-
+        this.csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
+        
         return tempContentHtml;
     }
-
-    async registerUser(username, password1, password2) {
-        if (csrfToken === null) {
+    
+    async registerUser(email, username, password1, password2) {
+        if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
         let response = await fetch('https://localhost:8083/auth/register', {
             method: 'POST',
             body: JSON.stringify({ 
-                "csrfmiddlewaretoken": csrfToken, 
+                "csrfmiddlewaretoken": this.csrfToken,
+                "email": email.value,
                 "username": username.value,
                 "password1": password1.value,
                 "password2": password2.value
             }),
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
+                'X-CSRFToken': this.csrfToken,
             },
         });
-
+        
         const data = await response.json();
+        // console.log(data);
         // if (data.form.username)
-        console.log(await data);
+        // console.log(await data);
         return data;
     }
 

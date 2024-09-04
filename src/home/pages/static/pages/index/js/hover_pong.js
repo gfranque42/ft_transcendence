@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("mouseover", function() {
     const indexPong = document.querySelector('.index-pong');
     const indexSudoku = document.querySelector('.index-sudoku');
 

@@ -1,0 +1,144 @@
+{%extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+
+<div class="navbar">
+    <a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+    <a href="/" class="navbar-content" id="home" data-link>HOME</a>
+    <a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
+</div>
+
+<!-- QR CODE -->
+<div class="popup" id="simple-popup">
+    <form method="POST" class="form-verification-profile" id="qr-code">
+        <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR Code">
+        <div class="checkbox-container">
+            {{ formApp.app }}
+            <label class="qr-code-label">I have scanned the QR code using an appropriate authenticatior application</label>
+        </div>
+        <button type="submit" class="btn-qr-code btn btn-login" id="verification-form-validation">Submit</button>
+    </form>
+</div>
+
+<!-- PHONE NUMBER FILED -->
+<div class="popup" id="simple-popup">
+
+    <form method="POST" class="form-verification-profile" id="sms-code">
+        {% csrf_token %}
+                <span class="input-span-sms input-group-text">+33
+                    {{ formSMS.phone_number}}
+                </span>
+                {% for error in field.errors%}
+                    <div class="row">
+                        <div class="small-12 columns val-error-msg error margin-below">
+                            {{ error }}
+                        </div>
+                    </div>
+            {% endfor %}
+        <button type="submit" class=" btn btn-login" id="verification-form-validation">Submit</button>
+    </form>
+</div>
+
+
+<!-- EMAIL NUMBER FILED -->
+<div class="popup" id="simple-popup">
+    <form method="POST" class="form-verification-profile" id="email-code">
+        {% csrf_token %}
+                {{ formEmail.email}}
+                {% for error in field.errors%}
+                    <div class="row">
+                        <div class="small-12 columns val-error-msg error margin-below">
+                            {{ error }}
+                        </div>
+                    </div>
+                {% endfor %}
+        <button type="submit" class="btn btn-login" id="verification-form-validation">Submit</button>
+    </form>
+</div>
+
+<!-- FINAL VERIFICATION FIELD -->
+
+<div class="popup">
+    <form method="POST" class="form-verification-profile" id="profile-otp-code">
+        {% csrf_token %}
+            {% for field in formOTP %}
+                {{field}}
+                {% for error in field.errors%}
+                    <div class="row">
+                        <div class="small-12 columns val-error-msg error margin-below">
+                            {{ error }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <div class="error-container">
+                <div id="countdown">The code will be valid for 30s after which you will need to ask for another.</div>
+                <div class="error"></div>
+            </div>
+        <button type="submit" class="btn btn-login">Submit</button>
+        <button type="submit" class="code-btn">Resend Code</button>
+    </form>
+</div>
+
+
+<!-- VISIBLE PAGE -->
+
+<div class="container" id="click-off">
+    <div class="row">
+        <div class="col-sm">
+            <form method="POST" class="form-profile">
+                <div style="display: flex;">
+                    <img src="http://localhost:8000{{ user.avatar.url }}" alt="User Avatar" class="avatar">
+                    
+                    {% csrf_token %}
+                    {{ formAvatar.avatar }}
+                    
+                    <div>
+
+                        <div class="profile-username">
+                            <div class="profile-label-username">
+                                {{ formUsername.username.label_tag }}
+                            </div>
+                            {{ formUsername.username }}
+                        </div>
+                        
+                        <div class="profile-error-container error-container">
+                            <div class="profile-error error"></div>
+                        </div>
+                    </div>
+                </div>
+                        <button type="submit" class="btn-profile">Save Changes</button>
+                <div class="add-2fa     ">
+                    Add 2 factor authentication
+                    <div style="display: flex;width: 100%">
+                        <div class="btn-verifi left-right-trapezoid" id="setup-email">Email</div>
+                        <div class="btn-verifi paralelogram" id="setup-sms">SMS</div>
+                        
+                        <div class="btn-verifi right-right-trapezoid" id="setup-app">APP</div>
+                    </div>
+                </div>
+            </form>
+            </div>
+
+            <div class="col-sm">
+                heyt
+            </div>
+
+
+            <div class="col-sm">
+              hey  
+            </div>
+
+
+            <div class="col-sm">
+                hey
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
