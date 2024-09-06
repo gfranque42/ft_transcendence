@@ -118,9 +118,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		try:
 			print(self.username, ': bisous de set_game', flush=True)
 			room = Room.objects.get(url=self.room_name)
-			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), Vec2(1, 0), 1)
-			self.paddleL = Paddle(Vec2(3, 30), Vec2(3, 40), 0)
-			self.paddleR = Paddle(Vec2(94, 30), Vec2(3, 40), room.difficulty)
+			self.ball = Ball(Vec2(48, 94), Vec2(4, 4), Vec2(1, 0), 1)
+			self.paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 0)
+			self.paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), room.difficulty)
 			self.scoreL = 0
 			self.scoreR = 0
 		except Exception as e:

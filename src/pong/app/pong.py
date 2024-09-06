@@ -120,3 +120,10 @@ def checkCollisionOfPaddleWithEdge(paddle):
 def	checkCollisionBallWithEdge(ball):
 	if (ball.coor.y - ball.radius <= 0 or ball.coor.y + ball.radius >= 100):
 		ball.vel.y *= -1
+
+def gameUpdate(paddleL, paddleR, ball):
+	checkCollisionOfPaddleWithEdge(paddleL)
+	checkCollisionOfPaddleWithEdge(paddleR)
+	checkCollisionBallWithEdge(ball)
+	checkCollisionBallWithPaddle(ball, paddleL)
+	checkCollisionBallWithPaddle(ball, paddleR)
