@@ -1,29 +1,16 @@
-FROM python:3.12.3-bookworm
+FROM alpine:3.19
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+RUN apk update
 
-RUN apt-get update && \
-    apt-get install -y postgresql postgresql-contrib && \
-    apt-get clean
+RUN apk add build-base postgresql bash\
+	python3-dev py3-pip --no-cache
 
 WORKDIR /project
 
-COPY requirements.txt /project/requirements.txt
+COPY requirements.txt /project/
 
-COPY entrypoint.sh /project/entrypoint.sh
-
-
-RUN pip install -r requirements.txt
-
-RUN chmod +x /project/entrypoint.sh
-
-# WORKDIR /project/media/images/
-
-# WORKDIR /project/media/
-
-# RUN mkdir -p /project/media/images/
+RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 COPY ./authapi/static/pages/Avatar.jpg /default_avatar.jpg
 
-ENTRYPOINT ["bash", "/project/entrypoint.sh"]
+ENTRYPOINT ["sh", "entrypoint.sh"]
