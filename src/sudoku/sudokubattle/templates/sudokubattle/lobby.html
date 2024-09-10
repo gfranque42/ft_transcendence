@@ -8,9 +8,10 @@
 	<link href="{% static 'css/lobby.css' %}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
-	<meta name="csrf-token" content="{{ csrf_token }}">
+	<!-- <meta name="csrf-token" content="{{ csrf_token }}"> -->
 </head>
 <body>
+	{% csrf_token %}
 	<div class="header-band">
 		<span class="left">Sudoku</span>
 		<span class="center">HOME</span>

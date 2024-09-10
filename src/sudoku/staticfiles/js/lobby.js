@@ -143,6 +143,14 @@ async	function Start()
 	};
 	try
 	{
+		const tempContentHtml = document.body.innerHTML;
+		console.log('tempContentHtml: ', tempContentHtml);
+		// Extract CSRF token from HTML form
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(tempContentHtml, 'text/html');
+		const csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
+		console.log('csrfToken: ', csrfToken);
+
 		// console.log('dns: ', dns);
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		// console.log('fetchurl: ', fetchurl);
@@ -150,7 +158,7 @@ async	function Start()
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-CSRFToken': getCookie('csrftoken'),
+				'X-CSRFToken': csrfToken,
 			},
 			body: JSON.stringify(roomData),
 		});
@@ -167,9 +175,15 @@ async	function Start()
 	}
 	catch (error)
 	{
-		console.error('Error: ',error);
+		console.error('Error: ', error);
 		return ;
 	}
 	console.log("Start !");
-	window.location.pathname = '/sudokubattle/' + roomUrl + '/';
+	const link = document.createElement('a');
+    link.href = '/sudokubattle/' + roomUrl + '/';
+    link.setAttribute('data-link', '');
+    document.body.appendChild(link);
+    console.log(link);
+    link.click();
+    document.body.removeChild(link);
 }

@@ -1,0 +1,23 @@
+###
+GET http://localhost:8005/sudokubattle/
+Content-Type: application/json
+
+{
+}
+
+###
+GET http://localhost:8005/sudokubattle/test/
+Content-Type: application/json
+
+{
+}
+
+###
+
+POST http://localhost:8005/sudokubattle/api/sudoku/create/
+Content-Type: application/json
+
+{
+    "url": "hrllo",
+    "difficulty": "0"
+}

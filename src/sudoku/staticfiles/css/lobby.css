@@ -4,20 +4,6 @@ body {
 	margin: 0 auto;
 }
 
-#Title {
-	color: #FFFBFC;
-	position: absolute;
-	left: 35vw;
-	width: 30vw;
-	height: 10vh;
-	top: 5vh;
-	text-align: center;
-	font-size: 5vh;
-	font-family: "Oswald", sans-serif;
-	cursor: default;
-	z-index: 1;
-}
-
 .Button {
 	width: 20vw;
 	height: 10vh;
@@ -94,14 +80,56 @@ body {
 	z-index: 1;
 }
 
+footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	background-color: #726DA8;
+	text-align: left;
+	font-family: "Oswald", sans-serif;
+	z-index: 0;
+}
+
 .background-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20vw; /* Adjust size as needed */
+    position: fixed;
+    bottom: -6%;
+    left: 0;
+    font-size: 30vw; /* Adjust size as needed */
     font-family: 'Oswald', sans-serif; /* Font as per your design */
-    color: rgba(19, 17, 18, 51); /* White color with transparency */
+    color: rgba(19, 17, 18, 0.3); /* White color with transparency */
     z-index: 0;
     pointer-events: none; /* Makes sure the text does not interfere with user interaction */
+    margin: 0%;
+	padding: 0%;
+	text-align: left;
+}
+
+.header-band {
+    display: flex; /* Flexbox layout */
+    justify-content: space-between; /* Distribute space between items */
+    align-items: center; /* Center items vertically */
+    background-color: #585481; /* Match your background color */
+    padding: 10px 20px; /* Adjust padding for spacing */
+    color: #FFFBFC; /* Dark text color */
+    font-family: 'Oswald', sans-serif; /* Match the font */
+	font-size: 2.5vw;
+}
+
+.header-band .left,
+.header-band .center,
+.header-band .right {
+    flex: 1; /* Make each section flexible */
+}
+
+.header-band .center {
+    text-align: center; /* Center text */
+}
+
+.header-band .left {
+    text-align: left; /* Left align text */
+}
+
+.header-band .right {
+    text-align: right; /* Right align text */
 }

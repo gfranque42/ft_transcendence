@@ -11,7 +11,7 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-        const response = await fetch('https://localhost:8083/auth/login');
+        const response = await fetch('https://localhost:8083/sudokubattle/');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
@@ -22,22 +22,24 @@ export default class extends abstractviews {
         return tempContentHtml;
     }
 
-    async loginUser(username, password) {
-        if (csrfToken === null) {
-            throw new Error('CSRF token not available');
-        }
-        let response = await fetch('https://localhost:8083/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ 
-                "csrfmiddlewaretoken": csrfToken, 
-                "username": username.value,
-                "password": password.value
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-        });
+	async getUser()
+	{
+		const token = getCookie('token');
+	
+		const options = {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Token ${token}`
+			}
+		};
+	
+		const response = await fetch('https://localhost:8083/auth/test_token', options);
+		const UserInformation = await response.json();
+		console.log(UserInformation);
+	
+		return UserInformation;
+	}
 
         const data = await response.json();
         // if (data.form.username)

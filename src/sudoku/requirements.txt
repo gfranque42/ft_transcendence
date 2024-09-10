@@ -5,3 +5,4 @@ django-admin
 daphne
 channels_redis
 django-cors-headers
+djangorestframework

@@ -36,7 +36,7 @@ function handleSocketMessage(e) {
 	}
 }
 
-function initialize() {
+export function initialize() {
 	const roomName = document.getElementById('room-name').value;  // Retrieve the room name from the hidden input
 	if (!roomName) {
 		console.error("Room name is not available in the HTML!");

@@ -3,6 +3,9 @@
 import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Register from "../views/register.js";
+import Sudoku from "../views/sudoku.js";
+
+import { initialize } from "./sudoku/sudoku.js";
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
@@ -60,6 +63,7 @@ const router = async () => {
     const routes = [
         { path: "/", view: Home },
         { path: "/login/", view: Login },
+        { path: "/sudoku/", view: Sudoku },
         { path: "/register/", view: Register }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
@@ -128,6 +132,9 @@ const router = async () => {
             // checkForm(form)
             navigateAfterPost(UserToken);
         });
+    } else if (match.route.path == "/sudoku/") {
+        console.log("post awaited");
+        initialize();
     }
     if (!UserToken)
             UserToken = getCookie("token");
