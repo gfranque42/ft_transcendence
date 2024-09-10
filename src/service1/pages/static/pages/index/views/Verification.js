@@ -17,7 +17,7 @@ export default class extends abstractviews {
             }
             
         };
-        const response = await fetch('http://localhost:8082/auth/verification', options);
+        const response = await fetch('https://localhost:8083/auth/verification', options);
         const tempContentHtml = await response.text();
 
         // if (tempContentHtml == '{"success":"No Verification"}')
@@ -34,7 +34,7 @@ export default class extends abstractviews {
         if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-        let response = await fetch('http://localhost:8082/auth/verification', {
+        let response = await fetch('https://localhost:8083/auth/verification', {
             method: 'POST',
             body: JSON.stringify({ 
                 "csrfmiddlewaretoken": this.csrfToken, 
@@ -54,7 +54,7 @@ export default class extends abstractviews {
     }
 
     async isVerification(token) {
-        let response = await fetch('http://localhost:8082/auth/test_OTP', {
+        let response = await fetch('https://localhost:8083/auth/test_OTP', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

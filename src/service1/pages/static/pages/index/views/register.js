@@ -9,7 +9,7 @@
 
 // 	async getHtml() 
 // 	{
-// 		const response = await fetch('http://localhost:8082/auth/register'); // put the endpoint
+// 		const response = await fetch('https://localhost:8083/auth/register'); // put the endpoint
 // 		const tempContentHtml = await response.text();
 //         console.log(tempContentHtml);
 // 		return tempContentHtml;
@@ -31,7 +31,7 @@
 
 //     async getHtml() 
 //     {
-//         const response = await fetch('http://localhost:8082/auth/register'); // put the endpoint
+//         const response = await fetch('https://localhost:8083/auth/register'); // put the endpoint
 //         const tempContentHtml = await response.text();
 
 //         // Extract CSRF token from HTML form
@@ -45,7 +45,7 @@
 //     async registerUser(username, password) {
 //         const { csrfToken } = await this.getHtml();
 
-//         const response = await fetch('http://localhost:8082/auth/register', {
+//         const response = await fetch('https://localhost:8083/auth/register', {
 //             method: 'POST',
 //             headers: {
 //                 'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-        const response = await fetch('http://localhost:8082/auth/register');
+        const response = await fetch('https://localhost:8083/auth/register');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
@@ -91,7 +91,7 @@ export default class extends abstractviews {
         if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-        let response = await fetch('http://localhost:8082/auth/register', {
+        let response = await fetch('https://localhost:8083/auth/register', {
             method: 'POST',
             body: JSON.stringify({ 
                 "csrfmiddlewaretoken": this.csrfToken,

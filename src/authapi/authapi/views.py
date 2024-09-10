@@ -306,6 +306,7 @@ def test_token(request):
 
 @api_view(['GET'])
 def test_OTP(request):
+    print('Test\n\n\n\n\')
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(' ')[1]
     payload = jwt.decode(token, 'secret', algorithms=['HS256'])

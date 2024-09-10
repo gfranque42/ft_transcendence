@@ -62,10 +62,10 @@ ROOT_URLCONF = 'ft_transcendence.urls'
 
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8000', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082' 
+    'http://localhost:8000', 'https://localhost:8083', 'http://127.0.0.1:8000', 'https://127.0.0.1:8083' 
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082', 'http://127.0.0.1:8082']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083']
 
 CORS_ALLOW_METHODS = [
     'DELETE',
