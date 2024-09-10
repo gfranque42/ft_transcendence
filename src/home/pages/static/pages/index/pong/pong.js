@@ -205,8 +205,11 @@ export async function testToken(roomSocket)
 	}));
 }
 
-export function wsonmessage(data, game, roomSocket, canvas, ctx)
+export function wsonmessage(data, game, roomSocket, canvas, ctx, keyPressed)
 {
+	const	KEY_UP = 38;
+	const	KEY_DOWN = 40;
+
 	console.log('data onmessage: ', data.type);
 	if (data.type === "connected")
 	{
@@ -227,8 +230,10 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx)
 		console.log(data);
 		let comptearebour = document.getElementById('comptearebour');
 		comptearebour.style.display = '';
+		const move = "none";
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
+			'move': move,
 		}));
 	}
 	else if (data.type === "game update")
@@ -237,8 +242,20 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx)
 		gameUpdate(data, game);
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
+		let move = "none";
+		if (keyPressed[KEY_UP] == True)
+			move = "up";
+		if (keyPressed[KEY_DOWN] == True)
+		{
+			if (move === "none")
+				move = "down";
+			else
+				move = "none";
+		}
+		console.log('keypressed: ', move);
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
+			'move': move,
 		}));
 	}
 }

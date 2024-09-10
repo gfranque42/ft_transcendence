@@ -167,7 +167,7 @@ export async	function Start(csrftoken, url)
 			}
 			};
 		const str = await checkRoom(options);
-		if (str != "None")
+		if (maxPlayers == 2 && str != "None")
 		{
 			roomExist = 1;
 			roomUrl = str;

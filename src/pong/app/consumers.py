@@ -43,8 +43,37 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			except Exception as e:
 				print(f"Exception from receive: {e}", flush=True)
 		elif (type_data == "ping"):
+			if (self.username == self.player1Name):
+				if (text_data_json["move"] == "up"):
+					self.paddleL.setXMin(self.paddleL.getXMin() + 1)
+				elif (text_data_json["move"] == "down"):
+					self.paddleL.setXMin(self.paddleL.getXMin() - 1)
+			else:
+				if (text_data_json["move"] == "up"):
+					self.paddleR.setXMin(self.paddleR.getXMin() + 1)
+				elif (text_data_json["move"] == "down"):
+					self.paddleR.setXMin(self.paddleR.getXMin() - 1)
+			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
 			await self.channel_layer.group_send(
-						self.room_group_name, {"type": "game_update", "message": "in playing"})
+						self.room_group_name, {"type": "game_update", "message": "in playing",
+									"ballcx": self.ball.getXMin(),
+									"ballcy": self.ball.getYMin(),
+									"ballsx": self.ball.getSizeX(),
+									"ballsy": self.ball.getSizeY(),
+									"balldx": self.ball.getXDir(),
+									"balldy": self.ball.getYDir(),
+									"ballvx": self.ball.getXVel(),
+									"ballvy": self.ball.getYVel(),
+									"paddleLcx": self.paddleL.getXMin(),
+									"paddleLcy": self.paddleL.getYMin(),
+									"paddleLsx": self.paddleL.getSizeX(),
+									"paddleLsy": self.paddleL.getSizeY(),
+									"paddleRcx": self.paddleR.getXMin(),
+									"paddleRcy": self.paddleR.getYMin(),
+									"paddleRsx": self.paddleR.getSizeX(),
+									"paddleRsy": self.paddleR.getSizeY(),
+									"scoreL": self.scoreL,
+									"scoreR": self.scoreR})
 
 	# Receive message from room group
 	async def update(self, event):
@@ -64,6 +93,26 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		print(self.username, ': bisous de game_update', flush=True)
 		message = event["message"]
 		print(self.username, ': ', message, flush=True)
+		if (message == "in playing"):
+			self.ball.setXMin(event["ballcx"])
+			self.ball.setYMin(event["ballcy"])
+			self.ball.setXSize(event["ballsx"])
+			self.ball.setYSize(event["ballsy"])
+			self.ball.setXDir(event["balldx"])
+			self.ball.setYDir(event["balldy"])
+			self.ball.setXVel(event["ballvx"])
+			self.ball.setYVel(event["ballvy"])
+			self.paddleL.setXMin(event["paddleLcx"])
+			self.paddleL.setYMin(event["paddleLcy"])
+			self.paddleL.setXSize(event["paddleLsx"])
+			self.paddleL.setYSize(event["paddleLsy"])
+			self.paddleR.setXMin(event["paddleRcx"])
+			self.paddleR.setYMin(event["paddleRcy"])
+			self.paddleR.setXSize(event["paddleRsx"])
+			self.paddleR.setYSize(event["paddleRsy"])
+			self.scoreL = event["scoreL"]
+			self.scoreR = event["scoreR"]
+			await asyncio.sleep(1)
 		await self.send_updated_game()
 
 	@database_sync_to_async
@@ -118,7 +167,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		try:
 			print(self.username, ': bisous de set_game', flush=True)
 			room = Room.objects.get(url=self.room_name)
-			self.ball = Ball(Vec2(48, 94), Vec2(4, 4), Vec2(1, 0), 1)
+			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), Vec2(1, 0), Vec2(1, 0.5))
 			self.paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 0)
 			self.paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), room.difficulty)
 			self.scoreL = 0
@@ -127,6 +176,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			print(f"Exception form set_game: {e}", flush=True)
 
 	async def send_updated_game(self):
+		print(self.username, ': bisous de send_updated_game', flush=True)
 		await self.send(text_data=json.dumps({"type": "game update",
 										"ballcx": self.ball.getXMin(),
 										"ballcy": self.ball.getYMin(),
@@ -143,3 +193,4 @@ class	PongConsumer(AsyncWebsocketConsumer):
 										"scoreL": 4,
 										"scoreR": 3}))
 										# "scoreL": self.scoreL,
+										# "scoreR": self.scoreR,
