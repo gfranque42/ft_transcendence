@@ -257,3 +257,29 @@ export function eventPong(view)
 		}
 	});
 }
+
+export async function checkConnection()
+{
+	const cookie = getCookie('token');
+
+	const options = {
+		method: 'GET', // HTTP method
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Token ${cookie}`
+		}
+
+	};
+
+	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	if (!response.ok)
+	{
+		const link = document.createElement('a');
+		link.href = '/login/';
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+}

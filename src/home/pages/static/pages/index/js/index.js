@@ -6,7 +6,7 @@ import Register from "../views/register.js";
 import Pong from "../views/pong.js";
 import PongLobby from "../views/pong_lobby.js";
 import {vec2, paddle, ball, game, waitForSocketConnection, wsonmessage} from  "../pong/pong.js";
-import {eventPong} from "../pong/index.js";
+import {eventPong, checkConnection} from "../pong/index.js";
 
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
@@ -135,6 +135,7 @@ const router = async () => {
             navigateAfterPost(UserToken);
         });
     } else if (match.route.path == "/pong/") {
+        await checkConnection();
         eventPong(view);
 
     } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
@@ -157,7 +158,7 @@ const router = async () => {
 		
         let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
         console.log('my game is ready: ', myGame.gameState);
-		
+
 		const canvas = document.getElementById('canvas');
 		const ctx = canvas.getContext('2d');
 		canvas.width = window.innerWidth * 0.8;

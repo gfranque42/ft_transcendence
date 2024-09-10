@@ -237,8 +237,8 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx)
 		gameUpdate(data, game);
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
-		// roomSocket.send(JSON.stringify({
-		// 	'type': "ping",
-		// }));
+		roomSocket.send(JSON.stringify({
+			'type': "ping",
+		}));
 	}
 }
