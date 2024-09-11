@@ -1,4 +1,18 @@
 export var timerInterval = null;
+let startTime = null;
+
+export function setStartTime() {
+	let tmp = document.getElementById("start-time").value;
+	console.log('Fetched start time:', tmp);  // Debugging step
+    startTime = new Date(tmp);
+
+    // Check if the date is valid
+    if (isNaN(startTime)) {
+        console.error('Invalid start time:', tmp);  // Log an error if the date is not valid
+        return;
+    }
+    console.log('Parsed start time:', startTime);  // Debugging step
+}
 
 export function startTimer() {
     startTime = new Date(startTime);

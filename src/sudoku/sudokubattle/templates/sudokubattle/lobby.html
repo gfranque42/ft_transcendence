@@ -17,12 +17,12 @@
 		<span class="center">HOME</span>
 		<span class="right">THX 1001</span>
 	</div>
-	<button class="PvP Button" onclick="PvP()">Player vs Player</button>
-	<button class="Solo Button" onclick="Solo()">Solo Play</button>
-	<button class="Start Button" onclick="Start()">Start Game</button>
-	<button class="Easy Difficulty" onclick="Easy()">Easy</button>
-	<button class="Medium Difficulty" onclick="Medium()">Medium</button>
-	<button class="Hard Difficulty" onclick="Hard()">Hard</button>
+	<button class="PvP Button" data-action="PvP">Player vs Player</button>
+	<button class="Solo Button" data-action="Solo">Solo Play</button>
+	<button class="Start Button" data-action="Start">Start Game</button>
+	<button class="Easy Difficulty" data-action="Easy">Easy</button>
+	<button class="Medium Difficulty" data-action="Medium">Medium</button>
+	<button class="Hard Difficulty" data-action="Hard">Hard</button>
 	<script>
 		const dns = "{{ dns|escapejs }}";
 	</script>

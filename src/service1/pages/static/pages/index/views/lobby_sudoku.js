@@ -1,20 +1,24 @@
 import abstractviews from "./abstractviews.js";
 
-import {setCookie, getCookie, eraseCookie} from "../js/cookie.js";
-
-
 export let csrfToken = null;
 
 export default class extends abstractviews {
     constructor() 
     {
         super();
-        this.setTitle("Sudoku");
+        this.setTitle("SudokuLobby");
     }
 
     async getHtml() 
     {
-        const response = await fetch('https://localhost:8083/sudokubattle/');
+
+
+		console.log("getHtml lobby called");
+		const url = location.pathname;
+		const bob = url.replace('/sudoku/', '');
+		const room_name = bob.replace('/', '');
+
+        const response = await fetch('https://localhost:8083/sudokubattle/' + room_name);
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form

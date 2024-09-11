@@ -4,8 +4,12 @@ import Home from "../views/home.js";
 import Login from "../views/login.js";
 import Register from "../views/register.js";
 import Sudoku from "../views/sudoku.js";
+import SudokuLobby from "../views/lobby_sudoku.js";
 
 import { initialize } from "./sudoku/sudoku.js";
+import {setBoard} from "./sudoku/board.js";
+import { setStartTime } from "./sudoku/timer.js";
+import { PvP, Solo, Start, Easy, Medium, Hard } from "./sudoku/lobby.js";
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
@@ -63,8 +67,9 @@ const router = async () => {
     const routes = [
         { path: "/", view: Home },
         { path: "/login/", view: Login },
+        { path: "/register/", view: Register },
         { path: "/sudoku/", view: Sudoku },
-        { path: "/register/", view: Register }
+		{ path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
 
@@ -75,9 +80,10 @@ const router = async () => {
             result: location.pathname.match(pathToRegex(route.path))
         };
     });
-
+	
     // Find the first matching route
     let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+	console.log("potentialMatches: ", potentialMatches);
 
     // If no match found, default to the first route
     if (!match) {
@@ -85,7 +91,7 @@ const router = async () => {
             route: routes[0],
             result: [location.pathname]
         };
-    }
+	}
     
     // Instantiate the view and render it
     const view = new match.route.view(getParams(match));
@@ -134,12 +140,33 @@ const router = async () => {
         });
     } else if (match.route.path == "/sudoku/") {
         console.log("post awaited");
-        initialize();
-    }
+
+		const actionHandlers = {
+			PvP: PvP,
+			Solo: Solo,
+			Start: Start,
+			Easy: Easy,
+			Medium: Medium,
+			Hard: Hard,
+			Start: Start,
+		};
+		document.addEventListener('click', function(event) {
+			// Handling data-action for button actions
+			const action = event.target.getAttribute('data-action');
+			if (action && actionHandlers[action]) {
+				actionHandlers[action](view); // Call the corresponding function from the lookup table
+			} else if (action) {
+				console.warn('No action defined for', action);
+			}
+		});
+    } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
+		setBoard();
+		setStartTime();
+		initialize();
+	}
     if (!UserToken)
             UserToken = getCookie("token");
-        displayUser();
-    };
+	displayUser();
     
     
     async function getToken() {
@@ -175,7 +202,7 @@ const router = async () => {
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
     </div>`;
-}
+}}
 
 // Listen for popstate event and trigger router
 window.addEventListener("popstate", router);
@@ -183,8 +210,10 @@ window.addEventListener("popstate", router);
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
     
-    
+
+
     document.addEventListener('click', function(event) {
+		
         if (event.target.matches('a[data-link]')) {
             event.preventDefault();
             navigateTo(event.target);

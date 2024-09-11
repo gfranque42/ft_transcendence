@@ -37,7 +37,7 @@ function handleSocketMessage(e) {
 }
 
 export function initialize() {
-	const roomName = document.getElementById('room-name').value;  // Retrieve the room name from the hidden input
+	const roomName = document.getElementById('room-name');  // Retrieve the room name from the hidden input
 	if (!roomName) {
 		console.error("Room name is not available in the HTML!");
 		return;
@@ -45,14 +45,12 @@ export function initialize() {
 	console.log('Room name:', roomName);
 
 	// Initialize WebSocket and assign to sudokuSocket
-	sudokuSocket = initializeWebSocket(roomName);
+	const sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {
 		sudokuSocket.onmessage = handleSocketMessage;
 		setGame(sudokuSocket);
 		startTimer();
 	}
 }
-
-export {sudokuSocket};
 
 document.addEventListener('DOMContentLoaded', initialize);

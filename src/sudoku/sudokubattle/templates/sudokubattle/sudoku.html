@@ -11,14 +11,13 @@
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
 
-	<script>
-		let board = JSON.parse('{{ board|escapejs }}');
-		let startTime = new Date('{{ start_time }}');
-	</script>
+	<input type="hidden" id="board" value="{{ board|escapejs }}">
+	<input type="hidden" id="start-time" value="{{ start_time|date:'c' }}">
 	<script type="module" src="{% static 'js/sudoku.js' %}" defer></script>
 </head>
 
 <body>
+	{% csrf_token %}
 	<h1>Sudoku</h1>
 	<div id="timer">00:00:00</div>
 	<input type="hidden" id="room-name" value="{{ room_url }}">

@@ -1,11 +1,17 @@
 import { isValidSudoku, isBoardComplete } from './valid.js';
-import { sudokuSocket } from './sudoku.js';
 import { showModal } from './modal.js';
 
 var numSelected = null;
 var tileSelected = null;
+let board = null;
 
-export function setGame() {
+
+export function setBoard() {
+	let tmp = document.getElementById("board").value;
+	board = JSON.parse(tmp);
+}
+
+export function setGame(socket) {
 	//Digits 1-9
 
 	for (let i = 1; i<=9; i++) {
@@ -17,6 +23,7 @@ export function setGame() {
 		document.getElementById("digits").appendChild(number);
 	}
 
+	console.log()
 	// Board 9x9
 	for (let r = 0; r < 9; r++) {
 		for (let c = 0; c < 9; c++) {
@@ -63,7 +70,9 @@ export function setGame() {
 			if (c == 0 || c == 8) {
 				tile.classList.add("outer-line");
 			}
-			tile.addEventListener("click", selectTile);
+			tile.addEventListener("click", function () {
+				selectTile.call(this, socket);  // `this` refers to the clicked tile
+			});
 			tile.classList.add("tile");
 			document.getElementById("board").append(tile);
 		}
@@ -79,7 +88,8 @@ function selectNumber() {
 	numSelected.classList.add("number-selected");
 }
 
-function selectTile() {
+function selectTile(socket) {
+		console.log(this);
 		if (numSelected) {
 			if (this.classList.contains("tile-start")) {
 				return;
@@ -103,7 +113,7 @@ function selectTile() {
 		// Vérifier si le jeu est terminé
 		if (isBoardComplete(board) && isValidSudoku(board)) {
 			const timeUsed = document.getElementById("timer").innerText;
-			sudokuSocket.send(JSON.stringify({
+			socket.send(JSON.stringify({
 				'type': 'board_complete',
 				'message': 'Board completed!',
 				'time_used': timeUsed,
@@ -117,6 +127,7 @@ function selectTile() {
 			clearHighlights();
 		}
 		tileSelected = this;
+		console.log(this);
 		tileSelected.classList.add("tile-selected");
 		highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
 		let number = tileSelected.innerText;

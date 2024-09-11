@@ -8,7 +8,7 @@ game modes:
 
 let	gameMode = -1;
 
-function Solo()
+export function Solo()
 {
 	let solo = document.querySelector('.Solo');
 	let pvp = document.querySelector('.PvP');
@@ -28,7 +28,7 @@ function Solo()
 	gameMode = -1;
 }
 
-function PvP()
+export function PvP()
 {
 	let pvp = document.querySelector('.PvP');
 	let solo = document.querySelector('.Solo');
@@ -48,7 +48,7 @@ function PvP()
 	gameMode = -1;
 }
 
-function Easy()
+export function Easy()
 {
 	let easy = document.querySelector('.Easy');
 	let medium = document.querySelector('.Medium');
@@ -59,7 +59,7 @@ function Easy()
 	gameMode = 0;
 }
 
-function Medium()
+export function Medium()
 {
 	let easy = document.querySelector('.Easy');
 	let medium = document.querySelector('.Medium');
@@ -70,7 +70,7 @@ function Medium()
 	gameMode = 1;
 }
 
-function Hard()
+export function Hard()
 {
 	let easy = document.querySelector('.Easy');
 	let medium = document.querySelector('.Medium');
@@ -81,7 +81,7 @@ function Hard()
 	gameMode = 2;
 }
 
-function generateRandomUrl() {
+export function generateRandomUrl() {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let str = '';
 	for (let i = 0; i < 10; i++) {
@@ -91,7 +91,7 @@ function generateRandomUrl() {
 	return str;
 }
 
-function getCookie(name)
+export function getCookie(name)
 {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '')
@@ -110,7 +110,7 @@ function getCookie(name)
 	return cookieValue;
 }
 
-// async	function getUser()
+// async	export function getUser()
 // {
 // 	const token = getCookie('token');
 
@@ -129,7 +129,7 @@ function getCookie(name)
 // 	return UserInformation;
 // }
 
-async	function Start(view)
+export async function Start(view)
 {
 	view.getUser();
 	console.log('Start button clicked');
@@ -180,7 +180,7 @@ async	function Start(view)
 	}
 	console.log("Start !");
 	const link = document.createElement('a');
-    link.href = '/sudokubattle/' + roomUrl + '/';
+    link.href = '/sudoku/' + roomUrl + '/';
     link.setAttribute('data-link', '');
     document.body.appendChild(link);
     console.log(link);
