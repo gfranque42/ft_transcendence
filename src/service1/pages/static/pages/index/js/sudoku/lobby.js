@@ -8,6 +8,13 @@ game modes:
 
 let	gameMode = -1;
 
+export async function changeUsername(view)
+{
+	const username = document.querySelector('.username');
+
+	user = await view.getUser();
+}
+
 export function Solo()
 {
 	let solo = document.querySelector('.Solo');

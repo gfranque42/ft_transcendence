@@ -8,8 +8,7 @@ import SudokuLobby from "../views/lobby_sudoku.js";
 
 import { initialize } from "./sudoku/sudoku.js";
 import {setBoard} from "./sudoku/board.js";
-import { setStartTime } from "./sudoku/timer.js";
-import { PvP, Solo, Start, Easy, Medium, Hard } from "./sudoku/lobby.js";
+import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
@@ -150,6 +149,8 @@ const router = async () => {
 			Hard: Hard,
 			Start: Start,
 		};
+
+		changeUsername(view);
 		document.addEventListener('click', function(event) {
 			// Handling data-action for button actions
 			const action = event.target.getAttribute('data-action');
@@ -161,7 +162,6 @@ const router = async () => {
 		});
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
 		setBoard();
-		setStartTime();
 		initialize();
 	}
     if (!UserToken)
@@ -198,10 +198,14 @@ const router = async () => {
         return ;
     }
     const UserInformation = await response.json();
-    document.getElementById('user').outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
+    let user = document.getElementById('user')
+	if (user)
+	{
+		user.outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
-    </div>`;
+    	</div>`;
+	}
 }}
 
 // Listen for popstate event and trigger router

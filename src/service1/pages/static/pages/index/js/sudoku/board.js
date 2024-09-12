@@ -7,7 +7,7 @@ let board = null;
 
 
 export function setBoard() {
-	let tmp = document.getElementById("board").value;
+	let tmp = document.getElementById("board_value").value;
 	board = JSON.parse(tmp);
 }
 
@@ -22,11 +22,13 @@ export function setGame(socket) {
 		number.classList.add("number");
 		document.getElementById("digits").appendChild(number);
 	}
-
-	console.log()
+	
+	//console.log()
 	// Board 9x9
+	console.log(board);
 	for (let r = 0; r < 9; r++) {
 		for (let c = 0; c < 9; c++) {
+			console.log("in the boucle");
 			let tile = document.createElement("div");
 			tile.id = r.toString() + "-" + c.toString();
 			if (board[r][c] != 0)
@@ -74,7 +76,10 @@ export function setGame(socket) {
 				selectTile.call(this, socket);  // `this` refers to the clicked tile
 			});
 			tile.classList.add("tile");
-			document.getElementById("board").append(tile);
+			console.log(tile);
+			document.getElementById("board").appendChild(tile);
+			const brd = document.getElementById("board");
+			console.log(brd);
 		}
 	}
 	document.addEventListener("keydown", handleKeyPress);

@@ -1,5 +1,5 @@
 import { setGame } from './board.js';
-import { startTimer } from './timer.js';
+import { startTimer, setStartTime } from './timer.js';
 import { showModal } from './modal.js';
 let sudokuSocket = null;
 
@@ -14,7 +14,7 @@ export function initializeWebSocket(roomName) {
 
 	// Initialize the WebSocket with the correct protocol
 	const socket = new WebSocket(
-		`${wsProtocol}://${window.location.host}/ws/sudokubattle/${roomName}/`
+		`${wsProtocol}://${window.location.host}/ws/sudokubattle/${roomName.value}/`
 	);
 
 	socket.onclose = function(e) {
@@ -49,6 +49,7 @@ export function initialize() {
 	if (sudokuSocket) {
 		sudokuSocket.onmessage = handleSocketMessage;
 		setGame(sudokuSocket);
+		setStartTime();
 		startTimer();
 	}
 }

@@ -4,6 +4,7 @@ import { showModal } from './modal.js';
 
 var numSelected = null;
 var tileSelected = null;
+let board = document.getElementById("board").value.JSON.parse();
 
 export function setGame() {
 	//Digits 1-9
