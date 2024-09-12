@@ -112,7 +112,6 @@ class AddVerification(APIView):
         token = request.data['token']
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=decoded['id'])
-        print("57: ",request.data)
 
         formSMS = verificationSMS(request.data)
         formEmail = verificationEmail(request.data)
@@ -178,20 +177,26 @@ class Profile(APIView):
             
     
     def patch(self, request):
-        new_username = request.data['username']
-        new_avatar = request.data['avatar']
+        formUsername = changeUsername(request.data)
+        formAvatar = changeAvatar(request.data, request.FILES)
         token = request.data['token']
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=decoded['id'])
+        # print(formUsername)
+        # print(formAvatar)
 
-        if new_username:
+        # new_avatar = formAvatar.cleaned_data['avatar']
+
+        if formUsername.is_valid():
+            new_username = formUsername.cleaned_data['username']
             if User.objects.filter(username=new_username).exists():
                 return Response({'error': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
             userProfile.user.username = new_username
             userProfile.user.save()
             # userProfile.save
-        if new_avatar:
-            userProfile.avatar = new_avatar
+        if formAvatar.is_valid():
+            print("\n\n\n\n THIS IS NEW AVATAR ---------------------\n\n\n\n",request.FILES, "\n\n\n\n")
+            userProfile.avatar = request.FILES["avatar"]
             userProfile.save()
         return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
 
@@ -306,7 +311,7 @@ def test_token(request):
 
 @api_view(['GET'])
 def test_OTP(request):
-    print('Test\n\n\n\n\')
+    print('Test\n\n\n\n')
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(' ')[1]
     payload = jwt.decode(token, 'secret', algorithms=['HS256'])

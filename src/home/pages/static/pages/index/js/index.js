@@ -261,8 +261,6 @@ const router = async () => {
 
 
     } else if (match.route.path == "/profile/") {
-                                                                            // PROFILE      capable of putting an avatar and change username, capabale of adding verification method
-
 
         console.log("post awaited profile");
         const profileForm = document.querySelectorAll('form');
@@ -271,6 +269,7 @@ const router = async () => {
                 event.preventDefault();
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
+                console.log(username)
                 if (username.value || avatar.value) {
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
                 } else {

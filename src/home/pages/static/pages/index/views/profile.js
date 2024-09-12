@@ -46,16 +46,34 @@ export default class extends abstractviews {
         if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
+
+        // const body = {};
+        let formdata = new FormData();
+
+
+        formdata.append('username', username.value);
+        formdata.append('avatar', avatar.files[0]);
+        formdata.append('token', token);
+
+
+        // URLSearchParams searchParams = new URLSearchParams(formdata)
+        // body["csrfmiddlewaretoken"] = this.csrfToken;
+        // body["token"] = token;
+
+
+        // // Conditionally add properties if they have values
+        // if (username !== null && !isEmptyOrWhitespace(username.value))
+        //     body["username"] = username.value;
+        // if (avatar !== null)
+        //     body["avatar"] = avatar.files[0];
+
+        // console.log(body);
+
         let response = await fetch('https://localhost:8083/auth/profile', {
             method: 'PATCH',
-            body: JSON.stringify({
-                "csrfmiddlewaretoken": this.csrfToken, 
-                "token": token,
-                "username": username.value,
-                "avatar": avatar.value
-            }),
+            body: formdata,
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': "application/x-www-form-urlencoded",
                 'X-CSRFToken': this.csrfToken,
             },
         });
