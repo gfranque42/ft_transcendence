@@ -141,8 +141,8 @@ export function getCookie(name)
 		{
 			const cookie = cookies[i].trim();
 			if (cookie.substring(0, name.length + 1) === `${name}=`)
-			{
-				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				{
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
 				break;
 			}
 		}
@@ -150,6 +150,16 @@ export function getCookie(name)
 	console.log("cookie: ", cookieValue);
 	return cookieValue;
 }
+
+const	keyPressed = [];
+
+window.addEventListener('keydown', function(e){
+	keyPressed[e.keyCode] = true;
+})
+
+window.addEventListener('keyup', function(e){
+	keyPressed[e.keyCode] = false;
+})
 
 export function waitForSocketConnection(roomSocket)
 {
@@ -205,7 +215,7 @@ export async function testToken(roomSocket)
 	}));
 }
 
-export function wsonmessage(data, game, roomSocket, canvas, ctx, keyPressed)
+export function wsonmessage(data, game, roomSocket, canvas, ctx)
 {
 	const	KEY_UP = 38;
 	const	KEY_DOWN = 40;
@@ -242,10 +252,11 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx, keyPressed)
 		gameUpdate(data, game);
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
+
 		let move = "none";
-		if (keyPressed[KEY_UP] == True)
+		if (keyPressed[38] == true)
 			move = "up";
-		if (keyPressed[KEY_DOWN] == True)
+		if (keyPressed[40] == true)
 		{
 			if (move === "none")
 				move = "down";

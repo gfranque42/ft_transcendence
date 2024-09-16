@@ -44,15 +44,27 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				print(f"Exception from receive: {e}", flush=True)
 		elif (type_data == "ping"):
 			if (self.username == self.player1Name):
-				if (text_data_json["move"] == "up"):
-					self.paddleL.setXMin(self.paddleL.getXMin() + 1)
-				elif (text_data_json["move"] == "down"):
-					self.paddleL.setXMin(self.paddleL.getXMin() - 1)
+				try:
+					if ("move" in text_data_json):
+						if (text_data_json["move"] == "up"):
+							self.paddleL.setXMin(self.paddleL.getXMin() + 1)
+						elif (text_data_json["move"] == "down"):
+							self.paddleL.setXMin(self.paddleL.getXMin() - 1)
+				except KeyError as e:
+					print(f"KeyError: {e}")
+				except Exception as e:
+					print(f"Exception from receive: {e}")
 			else:
-				if (text_data_json["move"] == "up"):
-					self.paddleR.setXMin(self.paddleR.getXMin() + 1)
-				elif (text_data_json["move"] == "down"):
-					self.paddleR.setXMin(self.paddleR.getXMin() - 1)
+				try:
+					if ("move" in text_data_json):
+						if (text_data_json["move"] == "up"):
+							self.paddleR.setXMin(self.paddleR.getXMin() + 1)
+						elif (text_data_json["move"] == "down"):
+							self.paddleR.setXMin(self.paddleR.getXMin() - 1)
+				except KeyError as e:
+					print(f"KeyError: {e}")
+				except Exception as e:
+					print(f"Exception from receive: {e}")
 			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
 			await self.channel_layer.group_send(
 						self.room_group_name, {"type": "game_update", "message": "in playing",
