@@ -197,22 +197,22 @@ class verificationApp(forms.Form):
 
 class SendFriendForm(forms.Form):
     token = forms.CharField(widget=forms.HiddenInput(), required=True)
-    to_user = forms.CharField(required=True)
+    to_user = forms.UUIDField(required=True)
     
     def clean(self):
         cleaned_data = super().clean()
 
         token = cleaned_data.get('token')
         try:
-            to_user = User.objects.get(username=cleaned_data['to_user'])
+            to_user = UserProfile.objects.get(uuid=cleaned_data['to_user'])
         except:
             raise forms.ValidationError("User not found.")
 
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         from_user_id = decoded['id']
         
-        cleaned_data['from_user'] = from_user_id
-        cleaned_data['to_user'] = to_user.id
+        cleaned_data['from_user_id'] = from_user_id
+        cleaned_data['to_user_id'] = to_user.id
 
         return cleaned_data
 
@@ -233,7 +233,7 @@ class AnswerFriendForm(forms.Form):
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         from_user_id = decoded['id']
         
-        cleaned_data['from_user'] = from_user_id
-        cleaned_data['to_user'] = to_user.id
+        cleaned_data['from_user_id'] = from_user_id
+        cleaned_data['to_user_id'] = to_user.id
 
         return cleaned_data

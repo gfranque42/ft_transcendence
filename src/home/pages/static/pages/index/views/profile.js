@@ -55,20 +55,6 @@ export default class extends abstractviews {
         formdata.append('avatar', avatar.files[0]);
         formdata.append('token', token);
 
-
-        // URLSearchParams searchParams = new URLSearchParams(formdata)
-        // body["csrfmiddlewaretoken"] = this.csrfToken;
-        // body["token"] = token;
-
-
-        // // Conditionally add properties if they have values
-        // if (username !== null && !isEmptyOrWhitespace(username.value))
-        //     body["username"] = username.value;
-        // if (avatar !== null)
-        //     body["avatar"] = avatar.files[0];
-
-        // console.log(body);
-
         let response = await fetch('https://localhost:8083/auth/profile', {
             method: 'PATCH',
             body: formdata,
@@ -115,6 +101,47 @@ export default class extends abstractviews {
 
         return data;
     }
+
+    async friendRequest(token, checkbox, fromUser) {
+        // let formdata = new FormData();
+        
+        // formdata.append('token', await token);
+        // formdata.append('from_user_id', fromUser);
+        
+        const body = {};
+
+        // Always include the CSRF token and token
+        body["token"] = await token;
+        body["from_user_id"] = fromUser;
+
+        let response;
+        if (checkbox)
+        {
+            response = await fetch('https://localhost:8083/auth/send-friend-request', {
+                method: 'PATCH',
+                body: JSON.stringify(body),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.csrfToken
+                },
+            });
+        } else {
+            response = await fetch('https://localhost:8083/auth/send-friend-request', {
+                method: 'DELETE',
+                body: JSON.stringify(body),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.csrfToken
+                },
+            });
+        }
+        
+        const data = await response.json();
+
+        return data;
+        
+    }
+
 
     setTitle(title) {
         document.title = title;

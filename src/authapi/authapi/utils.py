@@ -1,3 +1,6 @@
+from .serializers import  FriendRequestSerializer
+from .models import  Friend_request
+from .forms import AnswerFriendForm
 
 from django.conf import settings
 import json
@@ -76,3 +79,7 @@ def CheckForTFA(userprofile):
         return_value = True
     return return_value
 
+def GetFriendRequests(userProfile):
+    friend_requests = Friend_request.objects.filter(to_user=userProfile)
+    serializer = FriendRequestSerializer(friend_requests, many=True)
+    return serializer.data

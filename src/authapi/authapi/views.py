@@ -1,21 +1,16 @@
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.db import IntegrityError
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 from django.http import JsonResponse    
 
 from .urls import CheckForTFA
-from .utils import generate_qr_code
+from .utils import generate_qr_code, GetFriendRequests
 from .models import UserProfile, Friend_request
 from .forms import verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
 from .serializers import UserSerializer, FriendRequestSerializer
@@ -24,7 +19,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-import jwt, datetime, pyotp
+import jwt, datetime, pyotp, json
 
 
 
@@ -59,17 +54,41 @@ class FriendRequest(APIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request):
-        from_user_id = request.data['from_user_id']
-        to_user_id = request.data['to_user_id']
+        print("\n\n\n\nreauest body :", request.body,     "\n\n\n\n")
+
+        data = json.loads(request.body)
+        print("\n\n\n\ndata:", data, type(data),     "\n\n\n\n")
+        from_user_id = data.get('from_user_id')
+        print("\n\n\n\nuser_id:", from_user_id, type(from_user_id),     "\n\n\n\n")
+        token = data.get('token')
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        to_user = UserProfile.objects.get(id=decoded['id'])
         try:
             from_user = UserProfile.objects.get(id=from_user_id)
-            to_user = UserProfile.objects.get(id=to_user_id)
             friend_request = Friend_request.objects.filter(to_user=to_user, from_user=from_user)
             friend_request.delete()
-            to_user.friends = from_user
-            from_user.friends = to_user
+            to_user.friends.add(from_user)
+            from_user.friends.add(to_user)
             to_user.save()
             from_user.save()
+            return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except friend_request.DoesNotExist:
+            return Response({'error': 'friend request not found'}, status=status.HTTP_404_NOT_FOUND)
+  
+    def delete(self, request):
+        from_user_id = request.data['from_user_id']
+        token = request.data['token']
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        to_user = UserProfile.objects.get(id=decoded['id'])
+        try:
+            from_user = UserProfile.objects.get(id=from_user_id)
+            friend_request = Friend_request.objects.filter(to_user=to_user, from_user=from_user)
+            friend_request.delete()
+            to_user.save()
+            from_user.save()
+            return Response({'success': 'Friend request deleted'}, status=status.HTTP_200_OK)
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except friend_request.DoesNotExist:
@@ -170,10 +189,22 @@ class Profile(APIView):
         formSMS = verificationSMS()
         formApp = verificationApp()
         formOTP = Get2faForm()
-        # print("here\n\n\n\n", formEmail)
+        friend_requests=GetFriendRequests(userProfile)
         # print("here\n\n\n\n", formSMS)
         qr_code_base64 = generate_qr_code(userProfile)
-        return render(request, "profile.html", {"user": userProfile, "formApp":formApp, "formSMS":formSMS, "formEmail":formEmail, "formOTP":formOTP, "formAvatar":formAvatar, "formUsername":formUsername, 'qr_code_base64': qr_code_base64})
+
+        # for userProfile_key, userProfile_value in friend_requests.items:
+        #     print("\n\n\n", userProfile_key, userProfile_value)
+        
+        return render(request, "profile.html", {"friend_requests": friend_requests,
+                                                "user": userProfile,
+                                                "formApp":formApp,
+                                                "formSMS":formSMS,
+                                                "formEmail":formEmail,
+                                                "formOTP":formOTP,
+                                                "formAvatar":formAvatar,
+                                                "formUsername":formUsername,
+                                                'qr_code_base64': qr_code_base64})
             
     
     def patch(self, request):
@@ -289,7 +320,7 @@ class RegisterForm(APIView):
             user = form.save(commit=False)
             user.set_password(request.data['password1'])  # Set the password correctly
             user.save()
-            UserProfile.objects.create(user=user)
+            userprofile = UserProfile.objects.create(user=user)
             payload = {
                 'id': user.id,
                 'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
@@ -298,7 +329,7 @@ class RegisterForm(APIView):
             token = jwt.encode(payload, 'secret', algorithm='HS256')
 
             serializer = UserSerializer(instance=user)
-            return Response({"token": token, "user": serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"token": token, "uuid": userprofile.uuid, "user": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'form': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])

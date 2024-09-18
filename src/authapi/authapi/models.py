@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.core.validators import RegexValidator
 
-import pyotp
+
+import pyotp, uuid
 
 
 def default_preferences():
@@ -14,6 +15,8 @@ class UserProfile(models.Model):
         regex=r'^\+?1?\d{9,15}$',
         message="Enter a valid phone number. (e.g., +1234567890 or 1234567890)"
     )
+
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, max_length=8)
     friends = models.ManyToManyField("UserProfile", blank=True)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)

@@ -202,7 +202,6 @@ const router = async () => {
             if (window.getComputedStyle(otpPopup).display == 'block') {
                 view.profileUserPost(UserToken, "", "", "00");
             }
-        
         });
     }
 
@@ -228,10 +227,8 @@ const router = async () => {
 
     if (!UserToken)
         UserToken = getCookie("token");
-
     if (match.route.path == "/register/") {
                                                                             // REGISTER     It send the information given by the user to the authapi and adds a cookie
-
         console.log("post awaited");
         const registrationForm = document.querySelector('form.form-register');
         registrationForm.addEventListener('submit', (event) => {
@@ -267,11 +264,21 @@ const router = async () => {
         profileForm.forEach((form) => {
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
+                // console.log(event.submitter);
+                const formElement = event.target;
+                const accept = formElement.querySelector('#reject');
+                console.log(accept);
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
-                console.log(username)
-                if (username.value || avatar.value) {
+                console.log(event.submitter.value)
+                if ('btn-profile' == event.submitter.id) {
+                    console.log("stealing the thunder");
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
+                } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
+                    if (event.submitter.id == 'accept')
+                        view.friendRequest(UserToken, true,  event.submitter.value)
+                    else
+                        view.friendRequest(UserToken, false,  event.submitter.value)
                 } else {
                     const email = document.querySelector('input[name="email"]');
                     const phone_number = document.querySelector('input[name="phone_number"]');

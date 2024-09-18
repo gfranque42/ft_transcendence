@@ -13,7 +13,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserProfile
-		fields = ['user']
+		fields = ['user', 'avatar']
 
 class FriendRequestSerializer(serializers.ModelSerializer):
 	from_user = UserProfileSerializer()

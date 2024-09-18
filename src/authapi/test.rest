@@ -23,6 +23,17 @@ POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
+    "username": "stna",
+    "email": "baneg35@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
     "username": "stan12",
     "email": "baneg2a2335@eixdeal.com",
     "password1": "Pass1234!",
@@ -39,7 +50,7 @@ Content-Type: application/json
 ###
 GET http://localhost:8000/auth/send-friend-request
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI1MzgzNTYyLCJpYXQiOjE3MjUzODEwNDJ9.vNqtMXI1c_aZI0aNVfXIDxm_oqiSQd2DiDE5KFbzruo
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI2NjU2MTQxLCJpYXQiOjE3MjY2NTM2MjF9.ithUgum6i5n7AGXQqg3bOUzJyHaSRcGBGpBLA87h-b4
 
 {
 }
@@ -91,7 +102,7 @@ Content-Type: application/json
 
 GET http://localhost:8000/auth/profile
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIzNzE3NzI3LCJpYXQiOjE3MjM3MTUyMDd9.VSfJWE6tcoglfLjUbllrEM4fUUZpcuhUlIla8ROfuos 
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI2NjYwOTgyLCJpYXQiOjE3MjY2NTg0NjJ9.S4uskbVW2qZxp_xfc8-hmx66OdC0JYKC-exnNlRLf9Y 
 
 {
 }
@@ -124,4 +135,93 @@ Content-Type: application/json
 Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZXhwIjoxNzI1NDYzMzk5LCJpYXQiOjE3MjU0NjA4Nzl9.FV3q8M2ZlsQd83ZdcwaIZJEL_1NlpItEnIwKQ-h9mGA
 
 {
+}
+
+
+
+
+
+
+
+
+
+
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stn",
+    "email": "baneg2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stna",
+    "email": "baneg35@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stan12",
+    "email": "baneg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stan1a2",
+    "email": "baneg2a23a35@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "staan12",
+    "email": "banaeg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "sataan12",
+    "email": "baaneg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+POST http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+
+{
+    "from_user_id": "6",
+    "to_user_id": "1"
 }

@@ -19,3 +19,16 @@ urlpatterns = [
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+# {
+#     'id': 1,
+#     'from_user': 
+#         {
+#             'user': 
+#                 {
+#                     'id': 1,
+#                     'username': 'stn',
+#                     'email': 'baneg2335@eixdeal.com'
+#                 }
+#             'avatar': '/media/images/default_avatar.jpg'}, 'to_user': 2}
