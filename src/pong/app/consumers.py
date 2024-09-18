@@ -47,9 +47,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				try:
 					if ("move" in text_data_json):
 						if (text_data_json["move"] == "up"):
-							self.paddleL.setXMin(self.paddleL.getXMin() + 1)
+							self.paddleL.setXMin(self.paddleL.getYMin() - 1)
 						elif (text_data_json["move"] == "down"):
-							self.paddleL.setXMin(self.paddleL.getXMin() - 1)
+							self.paddleL.setXMin(self.paddleL.getYMin() + 1)
 				except KeyError as e:
 					print(f"KeyError: {e}")
 				except Exception as e:
@@ -58,9 +58,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				try:
 					if ("move" in text_data_json):
 						if (text_data_json["move"] == "up"):
-							self.paddleR.setXMin(self.paddleR.getXMin() + 1)
+							self.paddleR.setXMin(self.paddleR.getYMin() - 1)
 						elif (text_data_json["move"] == "down"):
-							self.paddleR.setXMin(self.paddleR.getXMin() - 1)
+							self.paddleR.setXMin(self.paddleR.getYMin() + 1)
 				except KeyError as e:
 					print(f"KeyError: {e}")
 				except Exception as e:
