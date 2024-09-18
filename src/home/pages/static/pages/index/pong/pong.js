@@ -155,6 +155,7 @@ const	keyPressed = [];
 
 window.addEventListener('keydown', function(e){
 	keyPressed[e.keyCode] = true;
+	console.log("Key pressed: ", keyPressed[e.keyCode]);
 })
 
 window.addEventListener('keyup', function(e){
