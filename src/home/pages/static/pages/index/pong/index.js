@@ -137,6 +137,7 @@ async function checkRoom(options)
 	const rooms = await response.json();
 	for (let i = 0; i < rooms.length; i++)
 	{
+		console.log("room search: ", rooms[i].url);
 		if (rooms[i].maxPlayers > rooms[i].players.length)
 		{
 			console.log('room found: ', rooms[i].url);

@@ -210,8 +210,10 @@ export async function testToken(roomSocket)
 
 	console.log(UserInformation);
 	console.log(UserInformation.Username);
+	console.log(UserInformation.id);
 	roomSocket.send(JSON.stringify({
 		'type': "username",
+		'id': UserInformation.ID,
 		'username': UserInformation.Username
 	}));
 }
@@ -249,25 +251,50 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx)
 	}
 	else if (data.type === "game update")
 	{
-		console.log(data);
-		gameUpdate(data, game);
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
-
-		let move = "none";
-		if (keyPressed[38] == true)
-			move = "up";
-		if (keyPressed[40] == true)
+		console.log("data.message: ", data.message);
+		if (data.message === "in playing")
 		{
-			if (move === "none")
-				move = "down";
-			else
-				move = "none";
+			console.log(data);
+			gameUpdate(data, game);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
+	
+			let move = "none";
+			if (keyPressed[38] == true)
+				move = "up";
+			if (keyPressed[40] == true)
+			{
+				if (move === "none")
+					move = "down";
+				else
+					move = "none";
+			}
+			console.log('keypressed: ', move);
+			roomSocket.send(JSON.stringify({
+				'type': "ping",
+				'move': move,
+			}));
 		}
-		console.log('keypressed: ', move);
-		roomSocket.send(JSON.stringify({
-			'type': "ping",
-			'move': move,
-		}));
+		else if (data.message === "game is finished")
+		{
+			const link = document.createElement('a');
+			link.href = '/pong/';
+			link.setAttribute('data-link', '');
+			document.body.appendChild(link);
+			console.log(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
+	else if (data.type === "end game")
+	{
+		console.log("serveur wants to quit");
+		const link = document.createElement('a');
+		link.href = '/pong/';
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+		document.body.removeChild(link);
 	}
 }

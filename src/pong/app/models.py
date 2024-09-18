@@ -4,6 +4,7 @@ from django.db import models
 
 class	Player(models.Model):
 	username = models.CharField(max_length=255)
+	stanid = models.IntegerField(default=0)
 	gamePlayed = models.IntegerField(default=0)
 	gameWon = models.IntegerField(default=0)
 
