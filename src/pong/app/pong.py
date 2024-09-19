@@ -165,16 +165,27 @@ class	Ball:
 # 	return paddleL, paddleR, ball, scoreL, scoreR
 
 class	Paddle:
-	def	__init__(self, coor, size, ai):
+	def	__init__(self, coor, size, vel, ai):
 		self.coor = coor
 		self.size = size
+		self.vel = vel
 		self.ai = ai
 	def	update(self, Ball):
-		if (self.ai == 3):
+		if (self.ai == 1 and Ball.dir.x > 0 and Ball.coor.x > 50):
 			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y += 1
+				self.coor.y += self.vel
 			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y -= 1
+				self.coor.y -= self.vel
+		elif (self.ai == 2 and Ball.dir.x > 0):
+			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
+				self.coor.y += self.vel
+			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
+				self.coor.y -= self.vel
+		elif (self.ai == 3):
+			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
+				self.coor.y += self.vel
+			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
+				self.coor.y -= self.vel
 
 def	CheckPaddleCollisionWithEdge(Paddle):
 	if (Paddle.coor.y <= 0):

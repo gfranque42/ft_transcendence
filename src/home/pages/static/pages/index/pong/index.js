@@ -149,6 +149,7 @@ async function checkRoom(options)
 
 export async	function Start(csrftoken, url)
 {
+	checkConnection();
 	if (gameMode == -1)
 		return ;
 	let maxPlayers = 1;

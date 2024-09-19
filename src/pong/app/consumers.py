@@ -52,9 +52,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				try:
 					if ("move" in text_data_json):
 						if (text_data_json["move"] == "up"):
-							self.paddleL.coor. y = self.paddleL.coor.y - 1
+							self.paddleL.coor. y = self.paddleL.coor.y - self.paddleL.vel
 						elif (text_data_json["move"] == "down"):
-							self.paddleL.coor. y = self.paddleL.coor.y + 1
+							self.paddleL.coor. y = self.paddleL.coor.y + self.paddleL.vel
 				except KeyError as e:
 					print(f"KeyError: {e}")
 				except Exception as e:
@@ -63,9 +63,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				try:
 					if ("move" in text_data_json):
 						if (text_data_json["move"] == "up"):
-							self.paddleR.coor. y = self.paddleR.coor.y - 1
+							self.paddleR.coor. y = self.paddleR.coor.y - self.paddleR.vel
 						elif (text_data_json["move"] == "down"):
-							self.paddleR.coor. y = self.paddleR.coor.y + 1
+							self.paddleR.coor. y = self.paddleR.coor.y + self.paddleR.vel
 				except KeyError as e:
 					print(f"KeyError: {e}")
 				except Exception as e:
@@ -138,7 +138,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.paddleR.size.y = event["paddleRsy"]
 			self.scoreL = event["scoreL"]
 			self.scoreR = event["scoreR"]
-			await asyncio.sleep(0.2)
+			# FPS choix a tester, pour l'instant sleep(0.2)
+			await asyncio.sleep(0.02)
 		elif (message == "game is finished"):
 			self.scoreL = event["scoreL"]
 			self.scoreR = event["scoreR"]
@@ -203,9 +204,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		try:
 			print(self.username, ': bisous de set_game', flush=True)
 			room = Room.objects.get(url=self.room_name)
-			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), Vec2(0.5, 	1), Vec2(1, 0.2))
-			self.paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 0)
-			self.paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), room.difficulty)
+			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), Vec2(2, 	3), Vec2(1, 0.2))
+			self.paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 1.5, 0)
+			self.paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), 1.5, room.difficulty)
 			self.scoreL = 0
 			self.scoreR = 0
 		except Exception as e:
