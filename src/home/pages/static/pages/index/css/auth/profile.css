@@ -109,6 +109,8 @@ button, input, optgroup, select, textarea {
 	width: 100%;
     border-radius: 12px;
     font: 1.7rem oswald;
+    text-align: center;
+
     color: #FFFBFC;
     border: unset;
     padding: 1vh 1vw;
@@ -303,6 +305,7 @@ button, input, optgroup, select, textarea {
 }
 
 .friend-username {
+    font-family: 'Oswald';
     align-self: center;
     margin-left: 10px;
 }
@@ -337,7 +340,7 @@ button, input, optgroup, select, textarea {
 
 .friend-requests {
     /* line-height:3em; */
-    height: 40%;
+    max-height: 40%;
     overflow:auto;
     direction: rtl;
     /* padding:5px; */
@@ -360,4 +363,51 @@ button, input, optgroup, select, textarea {
 {
 	border-radius: 4px;
 	background-color: #2E2C2F;
+}
+
+.friend-code {
+    margin: 5px;
+    padding: 3vw;
+}
+
+.btn-send-friend{
+    width: 100%;
+}
+
+#uuid {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.5rem;
+}
+
+.form-friend {
+    margin-top: 5vh;
+}
+
+.friend-label {
+    width: 100%;
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    font-family: oswald;
+}
+
+#fight {
+    color: #FFFBFC;
+    background-color: #2E2C2F;
+}
+
+#unfriend {
+    color: #2E2C2F;
+    background-color: #FFFBFC;
+}
+
+.friends {
+    /* line-height:3em; */
+    max-height: 70%;
+    overflow:auto;
+    /* padding:5px; */
+}
+
+#friend-request {
+    margin-top: 1rem;
 }

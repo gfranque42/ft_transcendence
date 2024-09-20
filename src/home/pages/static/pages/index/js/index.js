@@ -101,11 +101,13 @@ function hidePopstate() {
     var qrCode = document.getElementById('qr-code');
     var emailCode = document.getElementById('email-code');
     var smsCode = document.getElementById('sms-code');
+    var friendRequest = document.getElementById('friend-request-code');
     var clickOff = document.getElementById('click-off');
 
     if (qrCode) qrCode.style.display = 'none';
     if (emailCode) emailCode.style.display = 'none';
     if (smsCode) smsCode.style.display = 'none';
+    if (friendRequest) friendRequest.style.display = 'none';
     if (clickOff) clickOff.style.filter = 'none';
 }
 
@@ -165,6 +167,13 @@ const router = async () => {
         return 3;
     }
 
+    async function friendRequestCheck(data) {
+        hidePopstate();
+        if (data.success) {
+            alert(await data.success);
+        }
+    }
+
     async function VerificationRoute(tempToken) {
         const verification = new Verification();
         const token = await tempToken;
@@ -201,7 +210,9 @@ const router = async () => {
         
             if (window.getComputedStyle(otpPopup).display == 'block') {
                 view.profileUserPost(UserToken, "", "", "00");
+                console.log("UNLOADDING with profile");
             }
+            console.log("UNLOADDING");
         });
     }
 
@@ -270,8 +281,9 @@ const router = async () => {
                 console.log(accept);
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
+                const to_user = document.querySelector('input[name="to_user"]');
                 console.log(event.submitter.value)
-                if ('btn-profile' == event.submitter.id) {
+                if ('btn-profile-update' == event.submitter.id) {
                     console.log("stealing the thunder");
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
                 } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
@@ -279,6 +291,8 @@ const router = async () => {
                         view.friendRequest(UserToken, true,  event.submitter.value)
                     else
                         view.friendRequest(UserToken, false,  event.submitter.value)
+                } else if (event.submitter.id == 'friend-form') {
+                    friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
                 } else {
                     const email = document.querySelector('input[name="email"]');
                     const phone_number = document.querySelector('input[name="phone_number"]');
@@ -365,9 +379,11 @@ document.addEventListener("DOMContentLoaded", () => {
         var emailCode = document.getElementById('email-code');
         var smsCode = document.getElementById('sms-code');
         var clickOff = document.getElementById('click-off');
+        var friendRequest = document.getElementById('friend-request-code');
         var popup = document.querySelectorAll('#simple-popup');
         const ispopup = Array.from(popup).some(div =>  div.contains(event.target));
 
+        console.log(event.target);
         if (event.target.matches('#setup-email')) {
             emailCode.style.display = 'block';
             clickOff.style.filter = 'blur(5px)';
@@ -376,6 +392,9 @@ document.addEventListener("DOMContentLoaded", () => {
             clickOff.style.filter = 'blur(5px)';
         } else if (event.target.matches('#setup-app')) {
             qrCode.style.display = 'flex';
+            clickOff.style.filter = 'blur(5px)';
+        } else if (event.target.matches('#friend-request')) {
+            friendRequest.style.display = 'flex';
             clickOff.style.filter = 'blur(5px)';
         } else if (!ispopup) {
             hidePopstate();

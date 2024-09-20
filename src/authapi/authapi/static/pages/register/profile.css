@@ -111,6 +111,7 @@ button, input, optgroup, select, textarea {
     font: 1.7rem oswald;
     color: #FFFBFC;
     border: unset;
+    text-align: center;
     padding: 1vh 1vw;
     background-color: #2E2C2F;
 }

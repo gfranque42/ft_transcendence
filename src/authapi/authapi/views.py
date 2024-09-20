@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from .urls import CheckForTFA
 from .utils import generate_qr_code, GetFriendRequests
 from .models import UserProfile, Friend_request
-from .forms import verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
+from .forms import SendFriendForm, verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
 from .serializers import UserSerializer, FriendRequestSerializer
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -23,10 +23,14 @@ import jwt, datetime, pyotp, json
 
 
 
+# !FRIEND
+
 class FriendRequest(APIView):
     def post(self, request):
-        from_user_id = request.data['from_user_id']
-        to_user_id = request.data['to_user_id']
+        formFriend = SendFriendForm(request.data)
+        print(formFriend)
+        from_user_id = formFriend.cleaned_data['from_user_id']
+        to_user_id = formFriend.cleaned_data['to_user_id']
         try:
             from_user = UserProfile.objects.get(id=from_user_id)
             to_user = UserProfile.objects.get(id=to_user_id)
@@ -54,12 +58,9 @@ class FriendRequest(APIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request):
-        print("\n\n\n\nreauest body :", request.body,     "\n\n\n\n")
 
         data = json.loads(request.body)
-        print("\n\n\n\ndata:", data, type(data),     "\n\n\n\n")
         from_user_id = data.get('from_user_id')
-        print("\n\n\n\nuser_id:", from_user_id, type(from_user_id),     "\n\n\n\n")
         token = data.get('token')
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         to_user = UserProfile.objects.get(id=decoded['id'])
@@ -189,22 +190,26 @@ class Profile(APIView):
         formSMS = verificationSMS()
         formApp = verificationApp()
         formOTP = Get2faForm()
+        formSendFriend= SendFriendForm()
         friend_requests=GetFriendRequests(userProfile)
         # print("here\n\n\n\n", formSMS)
         qr_code_base64 = generate_qr_code(userProfile)
 
         # for userProfile_key, userProfile_value in friend_requests.items:
-        #     print("\n\n\n", userProfile_key, userProfile_value)
+        print("\n\n\n", userProfile.friends.all(), "\n\n\n\n")
+        print("\n\n\nhey\n\n\n\n")
         
         return render(request, "profile.html", {"friend_requests": friend_requests,
                                                 "user": userProfile,
+                                                "formSendFriend": formSendFriend,
                                                 "formApp":formApp,
                                                 "formSMS":formSMS,
                                                 "formEmail":formEmail,
                                                 "formOTP":formOTP,
                                                 "formAvatar":formAvatar,
                                                 "formUsername":formUsername,
-                                                'qr_code_base64': qr_code_base64})
+                                                'qr_code_base64': qr_code_base64,
+                                                'friends': userProfile.friends.all()})
             
     
     def patch(self, request):
@@ -213,21 +218,29 @@ class Profile(APIView):
         token = request.data['token']
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=decoded['id'])
+        # print("\n\n\n\n")
+        # formAvatar.is_valid()
         # print(formUsername)
-        # print(formAvatar)
+        # print(formAvatar.cleaned_data["avatar"])
+
+        # print ("\n\n\n\nCOMPARED To ------------------------------")
+
+        # print(request.FILES["avatar"])
+        # print("\n\n\n\n")
+
 
         # new_avatar = formAvatar.cleaned_data['avatar']
 
-        if formUsername.is_valid():
+        if formUsername.is_valid() and formUsername.cleaned_data['username'] and userProfile.user.username != formUsername.cleaned_data['username']:
             new_username = formUsername.cleaned_data['username']
             if User.objects.filter(username=new_username).exists():
                 return Response({'error': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
             userProfile.user.username = new_username
             userProfile.user.save()
             # userProfile.save
-        if formAvatar.is_valid():
+        if formAvatar.is_valid() and formAvatar.cleaned_data["avatar"]:
             print("\n\n\n\n THIS IS NEW AVATAR ---------------------\n\n\n\n",request.FILES, "\n\n\n\n")
-            userProfile.avatar = request.FILES["avatar"]
+            userProfile.avatar = formAvatar.cleaned_data["avatar"]
             userProfile.save()
         return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
 
@@ -342,11 +355,8 @@ def test_token(request):
 
 @api_view(['GET'])
 def test_OTP(request):
-    print('Test\n\n\n\n')
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(' ')[1]
     payload = jwt.decode(token, 'secret', algorithms=['HS256'])
     userProfile = UserProfile.objects.get(id=payload['id'])
-    print(userProfile.tfa)
-    print(any(userProfile.tfa.values()))
     return Response({"method": any(userProfile.tfa.values())})

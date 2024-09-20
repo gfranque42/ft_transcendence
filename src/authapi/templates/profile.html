@@ -12,11 +12,16 @@
 
 <!-- Friend Form Request -->
 <div class="popup" id="simple-popup">
-    <form method="POST" class="form-friend-profile" id="friend-request">
+    <form method="POST" class="form-friend-profile" id="friend-request-code">
+        {% csrf_token %}
         <div class="friend-code">
-            {{ Send.app }}
+            <div>
+                <label class="friend-label">Send following code to friend:</label>
+            </div>
+            <label id="uuid" class="friend-label">{{ user.uuid }}</label>
+            {{ formSendFriend.to_user }}
+            <button type="submit" class="btn-send-friend btn btn-login" id="friend-form">Submit</button>
         </div>
-        <button type="submit" class="btn-send-friend btn btn-login" id="friend-form">Submit</button>
     </form>
 </div>
 
@@ -119,7 +124,7 @@
                         </div>
                     </div>
                 </div>
-                        <button type="submit" class="btn-profile">Save Changes</button>
+                        <button id="btn-profile-update" type="submit" class="btn-profile">Save Changes</button>
                 <div class="add-2fa">
                     Add 2 factor authentication
                     <div style="display: flex;width: 100%">
@@ -130,44 +135,64 @@
                     </div>
                 </div>
             </form>
-
-
-            <!-- FRIEND REQUEST -->
-
-
-            <div class="add-2fa">Friend Request</div>
-            <div class="friend-requests friend-request-scroll">
-                
-            {% for item in friend_requests %}
-                <form class="friend-card">
-                    <!-- <div style="width:150px;height:150px;line-height:3em;overflow:scroll;padding:5px;"> -->
-                    <div style="width:100%">
-                        <div class="friend-username">{{ item.from_user.user.username }}</div>
-                        <div class="friend-request-buttons">
-                            <button id="reject" type="submit" value="{{item.from_user.user.id}}" class="btn-friend-request btn-login">Delete</button>
-                            <button id="accept" type="submit" value="{{item.from_user.user.id}}" class="btn-friend-request btn-login">Accept</button>
-                        </div>
-                    </div>
-                    <img src="http://localhost:8000{{ item.from_user.avatar }}" alt="{{ item.from_user.user.username }}'s avatar" class="friend-avatar" />
-                    <!-- </div> -->
-                </form>
-            {% endfor %}
-        </div>
-
+            
+            
+            
         </div>
 
         <div class="col-sm">
             heyt
         </div>
-
-
+        
+        
         <div class="col-sm">
             hey  
         </div>
-
-
+        
+        
         <div class="col-sm">
-            hey
+            <div class="add-2fa">Friend List</div>
+            {% for item in  friends %}
+            <div class="friends friend-request-scroll">
+                
+                
+                <div class="friend-card">
+                    <img src="http://localhost:8000{{ item.avatar.url }}" alt="{{ item.from_user.user.username }}'s avatar" class="friend-avatar" />
+                    <div style="width:100%">
+                        <div class="friend-username">{{ item }}</div>
+                        <div class="friend-request-buttons">
+                            <button id="fight" type="submit" value="{{item.id}}" class="btn-friend-request btn-login">Challenge</button>
+                            <button id="unfriend" type="submit" value="{{item.id}}" class="btn-friend-request btn-login">Unfriend</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- FRIEND REQUEST -->
+            
+            
+            <div class="add-2fa">Friend Request</div>
+            {% if friend_requests %}
+            <div class="friend-requests friend-request-scroll">
+                
+                {% for item in friend_requests %}
+                <form class="friend-card">
+                    <!-- <div style="width:150px;height:150px;line-height:3em;overflow:scroll;padding:5px;"> -->
+                        <div style="width:100%">
+                            <div class="friend-username">{{ item.from_user.user.username }}</div>
+                            <div class="friend-request-buttons">
+                                <button id="reject" type="submit" value="{{item.from_user.user.id}}" class="btn-friend-request btn-login">Delete</button>
+                                <button id="accept" type="submit" value="{{item.from_user.user.id}}" class="btn-friend-request btn-login">Accept</button>
+                            </div>
+                        </div>
+                        <img src="http://localhost:8000{{ item.from_user.avatar }}" alt="{{ item.from_user.user.username }}'s avatar" class="friend-avatar" />
+                    <!-- </div> -->
+                </form>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="btn-profile" id="friend-request">Send Friend Request</div>
         </div> 
     </div>
 </div>

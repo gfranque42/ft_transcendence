@@ -194,10 +194,9 @@ class verificationApp(forms.Form):
     #     self.fields['username'].widget.attrs['placeholder'] = 'Username'
     #     self.fields['password1'].widget.attrs['placeholder'] = 'Password'
     #     self.fields['password2'].widget.attrs['placeholder'] = 'Password confirmation'
-
 class SendFriendForm(forms.Form):
     token = forms.CharField(widget=forms.HiddenInput(), required=True)
-    to_user = forms.UUIDField(required=True)
+    to_user = forms.UUIDField(required=True, widget=forms.TextInput(attrs={'placeholder': "Enter a friend's code", 'class': 'form-control form-friend'}))
     
     def clean(self):
         cleaned_data = super().clean()
@@ -224,6 +223,8 @@ class AnswerFriendForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
 
+        print("\n\n\n\n\n stan\n\n\n\n")
+
         token = cleaned_data.get('token')
         try:
             to_user = UserProfile.objects.get(id=cleaned_data['from_user_id'])
@@ -237,3 +238,4 @@ class AnswerFriendForm(forms.Form):
         cleaned_data['to_user_id'] = to_user.id
 
         return cleaned_data
+

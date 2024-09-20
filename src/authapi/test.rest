@@ -222,6 +222,6 @@ POST http://localhost:8000/auth/send-friend-request
 Content-Type: application/json
 
 {
-    "from_user_id": "6",
-    "to_user_id": "1"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZXhwIjoxNzI2ODQzODMyLCJpYXQiOjE3MjY4NDEzMTJ9.wSzskejLHws-7Fhwcy9CAMcnldKnnIWFCsgE3lSD95o",
+    "to_user": "a91997b1-3ea6-49f9-b1ce-7384b17e1b69"
 }
