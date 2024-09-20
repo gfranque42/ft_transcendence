@@ -13,6 +13,8 @@ import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
 
+export let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
+
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -154,9 +156,9 @@ const router = async () => {
         	+ window.location.pathname
         );
 		
-        waitForSocketConnection(roomSocket);
+        await waitForSocketConnection(roomSocket);
+
 		
-        let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
         console.log('my game is ready: ', myGame.gameState);
 
 		const canvas = document.getElementById('canvas');
@@ -166,13 +168,27 @@ const router = async () => {
         roomSocket.onmessage = function (e)
         {
         	const data = JSON.parse(e.data);
-			wsonmessage(data, myGame, roomSocket, canvas, ctx);
+			wsonmessage(data, roomSocket, canvas, ctx);
         };
 
         roomSocket.onclose = function (e)
         {
         	console.error('Chat socket closed unexpectedly');
         };
+		let starttime = Date.now();
+        while (myGame.gameState != "end")
+        {	
+			let elapstime = Date.now() - starttime;
+			console.log("time: ",elapstime);
+			if (elapstime > 1000 / 60)
+			{
+				myGame.draw(canvas, ctx, (elapstime / ( 1000 / 60)));
+				starttime += 1000 / 60;
+				console.log(".");
+			}
+			await new Promise(r => setTimeout(r, 2));
+        }
+
     }
     if (!UserToken)
             UserToken = getCookie("token");

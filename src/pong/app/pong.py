@@ -168,9 +168,11 @@ class	Paddle:
 	def	__init__(self, coor, size, vel, ai):
 		self.coor = coor
 		self.size = size
+		self.dir = 0
 		self.vel = vel
 		self.ai = ai
 	def	update(self, Ball):
+		self.coor.y += self.dir
 		if (self.ai == 1 and Ball.dir.x > 0 and Ball.coor.x > 50):
 			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
 				self.coor.y += self.vel
@@ -221,6 +223,7 @@ def	CheckBallCollisionWithPaddle(Ball, Paddle, Score):
 	return Score
 
 def	gameUpdate(PaddleL, PaddleR, Ball, ScoreL, ScoreR):
+	print('bisous de gameUPdatemet a jour', flush=True)
 	PaddleL.update(Ball)
 	PaddleR.update(Ball)
 	CheckPaddleCollisionWithEdge(PaddleL)

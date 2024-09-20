@@ -1,4 +1,4 @@
-
+import {myGame} from "../js/index.js"
 export class vec2
 {
 	constructor(x, y)
@@ -84,8 +84,9 @@ export class game
 		this.ball.update(ballcx, ballcy, ballsx, ballsy);
 	};
 
-	draw(canvas, ctx)
+	draw(canvas, ctx, frameTime)
 	{
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		this.paddleL.draw(canvas, ctx, "#FFFBFC");
 		this.paddleR.draw(canvas, ctx, "#FFFBFC");
 		this.ball.draw(canvas, ctx, "#FFFBFC");
@@ -124,11 +125,9 @@ function gameUpdate(data, game)
 	console.log('game updated');
 }
 
-function gameDraw(game, s1, s2, canvas, ctx)
+function gameDraw(game, canvas, ctx)
 {
 	game.draw(canvas, ctx);
-	document.getElementById('player1Score').innerHTML = s1;
-	document.getElementById('player2Score').innerHTML = s2;
 }
 
 export function getCookie(name)
@@ -162,7 +161,7 @@ window.addEventListener('keyup', function(e){
 	keyPressed[e.keyCode] = false;
 })
 
-export function waitForSocketConnection(roomSocket)
+export async function waitForSocketConnection(roomSocket)
 {
 
 	setTimeout(
@@ -216,9 +215,30 @@ export async function testToken(roomSocket)
 		'id': UserInformation.ID,
 		'username': UserInformation.Username
 	}));
+	return (UserInformation.Username);
 }
 
-export function wsonmessage(data, game, roomSocket, canvas, ctx)
+async function getUsername()
+{
+	const cookie = getCookie('token');
+
+	const options = {
+		method: 'GET', // HTTP method
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Token ${cookie}`
+		}
+
+	};
+	let	bob;
+	let	UserInformation;
+	bob = await fetch('https://localhost:8083/auth/test_token', options);
+	UserInformation = await bob.json();
+	console.log("from getUsername: ", UserInformation.Username);
+	return (UserInformation.Username);
+}
+
+export async function wsonmessage(data, roomSocket, canvas, ctx)
 {
 	const	KEY_UP = 38;
 	const	KEY_DOWN = 40;
@@ -255,10 +275,12 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx)
 		if (data.message === "in playing")
 		{
 			console.log(data);
-			gameUpdate(data, game);
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			gameDraw(game, data.scoreL, data.scoreR, canvas, ctx);
-	
+			gameUpdate(data, myGame);
+			
+			// gameDraw(game, canvas, ctx);
+			document.getElementById('player1Score').innerHTML = data.scoreL;
+			document.getElementById('player2Score').innerHTML = data.scoreR;
+		
 			let move = "none";
 			if (keyPressed[38] == true)
 				move = "up";
@@ -277,13 +299,47 @@ export function wsonmessage(data, game, roomSocket, canvas, ctx)
 		}
 		else if (data.message === "game is finished")
 		{
-			const link = document.createElement('a');
-			link.href = '/pong/';
-			link.setAttribute('data-link', '');
-			document.body.appendChild(link);
-			console.log(link);
-			link.click();
-			document.body.removeChild(link);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			let username;
+			username = await getUsername();
+			document.getElementById('player1Score').textContent = data.scoreL;
+			document.getElementById('player2Score').textContent = data.scoreR;
+			console.log(username);
+			console.log(data.scoreL);
+			console.log(data.scoreR);
+			console.log(data.player1Name);
+			console.log(data.player2Name);
+			if (data.scoreL === 5 && data.player1Name === username)
+			{
+				const	result = document.getElementById("win");
+				result.style.display = "flex";
+			}
+			else if (data.scoreR === 5 && data.player2Name === username)
+			{
+				const	result = document.getElementById("win");
+				result.style.display = "flex";
+			}
+			else
+			{
+				const	result = document.getElementById("loose");
+				result.style.display = "flex";
+			}
+			myGame.gameState = "end";
+			const pourStan = {
+				"player one" : data.player1id,
+				"player two": data.player2id,
+				"score one": scoreL,
+				"score two": scoreR,
+				"winner": 1,// ou 2 player id du winner
+				"game": "pong"
+			};
+			// const link = document.createElement('a');
+			// link.href = '/pong/';
+			// link.setAttribute('data-link', '');
+			// document.body.appendChild(link);
+			// console.log(link);
+			// link.click();
+			// document.body.removeChild(link);
 		}
 	}
 	else if (data.type === "end game")
