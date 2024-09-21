@@ -238,12 +238,12 @@ class	PongConsumer(AsyncWebsocketConsumer):
 											"paddleLcy": self.paddleL.coor.y,
 											"paddleLsx": self.paddleL.size.x,
 											"paddleLsy": self.paddleL.size.y,
-											"paddleLd": self.paddleL.dir,
+											"paddleLdy": self.paddleL.dir,
 											"paddleRcx": self.paddleR.coor.x,
 											"paddleRcy": self.paddleR.coor.y,
 											"paddleRsx": self.paddleR.size.x,
 											"paddleRsy": self.paddleR.size.y,
-											"paddleRd": self.paddleR.dir,
+											"paddleRdy": self.paddleR.dir,
 											"scoreL": self.scoreL,
 											"scoreR": self.scoreR}))
 			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)

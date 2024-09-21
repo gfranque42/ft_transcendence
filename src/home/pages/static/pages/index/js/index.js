@@ -13,7 +13,7 @@ import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
 
-export let myGame = new game(new paddle(new vec2(1, 1), new vec2(1, 1)), new paddle(new vec2(1, 1), new vec2(1, 1)), new ball(new vec2(1, 1), new vec2(1, 1)));
+export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
 
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -182,7 +182,7 @@ const router = async () => {
 			console.log("time: ",elapstime);
 			if (elapstime > 1000 / 60)
 			{
-				myGame.draw(canvas, ctx, (elapstime / ( 1000 / 60)));
+				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
 				starttime += 1000 / 60;
 				console.log(".");
 			}

@@ -172,22 +172,25 @@ class	Paddle:
 		self.vel = vel
 		self.ai = ai
 	def	update(self, Ball):
-		self.coor.y += self.dir
 		if (self.ai == 1 and Ball.dir.x > 0 and Ball.coor.x > 50):
+			self.dir = 0
 			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y += self.vel
+				self.dir = self.vel
 			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y -= self.vel
+				self.dir = -self.vel
 		elif (self.ai == 2 and Ball.dir.x > 0):
+			self.dir = 0
 			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y += self.vel
+				self.dir = self.vel
 			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y -= self.vel
+				self.dir = -self.vel
 		elif (self.ai == 3):
+			self.dir = 0
 			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y += self.vel
+				self.dir = self.vel
 			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
-				self.coor.y -= self.vel
+				self.dir = -self.vel
+		self.coor.y += self.dir
 
 def	CheckPaddleCollisionWithEdge(Paddle):
 	if (Paddle.coor.y <= 0):

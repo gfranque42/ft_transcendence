@@ -20,43 +20,51 @@ export class paddle
 	{
 		this.pos = pos;
 		this.size = size;
+		this.dir = 0;
 	};
 
-	update(paddlecx, paddlecy, paddlesx, paddlesy)
+	update(paddlecx, paddlecy, paddlesx, paddlesy, paddledy)
 	{
 		this.pos.update(paddlecx, paddlecy);
 		this.size.update(paddlesx, paddlesy);
+		this.dir = paddledy;
 	};
 
-	draw(canvas, ctx, color)
+	draw(canvas, ctx, color, frameTime)
 	{
 		var width = canvas.width;
 		var height = canvas.height;
 		ctx.fillStyle = color;
-		ctx.fillRect(this.pos.x / 100 * width, this.pos.y / 100 * height, this.size.x / 100 * width, this.size.y / 100 * height);
+		const posy = this.pos.y + this.dir * (frameTime / (1 / 20));
+		ctx.fillRect(this.pos.x / 100 * width, posy / 100 * height, this.size.x / 100 * width, this.size.y / 100 * height);
 	};
 }
 
 export class ball
 {
-	constructor(pos, size)
+	constructor(pos, size, dir)
 	{
 		this.pos = pos;
 		this.size = size;
+		this.dir = dir;
 	};
 
-	update(ballcx, ballcy, ballsx, ballsy)
+	update(ballcx, ballcy, ballsx, ballsy, balldx, balldy)
 	{
 		this.pos.update(ballcx + ballsx / 2, ballcy + ballsy / 2);
 		this.size.update(ballsx, ballsy);
+		this.dir.update(balldx, balldy);
 	};
 
-	draw(canvas, ctx, color)
+	draw(canvas, ctx, color, frameTime)
 	{
 		var width = canvas.width;
 		var height = canvas.height;
+		const frame = frameTime / (1 / 20);
+		const posx = this.pos.x + this.dir.x * frame;
+		const posy = this.pos.y + this.dir.y * frame;
 		ctx.beginPath();
-		ctx.arc(this.pos.x / 100 * width, this.pos.y / 100 * height, this.size.x / 100 * height, 0, Math.PI * 2);
+		ctx.arc(posx / 100 * width, posy / 100 * height, this.size.x / 100 * height, 0, Math.PI * 2);
 		ctx.fillStyle = color;
 		ctx.strokeStyle = color;
 		ctx.fill();
@@ -77,19 +85,20 @@ export class game
 		this.gameState = "waiting";
 	};
 
-	update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleRcx, paddleRcy, paddleRsx, paddleRsy, ballcx, ballcy, ballsx, ballsy)
+	update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleLdy, paddleRcx, paddleRcy, paddleRsx, paddleRsy, paddleRdy, ballcx, ballcy, ballsx, ballsy, balldx, balldy, frameTime)
 	{
-		this.paddleL.update(paddleLcx, paddleLcy, paddleLsx, paddleLsy);
-		this.paddleR.update(paddleRcx, paddleRcy, paddleRsx, paddleRsy);
-		this.ball.update(ballcx, ballcy, ballsx, ballsy);
+		this.paddleL.update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleLdy);
+		this.paddleR.update(paddleRcx, paddleRcy, paddleRsx, paddleRsy, paddleRdy);
+		this.ball.update(ballcx, ballcy, ballsx, ballsy, balldx, balldy);
+		this.frameTime = frameTime;
 	};
 
 	draw(canvas, ctx, frameTime)
 	{
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		this.paddleL.draw(canvas, ctx, "#FFFBFC");
-		this.paddleR.draw(canvas, ctx, "#FFFBFC");
-		this.ball.draw(canvas, ctx, "#FFFBFC");
+		this.paddleL.draw(canvas, ctx, "#FFFBFC", frameTime);
+		this.paddleR.draw(canvas, ctx, "#FFFBFC", frameTime);
+		this.ball.draw(canvas, ctx, "#FFFBFC", frameTime);
 		console.log('I am drawing');
 	};
 }
@@ -121,7 +130,7 @@ function compteARebour(number)
 
 function gameUpdate(data, game)
 {
-	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.ballcx, data.ballcy, data.ballsx, data.ballsy);
+	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleLdy, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.paddleRdy, data.ballcx, data.ballcy, data.ballsx, data.ballsy, data.balldx, data.balldy, Date.now());
 	console.log('game updated');
 }
 
