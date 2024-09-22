@@ -91,8 +91,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 										"ballsy": self.ball.size.y,
 										"balldx": self.ball.dir.x,
 										"balldy": self.ball.dir.y,
-										"ballvx": self.ball.vel.x,
-										"ballvy": self.ball.vel.y,
+										"balla": self.ball.angle,
+										"ballv": self.ball.vel,
 										"paddleLcx": self.paddleL.coor.x,
 										"paddleLcy": self.paddleL.coor.y,
 										"paddleLsx": self.paddleL.size.x,
@@ -135,8 +135,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.ball.size.y = event["ballsy"]
 			self.ball.dir.x = event["balldx"]
 			self.ball.dir.y = event["balldy"]
-			self.ball.vel.x = event["ballvx"]
-			self.ball.vel.y = event["ballvy"]
+			self.ball.angle = event["balla"]
+			self.ball.vel = event["ballv"]
 			self.paddleL.coor.x = event["paddleLcx"]
 			self.paddleL.coor. y = event["paddleLcy"]
 			self.paddleL.size.x = event["paddleLsx"]
@@ -215,7 +215,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		try:
 			print(self.username, ': bisous de set_game', flush=True)
 			room = Room.objects.get(url=self.room_name)
-			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), Vec2(2, 	3), Vec2(1, 0.2))
+			self.ball = Ball(Vec2(48, 48), Vec2(4, 4), 45, 2)
 			self.paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 1.5, 0)
 			self.paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), 1.5, room.difficulty)
 			self.scoreL = 0
