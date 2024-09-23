@@ -14,5 +14,6 @@ urlpatterns = [
 	path('deleteroom/<str:pk>', views.deleteRoom),
 	path('getindex/', views.getIndex),
 	path('getlobby/<str:pk>', views.getLobby),
+	path('test/', views.test),
 
 ]

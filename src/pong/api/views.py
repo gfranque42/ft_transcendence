@@ -4,6 +4,7 @@ from app.models import Player, Room
 from .serializers import PlayerSerializer, RoomSerializer
 import os
 from django.shortcuts import render
+from django.http import JsonResponse
 
 @api_view(['GET'])
 def	getPlayer(request):
@@ -88,3 +89,6 @@ def	getLobby(request, pk):
 	# room_name = request.headers.get["room_name"]
 	return (render(request, "pong.html", {"room_name": pk}))
 
+def	test(request):
+	data = {'status': 'ok'}
+	return JsonResponse(data)

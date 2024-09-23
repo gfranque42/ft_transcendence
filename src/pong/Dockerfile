@@ -3,7 +3,7 @@ FROM alpine:3.19
 RUN apk update
 
 RUN apk add build-base postgresql bash\
-	python3-dev py3-pip redis --no-cache
+	python3-dev py3-pip redis curl --no-cache
 
 WORKDIR /project
 
