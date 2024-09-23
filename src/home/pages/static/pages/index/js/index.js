@@ -6,6 +6,8 @@ import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
 import Profile from "../views/profile.js";
 
+
+import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
@@ -207,6 +209,7 @@ const router = async () => {
     function UnFinishedOTP() {
         window.addEventListener('beforeunload', function () {
             const otpPopup = document.getElementById('profile-otp-code');
+            logout(UserToken);
         
             if (window.getComputedStyle(otpPopup).display == 'block') {
                 view.profileUserPost(UserToken, "", "", "00");
@@ -275,7 +278,7 @@ const router = async () => {
         profileForm.forEach((form) => {
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
-                // console.log(event.submitter);
+                console.log(event.submitter);
                 const formElement = event.target;
                 const accept = formElement.querySelector('#reject');
                 console.log(accept);
@@ -291,9 +294,15 @@ const router = async () => {
                         view.friendRequest(UserToken, true,  event.submitter.value)
                     else
                         view.friendRequest(UserToken, false,  event.submitter.value)
+                    navigateTo("/profile/")
                 } else if (event.submitter.id == 'friend-form') {
                     friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
+                } else if (event.submitter.id == 'unfriend') {
+                    console.log("unfriend");
+                    view.deleteFriend(UserToken, event.submitter);
+                    navigateTo("/profile/")
                 } else {
+                    console.log("last")
                     const email = document.querySelector('input[name="email"]');
                     const phone_number = document.querySelector('input[name="phone_number"]');
                     const otp = document.querySelector('input[name="otp"]');
@@ -371,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target.matches('#disconnect'))
         {
             eraseCookie("token");
-            UserToken = null;
+            UserToken = logout(UserToken);
             document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
         }
         // Get references to the elements

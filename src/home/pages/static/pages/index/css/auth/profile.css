@@ -308,6 +308,7 @@ button, input, optgroup, select, textarea {
     font-family: 'Oswald';
     align-self: center;
     margin-left: 10px;
+    margin-right: 5px;
 }
 
 .btn-friend-request{
@@ -410,4 +411,101 @@ button, input, optgroup, select, textarea {
 
 #friend-request {
     margin-top: 1rem;
+}
+
+.loser-no-friends {
+    text-align: center;
+    font-family: 'OSWALD';
+    font-weight: 300;
+}
+
+.dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+    align-self: center;
+}
+
+.green-background {
+    background-color: #53917E;
+}
+
+.red-background {
+    background-color: #F08080;
+}
+
+.green-online {
+    color:#53917E;
+    font-size: 0.8rem;
+}
+
+.red-offline {
+    color: #F08080;
+    font-size: 0.8rem;
+}
+
+.match-history-card {
+    display: flex;
+}
+
+.match-game-type-pong {
+    height: 4.5vh;
+}
+
+.match-users {
+    font: 1.4rem 'Oswald';
+}
+
+.match-history-card {
+    background-color: #53917E;
+    width: 100%;
+    padding: 1.2vh;
+    border-radius: 9px;
+    margin: 1vh 0;
+}
+
+.match-information {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.match-history-win {
+    /* padding: 0.5vh 0.7vw; */
+    align-self: center;
+    border-radius: 7px;
+    color: #53917E;
+    font: 1.8rem 'Oswald';
+}
+
+
+.match-history-loss {
+    /* padding: 0.5vh 0.7vw; */
+    align-self: center;
+    border-radius: 7px;
+    color: #F08080;
+    font: 1.8rem 'Oswald';
+}
+
+.match-status-card{
+    background: #FFFBFC;
+    align-self: center;
+    width: 3vw;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.match-score {
+    font: 1rem 'Oswald';
+    margin-left: 0.1vw;
+}
+
+.match-player-info {
+    color:#FFFBFC;
+    margin-left: 1vw;
 }

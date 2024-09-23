@@ -9,21 +9,86 @@ from django.shortcuts import render
 
 from django.http import JsonResponse    
 
+
+from django.contrib.auth import authenticate, login
+
 from .urls import CheckForTFA
-from .utils import generate_qr_code, GetFriendRequests
-from .models import UserProfile, Friend_request
+from .utils import generate_qr_code, GetFriendRequests, CreateToken, CheckToken
+from .models import UserProfile, Friend_request, GameHistory
 from .forms import SendFriendForm, verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
-from .serializers import UserSerializer, FriendRequestSerializer
+from .serializers import UserSerializer, FriendRequestSerializer, GamesSerializer
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
+# from jwt import ExpiredSignatureError, InvalidTokenError
 
-import jwt, datetime, pyotp, json
+
+import jwt, pyotp, json
+
+
+# !GAMES
+
+class Games(APIView):
+    def post(self, request):
+        winner_id = request.data['winner_id']
+        loser_id = request.data['loser_id']
+        score_winner = request.data['score_winner']
+        score_loser = request.data['score_loser']
+        game_type = request.data['game_type']
+        try :
+            winner = UserProfile.objects.get(id=winner_id)
+            loser = UserProfile.objects.get(id=loser_id)
+            game_history = GameHistory.objects.create(winner=winner,
+                                                     loser=loser,
+                                                      score_winner=score_winner,
+                                                      score_loser=score_loser,
+                                                      game_type=game_type)
+            print (game_history)
+            game_history.save()
+            serializer = GamesSerializer(game_history)
+
+            return Response({'success': 'Game history created', 'history': serializer.data}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+ 
+
+# !USER
+
+class UserStatus(APIView):
+    def get(self, request):
+        auth_header = request.headers.get('Authorization')
+        try:
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            user = UserProfile.objects.get(id=user_id)
+            user.status = not user.status
+            user.save()
+            return Response({'success': 'Status changed'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
 # !FRIEND
+
+class Friend(APIView):
+    def delete(self, request):
+        auth_header = request.headers.get('Authorization')
+        try: 
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            friend_id = request.data.get('friend_id')
+            friend = UserProfile.objects.get(id=friend_id)
+            user = UserProfile.objects.get(id=user_id)
+            user.friends.remove(friend)
+            friend.friends.remove(user)
+            return Response({'Succes': "You lost a friend :'("}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class FriendRequest(APIView):
     def post(self, request):
@@ -31,9 +96,13 @@ class FriendRequest(APIView):
         print(formFriend)
         from_user_id = formFriend.cleaned_data['from_user_id']
         to_user_id = formFriend.cleaned_data['to_user_id']
+        if (to_user_id == from_user_id):
+            return Response({'success': 'Find friends'}, status=status.HTTP_201_CREATED)
         try:
             from_user = UserProfile.objects.get(id=from_user_id)
             to_user = UserProfile.objects.get(id=to_user_id)
+            if (to_user.friends.filter(id=from_user_id).exists()):
+                return Response({'success': 'Already Friends'}, status=status.HTTP_400_BAD_REQUEST)
             friend_request = Friend_request(from_user=from_user, to_user=to_user)
             friend_request.save()
             return Response({'success': 'Invite sent'}, status=status.HTTP_201_CREATED)
@@ -194,11 +263,37 @@ class Profile(APIView):
         friend_requests=GetFriendRequests(userProfile)
         # print("here\n\n\n\n", formSMS)
         qr_code_base64 = generate_qr_code(userProfile)
+        print(userProfile.is_logged_in())
+        print("stan is loved")
+        for item in  userProfile.friends.all():
+            print("\n\n\n\n")
+        #     print("friend")
+        #     print(item.user.email)
+        #     print(item.user)
+            print(userProfile.is_logged_in())
+            print(userProfile.user.is_authenticated)
+            print("status: ", item.user.is_authenticated)
+            print("has reloaded")
+            print("\n\n\n\n")
 
-        # for userProfile_key, userProfile_value in friend_requests.items:
-        print("\n\n\n", userProfile.friends.all(), "\n\n\n\n")
-        print("\n\n\nhey\n\n\n\n")
-        
+
+        friends = userProfile.friends.all()
+
+        # Create a list of friends with their login status
+        friends_with_status = []
+        for friend in friends:
+            is_logged_in = CheckToken(friend.jwt)  # Call the method here
+            friends_with_status.append({
+                'friend': friend,
+                'is_logged_in': is_logged_in
+            })
+
+
+
+            # for userProfile_key, userProfile_value in friend_requests.items:
+            print("\n\n\n", userProfile.friends.all(), "\n\n\n\n")
+            print("\n\n\nhey\n\n\n\n")
+            
         return render(request, "profile.html", {"friend_requests": friend_requests,
                                                 "user": userProfile,
                                                 "formSendFriend": formSendFriend,
@@ -209,7 +304,10 @@ class Profile(APIView):
                                                 "formAvatar":formAvatar,
                                                 "formUsername":formUsername,
                                                 'qr_code_base64': qr_code_base64,
-                                                'friends': userProfile.friends.all()})
+                                                'friends': friends_with_status,
+                                                "token": CreateToken(userProfile),
+                                                "games": userProfile.games()
+                                                })
             
     
     def patch(self, request):
@@ -288,6 +386,28 @@ class VerifyOTPView(APIView):
         # print(form.errors)
         return Response({'error': 'Form invalid.', 'form':form.cleaned_data})        
 
+
+# !LOGOUT
+
+
+class LogOut(APIView):
+    def get(self, request):
+        auth_header = request.headers.get('Authorization')
+        print("logging out...")
+        try:
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            userProfile = UserProfile.objects.get(id=user_id)
+            userProfile.jwt = "!".join(userProfile.jwt)
+            userProfile.save()
+            return Response({'Success': 'User logged out'}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token is expired'}, status=status.HTTP_404_NOT_FOUND)
+
+
 # !LOGIN
 
 class LoginForm(APIView):
@@ -301,22 +421,18 @@ class LoginForm(APIView):
 
     def post(self, request):
         try:
-            user = User.objects.get(username=request.data['username'])
-            if not user.check_password(request.data['password']):
+            user = authenticate(username=request.data['username'], password=request.data['password'])
+            if not user:
                 return Response({"detail": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-            
-            payload = {
-                'id': user.id,
-                'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
-                'iat': datetime.datetime.utcnow(),
-            }
-            token = jwt.encode(payload, 'secret', algorithm='HS256')
+            login(request, user)
+            userprofile = UserProfile.objects.get(user=user)
             serializer = UserSerializer(instance=user)
-            return Response({"token": token, "user": serializer.data})
+            return Response({"token": CreateToken(userprofile), "user": serializer.data})
         except User.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         except KeyError:
             return Response({"detail": "Username and password required."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 # !REGISTER
 
@@ -330,19 +446,12 @@ class RegisterForm(APIView):
     def post(self, request):
         form = CreateUserForm(request.data)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(request.data['password1'])  # Set the password correctly
+            user = User.objects.create_user(form.cleaned_data["username"], form.cleaned_data["email"], form.cleaned_data["password1"])
             user.save()
             userprofile = UserProfile.objects.create(user=user)
-            payload = {
-                'id': user.id,
-                'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
-                'iat': datetime.datetime.utcnow(),
-            }
-            token = jwt.encode(payload, 'secret', algorithm='HS256')
 
             serializer = UserSerializer(instance=user)
-            return Response({"token": token, "uuid": userprofile.uuid, "user": serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"token": CreateToken(userprofile), "uuid": userprofile.uuid, "user": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'form': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])

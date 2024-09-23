@@ -171,6 +171,33 @@ export default class extends abstractviews {
     }
 
 
+    async deleteFriend(UserToken, friend) {
+        const token = await UserToken;
+        
+        const body = {};
+
+        // Always include the CSRF token and token
+        body["token"] = await token;
+        body["friend_id"] = friend.value;
+
+        const response = await fetch('https://localhost:8083/auth/friends', {
+            method: 'DELETE',
+            body: JSON.stringify(body),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken,
+                "Authorization": "Token " + token
+            },
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        return data;
+    }
+
+
     setTitle(title) {
         document.title = title;
     }

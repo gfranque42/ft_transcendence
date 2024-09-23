@@ -140,8 +140,30 @@
             
         </div>
 
-        <div class="col-sm">
-            heyt
+        <div class="col-sm-4">
+            {% for item in games %}
+            <div class="match-history-card">
+                {% if item.game_type == "pong" %}
+                    <img class="match-game-type-pong" src="{% static 'pages/Group.svg' %}" alt="Pong">
+                {% else %}
+                    <img class="" src="{% static 'pages/sudoku.svg' %}" alt="Pong">
+                {% endif %}
+                <div class="match-information">
+                    <div class="match-player-info">
+                        <div class="match-users">{{item.winner}} vs {{item.loser}}</div>
+                        <div class="match-score">{{item.score_winner}} / {{item.score_loser}}</div>
+                    </div>
+                    <div class="match-status-card">
+                    {% if item.winner == user %}
+                        <div class="match-history-win">WIN</div>
+                    {% else %}
+                        <div class="match-history-loss">LOSS</div>
+                    {% endif %}
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
         </div>
         
         
@@ -152,23 +174,41 @@
         
         <div class="col-sm">
             <div class="add-2fa">Friend List</div>
-            {% for item in  friends %}
+            {% if friends %}
+
+            {% for item in friends %}
             <div class="friends friend-request-scroll">
                 
                 
-                <div class="friend-card">
-                    <img src="http://localhost:8000{{ item.avatar.url }}" alt="{{ item.from_user.user.username }}'s avatar" class="friend-avatar" />
+                <form class="friend-card">
+                    <img src="http://localhost:8000{{ item.friend.avatar.url }}" alt="{{ item.friend.from_user.user.username }}'s avatar" class="friend-avatar" />
                     <div style="width:100%">
-                        <div class="friend-username">{{ item }}</div>
+                        <div class="d-flex justify-content-between">
+                            <div class="friend-username">{{ item.friend }}</div>
+                            <div class="d-flex">                                 
+                                {% if item.is_logged_in %}
+                                    <div class="me-1 friend-username  green-online">Online</div>
+                                    <div class="ms-1 dot green-background"></div>
+                                {% else %}
+                                    <div class="friend-username red-offline">Offline</div>
+                                    <div class="dot red-background"></div>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="friend-request-buttons">
-                            <button id="fight" type="submit" value="{{item.id}}" class="btn-friend-request btn-login">Challenge</button>
-                            <button id="unfriend" type="submit" value="{{item.id}}" class="btn-friend-request btn-login">Unfriend</button>
+                            <button id="fight" type="submit" value="{{item.friend.id}}" class="btn-friend-request btn-login">Challenge</button>
+                            <button id="unfriend" type="submit" value="{{item.friend.id}}" class="btn-friend-request btn-login">Unfriend</button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
             {% endfor %}
             
+            {% else %}
+                <div class="loser-no-friends">No Friends :(</div>
+            {% endif %}
+
+
             <!-- FRIEND REQUEST -->
             
             

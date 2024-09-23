@@ -102,7 +102,7 @@ Content-Type: application/json
 
 GET http://localhost:8000/auth/profile
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI2NjYwOTgyLCJpYXQiOjE3MjY2NTg0NjJ9.S4uskbVW2qZxp_xfc8-hmx66OdC0JYKC-exnNlRLf9Y 
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzI3MDg3NjQ0LCJpYXQiOjE3MjcwODUxMjR9.96FbtEiff3_G2-K38spHG7OBpE7BP9lfa86vwjCeQEE
 
 {
 }
@@ -222,6 +222,41 @@ POST http://localhost:8000/auth/send-friend-request
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZXhwIjoxNzI2ODQzODMyLCJpYXQiOjE3MjY4NDEzMTJ9.wSzskejLHws-7Fhwcy9CAMcnldKnnIWFCsgE3lSD95o",
-    "to_user": "a91997b1-3ea6-49f9-b1ce-7384b17e1b69"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZXhwIjoxNzI3MDg5MDIyLCJpYXQiOjE3MjcwODY1MDJ9.K6an549VnuaA03Jn1x64GvW2AV50gPbxOoQ8b_ooCZs",
+    "to_user": "dfa490fc-ad33-4d0d-bc9a-7b586ca7dff6"
 }
+
+###
+PATCH http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI2OTM3NDc5LCJpYXQiOjE3MjY5MzQ5NTl9.bKqg19D4G3R3IQv6OUN55BZQuiA9J3JSmmpEPWTm8Ys",
+    "from_user_id": "3"
+}
+
+###
+
+POST http://localhost:8000/auth/friends
+Content-Type: application/json
+
+{
+    "username": "stn",
+    "email": "baneg2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+
+POST http://localhost:8000/auth/games
+Content-Type: application/json
+
+{
+    "winner_id": "2",
+    "loser_id": "1",
+    "score_winner": "11",
+    "score_loser": "0",
+    "game_type": "pong"
+}
+###

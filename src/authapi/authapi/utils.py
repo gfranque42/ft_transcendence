@@ -3,14 +3,44 @@ from .models import  Friend_request
 from .forms import AnswerFriendForm
 
 from django.conf import settings
-import json
+import json, datetime, pyotp, qrcode, base64, jwt
+
+from jwt import ExpiredSignatureError, InvalidTokenError
+
 from django.core.mail import send_mail
-import pyotp, qrcode
 from io import BytesIO
 from django.http import HttpResponse
 from sms import send_sms
 
 import base64
+from django.contrib.sessions.models import Session
+from django.utils import timezone
+
+
+def CheckToken(token):
+    try:
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        return True    
+    except ExpiredSignatureError:
+        # The token has expired
+        return False
+
+    except InvalidTokenError:
+        # The token is invalid (wrong signature, wrong secret, malformed token, etc.)
+        return False
+
+
+def CreateToken(userProfile):
+    user = userProfile.user
+    payload = {
+        'id': user.id,
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
+        'iat': datetime.datetime.utcnow(),
+    }
+    token = jwt.encode(payload, 'secret', algorithm='HS256')
+    userProfile.jwt = token
+    userProfile.save()
+    return (token)
 
 def JsonItieator(json_data):
     for key, value in json_data.items():
