@@ -51,12 +51,12 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			if (self.username == self.player1Name):
 				try:
 					if ("move" in text_data_json):
-						self.paddleL.dir = 0
+						self.paddleL.key = 0
 						if (text_data_json["move"] == "up"):
-							self.paddleL.dir = -self.paddleL.vel
+							self.paddleL.key = -self.paddleL.vel
 							# self.paddleL.coor. y = self.paddleL.coor.y - self.paddleL.vel
 						elif (text_data_json["move"] == "down"):
-							self.paddleL.dir = self.paddleL.vel
+							self.paddleL.key = self.paddleL.vel
 							# self.paddleL.coor. y = self.paddleL.coor.y + self.paddleL.vel
 				except KeyError as e:
 					print(f"KeyError: {e}")
@@ -65,12 +65,12 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			else:
 				try:
 					if ("move" in text_data_json):
-						self.paddleR.dir = 0
+						self.paddleR.key = 0
 						if (text_data_json["move"] == "up"):
-							self.paddleR.dir = -self.paddleR.vel
+							self.paddleR.key = -self.paddleR.vel
 							# self.paddleR.coor. y = self.paddleR.coor.y - self.paddleR.vel
 						elif (text_data_json["move"] == "down"):
-							self.paddleR.dir = self.paddleR.vel
+							self.paddleR.key = self.paddleR.vel
 							# self.paddleR.coor. y = self.paddleR.coor.y + self.paddleR.vel
 				except KeyError as e:
 					print(f"KeyError: {e}")
@@ -98,12 +98,14 @@ class	PongConsumer(AsyncWebsocketConsumer):
 										"paddleLsx": self.paddleL.size.x,
 										"paddleLsy": self.paddleL.size.y,
 										"paddleLd": self.paddleL.dir,
+										"paddleLk": self.paddleL.key,
 										"paddleLv": self.paddleL.vel,
 										"paddleRcx": self.paddleR.coor.x,
 										"paddleRcy": self.paddleR.coor.y,
 										"paddleRsx": self.paddleR.size.x,
 										"paddleRsy": self.paddleR.size.y,
 										"paddleRd": self.paddleR.dir,
+										"paddleRk": self.paddleR.key,
 										"paddleRv": self.paddleR.vel,
 										"scoreL": self.scoreL,
 										"scoreR": self.scoreR})
@@ -142,12 +144,14 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.paddleL.size.x = event["paddleLsx"]
 			self.paddleL.size.y = event["paddleLsy"]
 			self.paddleL.dir = event["paddleLd"]
+			self.paddleL.key = event["paddleLk"]
 			self.paddleL.vel = event["paddleLv"]
 			self.paddleR.coor.x = event["paddleRcx"]
 			self.paddleR.coor. y = event["paddleRcy"]
 			self.paddleR.size.x = event["paddleRsx"]
 			self.paddleR.size.y = event["paddleRsy"]
 			self.paddleR.dir = event["paddleRd"]
+			self.paddleR.key = event["paddleRk"]
 			self.paddleR.vel = event["paddleRv"]
 			self.scoreL = event["scoreL"]
 			self.scoreR = event["scoreR"]
@@ -247,6 +251,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 											"scoreL": self.scoreL,
 											"scoreR": self.scoreR}))
 			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
+			print(self.username, ': paddleLdir = ', self.paddleL.dir, flush=True)
 			# FPS choix a tester, pour l'instant sleep(0.2)
 			await asyncio.sleep(1 / 20)			
 		elif (message == "game is finished"):

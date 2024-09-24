@@ -25,14 +25,17 @@ class	Ball:
 		self.coor.x = 100 / 2 - self.size.x / 2
 		self.coor.y = 100 / 2 - self.size.y / 2
 		self.vel = self.startvel
-		self.startangle = 360 - self.startangle
+		self.startangle = self.startangle + 180
 		self.angle = self.startangle
+		self.dir.x = 0
+		self.dir.y = 0
 
 class	Paddle:
 	def	__init__(self, coor, size, vel, ai):
 		self.coor = coor
 		self.size = size
 		self.dir = 0
+		self.key = 0
 		self.vel = vel
 		self.ai = ai
 	def	update_ai(self, Ball):
@@ -56,6 +59,7 @@ class	Paddle:
 				self.dir = -self.vel
 	def update(self):
 		self.coor.y += self.dir
+		self.dir = self.key
 
 def	CheckPaddleCollisionWithEdge(Paddle):
 	if (Paddle.coor.y + Paddle.dir <= 0):
@@ -64,41 +68,48 @@ def	CheckPaddleCollisionWithEdge(Paddle):
 		Paddle.dir = 100 - Paddle.size.y - Paddle.coor.y
 
 def	CheckBallCollisionWithEdge(Ball):
-	if (Ball.coor.y <= 0):
-		Ball.coor.y = 0
+	if (Ball.coor.y + Ball.dir.y <= 2):
+		newDir = (Ball.coor.y - 2) / -Ball.dir.y
+		Ball.dir.x *= newDir
+		Ball.dir.y *= newDir
 		Ball.angle = 360 - Ball.angle
-	elif (Ball.coor.y + Ball.size.y >= 100):
-		Ball.coor.y = 100 - Ball.size.y
+	elif (Ball.coor.y + Ball.size.y + Ball.dir.y >= 98):
+		newDir = (98 - Ball.coor.y - Ball.size.y) / Ball.dir.y
+		Ball.dir.x *= newDir
+		Ball.dir.y *= newDir
 		Ball.angle = 360 - Ball.angle
 
 def	CheckBallCollisionWithPaddle(Ball, Paddle, Score):
 	if (Ball.coor.x < 100 / 2 and Paddle.coor.x < 100 / 2):
-		if (Ball.coor.x < Paddle.coor.x + Paddle.size.x):
-			if (Ball.coor.y + Ball.size.y >= Paddle.coor.y and Ball.coor.y <= Paddle.coor.y + Paddle.size.y):
-				hitZone = (Ball.coor.y + Ball.size.y / 2 - Paddle.coor.y) / Paddle.size.y
+		if (Ball.coor.x + Ball.dir.x < Paddle.coor.x + Paddle.size.x):
+			if (Ball.coor.y + Ball.size.y + Ball.dir.y >= Paddle.coor.y + Paddle.dir and Ball.coor.y + Ball.dir.y <= Paddle.coor.y + Paddle.dir + Paddle.size.y):
+				hitZone = (Ball.coor.y + Ball.dir.y + Ball.size.y / 2 - Paddle.coor.y + Paddle.dir) / Paddle.size.y
 				Ball.angle = 90 + (hitZone - 0.5) * 120
-				Ball.coor.x = Paddle.coor.x + Paddle.size.x
+				newDir = (Paddle.coor.x + Paddle.size.x - Ball.coor.x) / Ball.dir.x
+				Ball.dir.x *= newDir
+				Ball.dir.y *= newDir
 				Ball.vel += 0.1
 			else:
-				hitZone = (Ball.coor.y + Ball.size.y / 2 - Paddle.coor.y) / Paddle.size.y
-				Ball.angle = 90 + (hitZone - 0.5) * 120
 				Ball.reset()
 				Score += 1
 	if (Ball.coor.x > 100 / 2 and Paddle.coor.x > 100 / 2):
-		if (Ball.coor.x + Ball.size.x > Paddle.coor.x):
-			if (Ball.coor.y + Ball.size.y >= Paddle.coor.y and Ball.coor.y <= Paddle.coor.y + Paddle.size.y):
-				hitZone = (Ball.coor.y + Ball.size.y / 2 - Paddle.coor.y) / Paddle.size.y
+		if (Ball.coor.x + Ball.size.x + Ball.dir.x > Paddle.coor.x):
+			if (Ball.coor.y + Ball.size.y + Ball.dir.y >= Paddle.coor.y + Paddle.dir and Ball.coor.y + Ball.dir.y <= Paddle.coor.y + Paddle.dir + Paddle.size.y):
+				hitZone = (Ball.coor.y + Ball.dir.y + Ball.size.y / 2 - Paddle.coor.y + Paddle.dir) / Paddle.size.y
 				Ball.angle = 90 + (hitZone - 0.5) * 120
-				Ball.coor.x = Paddle.coor.x
+				newDir = (Paddle.coor.x - Ball.coor.x - Ball.size.x) / Ball.dir.x
+				Ball.dir.x *= newDir
+				Ball.dir.y *= newDir
 				Ball.vel += 0.1
 			else:
-				hitZone = (Ball.coor.y + Ball.size.y / 2 - Paddle.coor.y) / Paddle.size.y
-				Ball.angle = 90 + (hitZone - 0.5) * 120
 				Ball.reset()
 				Score += 1
 	return Score
 
 def	gameUpdate(PaddleL, PaddleR, Ball, ScoreL, ScoreR):
+	PaddleL.update()
+	PaddleR.update()
+	Ball.update()
 	PaddleL.update_ai(Ball)
 	PaddleR.update_ai(Ball)
 	Ball.update_dir()
@@ -107,7 +118,4 @@ def	gameUpdate(PaddleL, PaddleR, Ball, ScoreL, ScoreR):
 	CheckBallCollisionWithEdge(Ball)
 	ScoreR = CheckBallCollisionWithPaddle(Ball, PaddleL, ScoreR)
 	ScoreL = CheckBallCollisionWithPaddle(Ball, PaddleR, ScoreL)
-	PaddleL.update()
-	PaddleR.update()
-	Ball.update()
 	return PaddleL, PaddleR, Ball, ScoreL, ScoreR
