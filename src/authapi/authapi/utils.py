@@ -79,7 +79,7 @@ def CreateToken(userProfile):
     user = userProfile.user
     payload = {
         'id': user.id,
-        'exp': datetime.datetime.now() + datetime.timedelta(minutes=2),
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
         'iat': datetime.datetime.utcnow(),
     }
     token = jwt.encode(payload, 'secret', algorithm='HS256')
