@@ -5,6 +5,8 @@ import Login from "../views/login.js";
 import Register from "../views/register.js";
 import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
+import SudokuWaiting from "../views/waiting_sudoku.js";
+
 
 import { initialize } from "./sudoku/sudoku.js";
 import {setBoard} from "./sudoku/board.js";
@@ -68,6 +70,7 @@ const router = async () => {
         { path: "/login/", view: Login },
         { path: "/register/", view: Register },
         { path: "/sudoku/", view: Sudoku },
+        { path: "/sudoku/waiting-room", view: SudokuWaiting },
 		{ path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];

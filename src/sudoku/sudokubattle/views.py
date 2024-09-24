@@ -58,3 +58,7 @@ def sudoku_board(request, room_url):
 		return render(request, 'sudokubattle/sudoku.html', context)
 	else:
 		return HttpResponse(status=405)
+
+def waiting_room(request):
+	if request.method == 'GET':
+		return render(request, "sudokubattle/waiting.html")
