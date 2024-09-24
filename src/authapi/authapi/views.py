@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 
 from .urls import CheckForTFA
-from .utils import generate_qr_code, GetFriendRequests, CreateToken, CheckToken
+from .utils import generate_qr_code, GetFriendRequests, gameStats, CreateToken, CheckToken
 from .models import UserProfile, Friend_request, GameHistory
 from .forms import SendFriendForm, verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
 from .serializers import UserSerializer, FriendRequestSerializer, GamesSerializer
@@ -263,26 +263,14 @@ class Profile(APIView):
         friend_requests=GetFriendRequests(userProfile)
         # print("here\n\n\n\n", formSMS)
         qr_code_base64 = generate_qr_code(userProfile)
-        print(userProfile.is_logged_in())
-        print("stan is loved")
-        for item in  userProfile.friends.all():
-            print("\n\n\n\n")
-        #     print("friend")
-        #     print(item.user.email)
-        #     print(item.user)
-            print(userProfile.is_logged_in())
-            print(userProfile.user.is_authenticated)
-            print("status: ", item.user.is_authenticated)
-            print("has reloaded")
-            print("\n\n\n\n")
+        print("\n\n\n", gameStats(userProfile), "\n\n\n\n")
 
-
-        friends = userProfile.friends.all()
+        # friends = userProfile.friends.all()
 
         # Create a list of friends with their login status
         friends_with_status = []
-        for friend in friends:
-            is_logged_in = CheckToken(friend.jwt)  # Call the method here
+        for friend in userProfile.friends.all():
+            is_logged_in = CheckToken(friend)  # Call the method here
             friends_with_status.append({
                 'friend': friend,
                 'is_logged_in': is_logged_in
@@ -291,8 +279,6 @@ class Profile(APIView):
 
 
             # for userProfile_key, userProfile_value in friend_requests.items:
-            print("\n\n\n", userProfile.friends.all(), "\n\n\n\n")
-            print("\n\n\nhey\n\n\n\n")
             
         return render(request, "profile.html", {"friend_requests": friend_requests,
                                                 "user": userProfile,
@@ -306,7 +292,8 @@ class Profile(APIView):
                                                 'qr_code_base64': qr_code_base64,
                                                 'friends': friends_with_status,
                                                 "token": CreateToken(userProfile),
-                                                "games": userProfile.games()
+                                                "games": userProfile.games(),
+                                                "stats": gameStats(userProfile)
                                                 })
             
     
@@ -455,6 +442,17 @@ class RegisterForm(APIView):
         return Response({'form': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
+def get_token(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"token": CreateToken(userProfile) }, status=status.HTTP_201_CREATED)
+    except jwt.ExpiredSignatureError:
+        return Response({"token": None}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
 def test_token(request):
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(' ')[1]
@@ -464,8 +462,11 @@ def test_token(request):
 
 @api_view(['GET'])
 def test_OTP(request):
-    auth_header = request.headers.get('Authorization')
-    token = auth_header.split(' ')[1]
-    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-    userProfile = UserProfile.objects.get(id=payload['id'])
-    return Response({"method": any(userProfile.tfa.values())})
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"method": any(userProfile.tfa.values())})
+    except jwt.ExpiredSignatureError:
+        return Response({"method": False}, status=status.HTTP_200_OK)

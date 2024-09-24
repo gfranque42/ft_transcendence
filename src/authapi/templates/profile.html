@@ -6,8 +6,8 @@
 
 <div class="navbar">
     <a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
-    <a href="/" class="navbar-content" id="home" data-link>HOME</a>
-    <a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
+    <a href="/" class="navbar-content navbar-home" id="home" data-link>HOME</a>
+    <a href="/register/" class="navbar-content navbar-user" id="user" data-link>REGISTER</a>
 </div>
 
 <!-- Friend Form Request -->
@@ -100,7 +100,7 @@
 
 <!-- VISIBLE PAGE -->
 
-<div class="container" id="click-off">
+<div class="container-fluid" id="click-off">
     <div class="row">
         <div class="col-sm">
             <form method="POST" class="form-profile">
@@ -141,34 +141,87 @@
         </div>
 
         <div class="col-sm-4">
+            <div class="scroll-match-history">
             {% for item in games %}
-            <div class="match-history-card">
                 {% if item.game_type == "pong" %}
+                <div class="match-history-card match-history-card-pong">
                     <img class="match-game-type-pong" src="{% static 'pages/Group.svg' %}" alt="Pong">
                 {% else %}
+                <div class="match-history-card match-history-card-sudoku">
+                
                     <img class="" src="{% static 'pages/sudoku.svg' %}" alt="Pong">
                 {% endif %}
-                <div class="match-information">
-                    <div class="match-player-info">
-                        <div class="match-users">{{item.winner}} vs {{item.loser}}</div>
-                        <div class="match-score">{{item.score_winner}} / {{item.score_loser}}</div>
+                    <div class="match-information">
+                        <div class="match-player-info">
+                            {% if user == item.winner %}
+                            <div class="match-users">{{item.winner}} vs {{item.loser}}</div>
+                            <div class="match-score">{{item.score_winner}} / {{item.score_loser}}</div>
+                            {% else %}
+                            <div class="match-users">{{item.loser}} vs {{item.winner}}</div>
+                            <div class="match-score">{{item.score_loser}} / {{item.score_winner}}</div>
+                            {% endif %}
+                            
+                        </div>
+                        <div class="match-status-card">
+                        {% if item.winner == user %}
+                            <div class="match-history-win">WIN</div>
+                        {% else %}
+                            <div class="match-history-loss">LOSS</div>
+                        {% endif %}
+                        </div>
                     </div>
-                    <div class="match-status-card">
-                    {% if item.winner == user %}
-                        <div class="match-history-win">WIN</div>
-                    {% else %}
-                        <div class="match-history-loss">LOSS</div>
-                    {% endif %}
-                    </div>
-
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
         
         
         <div class="col-sm">
-            hey  
+            <div class="stats-card">
+                <div class="stats">
+                    <div>Games: played</div>
+                    <div>{{stats.0.games_played}}</div>
+                </div>
+                <div class="stats">
+                    <div>Won: </div>
+                    <div>{{stats.0.games_won}}</div>
+                </div>
+                <div class="stats">
+                    <div>Lost: </div>
+                    <div>{{stats.0.games_lost}}</div>
+                </div>
+                <div class="stats">
+                    <div>Ratio: </div>
+                    <div>{{stats.0.win_ratio}}</div>
+                </div>
+                <div class="stats">
+                    <div>Greatest Rival: </div>
+                </div>
+
+                
+                <form class="friend-card">
+                    <img src="http://localhost:8000{{ stats.0.rival.user.avatar.url }}" alt="{{ stats.0.rival.user.user.username }}'s avatar" class="friend-avatar" />
+                    <div style="width:100%">
+                        <div class="d-flex justify-content-between">
+                            <div class="friend-username">{{ stats.0.rival.user }}</div>
+                            <div class="d-flex">                                 
+                                {% if stats.0.rival.is_logged_in %}
+                                    <div class="me-1 friend-username  green-online">Online</div>
+                                    <div class="ms-1 dot green-background"></div>
+                                {% else %}
+                                    <div class="friend-username red-offline">Offline</div>
+                                    <div class="dot red-background"></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="friend-request-buttons">
+                            <button id="fight" type="submit" value="{{stats.0.rival.user.id}}" class="btn-stats btn-friend-request btn-login">Challenge</button>
+                            <!-- <button id="unfriend" type="submit" value="{{stats.0.rival.user.id}}" class="btn-friend-request btn-login">Unfriend</button> -->
+                        </div>
+                    </div>
+                </form>
+
+            </div>
         </div>
         
         

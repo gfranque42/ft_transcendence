@@ -7,6 +7,7 @@ import Register from "../views/register.js";
 import Profile from "../views/profile.js";
 
 
+import {getRenewedToken} from "./token.js"
 import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
@@ -15,6 +16,13 @@ let UserToken = null;
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
 }
+
+
+window.addEventListener('beforeunload', function (event) {
+    // Perform cleanup actions here, like saving data or closing connections.
+    logout(UserToken);
+});
+
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -209,7 +217,6 @@ const router = async () => {
     function UnFinishedOTP() {
         window.addEventListener('beforeunload', function () {
             const otpPopup = document.getElementById('profile-otp-code');
-            logout(UserToken);
         
             if (window.getComputedStyle(otpPopup).display == 'block') {
                 view.profileUserPost(UserToken, "", "", "00");
@@ -240,7 +247,12 @@ const router = async () => {
 
 
     if (!UserToken)
-        UserToken = getCookie("token");
+        {
+            const token = getCookie("token")
+                
+            if (token != null)
+                UserToken = getRenewedToken(token)
+        }
     if (match.route.path == "/register/") {
                                                                             // REGISTER     It send the information given by the user to the authapi and adds a cookie
         console.log("post awaited");
@@ -319,19 +331,16 @@ const router = async () => {
         });
     }
 
-    if (!UserToken)
-            UserToken = getCookie("token");
-        displayUser();
-    };
+    displayUser();
+};
     
-    
-    async function getToken() {
-        return UserToken;
-    }
-    
-    async function displayUser()
-    {
-        let tempToken = await getToken();
+async function getToken() {
+    return UserToken;
+}
+
+async function displayUser()
+{
+    let tempToken = await getToken();
 
     if (!tempToken) 
         return ;
@@ -353,9 +362,10 @@ const router = async () => {
         return ;
     }
     const UserInformation = await response.json();
+    console.log(UserInformation);
     const userElement = document.getElementById('user');
     if (userElement) {
-        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
+        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
     </div>`;

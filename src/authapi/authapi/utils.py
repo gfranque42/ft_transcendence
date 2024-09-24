@@ -13,19 +13,57 @@ from django.http import HttpResponse
 from sms import send_sms
 
 import base64
+from .models import UserProfile, Friend_request, GameHistory
+
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 
 
-def CheckToken(token):
+def most_common(lst):
+    return max(set(lst), key=lst.count)
+
+def gameStats(user):
+    total_games = user.games()
+
+    won_games = user.games_won.all()
+
+    games_played_count = len(total_games)
+    games_won_count = len(won_games)
+    win_ratio = (len(won_games) / len(total_games))
+    opponents = []
+    for game in total_games:
+        if game.winner == user:
+            opponents.append(game.loser)
+        else:
+            opponents.append(game.winner)
+    rival = most_common(opponents)
+
+    games_lost_count = (games_played_count - games_won_count)
+
+    return_objects = [{
+            "games_played": games_played_count,
+            "games_won": games_won_count,
+            "games_lost": games_lost_count,
+            "win_ratio": win_ratio,
+            "rival": {"user": rival, "is_logged_in": CheckToken(rival)}}]
+
+    return return_objects
+
+     
+
+
+def CheckToken(user):
+    token = user.jwt
     try:
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        UserProfile.objects.get(id=decoded['id'])
+        print("\n\n\n\n this i happening in chectoken \n\n\n\n\n")
         return True    
-    except ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:
         # The token has expired
         return False
 
-    except InvalidTokenError:
+    except jwt.InvalidTokenError:
         # The token is invalid (wrong signature, wrong secret, malformed token, etc.)
         return False
 

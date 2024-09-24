@@ -58,7 +58,7 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNz
 
 GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZXhwIjoxNzI1NDYzMzk5LCJpYXQiOjE3MjU0NjA4Nzl9.FV3q8M2ZlsQd83ZdcwaIZJEL_1NlpItEnIwKQ-h9mGA
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3MTc4NTkwLCJpYXQiOjE3MjcxNzYwNzB9.5VsuYOf-Bsw4W6W4lXDahEbJy3vvIiGkFyR5p9vXbNo
 
 {
 }
@@ -253,10 +253,21 @@ POST http://localhost:8000/auth/games
 Content-Type: application/json
 
 {
-    "winner_id": "2",
-    "loser_id": "1",
+    "winner_id": "1",
+    "loser_id": "2",
     "score_winner": "11",
     "score_loser": "0",
     "game_type": "pong"
+}
+###
+
+
+
+GET http://localhost:8000/auth/get_token
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3MTc4NTkwLCJpYXQiOjE3MjcxNzYwNzB9.5VsuYOf-Bsw4W6W4lXDahEbJy3vvIiGkFyR5p9vXbNo
+
+
+{
 }
 ###
