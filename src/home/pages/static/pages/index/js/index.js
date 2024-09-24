@@ -6,6 +6,9 @@ import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
 import Profile from "../views/profile.js";
 
+
+import {getRenewedToken} from "./token.js"
+import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
@@ -13,6 +16,13 @@ let UserToken = null;
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
 }
+
+
+window.addEventListener('beforeunload', function (event) {
+    // Perform cleanup actions here, like saving data or closing connections.
+    logout(UserToken);
+});
+
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -101,11 +111,13 @@ function hidePopstate() {
     var qrCode = document.getElementById('qr-code');
     var emailCode = document.getElementById('email-code');
     var smsCode = document.getElementById('sms-code');
+    var friendRequest = document.getElementById('friend-request-code');
     var clickOff = document.getElementById('click-off');
 
     if (qrCode) qrCode.style.display = 'none';
     if (emailCode) emailCode.style.display = 'none';
     if (smsCode) smsCode.style.display = 'none';
+    if (friendRequest) friendRequest.style.display = 'none';
     if (clickOff) clickOff.style.filter = 'none';
 }
 
@@ -165,6 +177,13 @@ const router = async () => {
         return 3;
     }
 
+    async function friendRequestCheck(data) {
+        hidePopstate();
+        if (data.success) {
+            alert(await data.success);
+        }
+    }
+
     async function VerificationRoute(tempToken) {
         const verification = new Verification();
         const token = await tempToken;
@@ -201,8 +220,9 @@ const router = async () => {
         
             if (window.getComputedStyle(otpPopup).display == 'block') {
                 view.profileUserPost(UserToken, "", "", "00");
+                console.log("UNLOADDING with profile");
             }
-        
+            console.log("UNLOADDING");
         });
     }
 
@@ -227,11 +247,14 @@ const router = async () => {
 
 
     if (!UserToken)
-        UserToken = getCookie("token");
-
+        {
+            const token = getCookie("token")
+                
+            if (token != null)
+                UserToken = getRenewedToken(token)
+        }
     if (match.route.path == "/register/") {
                                                                             // REGISTER     It send the information given by the user to the authapi and adds a cookie
-
         console.log("post awaited");
         const registrationForm = document.querySelector('form.form-register');
         registrationForm.addEventListener('submit', (event) => {
@@ -261,19 +284,37 @@ const router = async () => {
 
 
     } else if (match.route.path == "/profile/") {
-                                                                            // PROFILE      capable of putting an avatar and change username, capabale of adding verification method
-
 
         console.log("post awaited profile");
         const profileForm = document.querySelectorAll('form');
         profileForm.forEach((form) => {
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
+                console.log(event.submitter);
+                const formElement = event.target;
+                const accept = formElement.querySelector('#reject');
+                console.log(accept);
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
-                if (username.value || avatar.value) {
+                const to_user = document.querySelector('input[name="to_user"]');
+                console.log(event.submitter.value)
+                if ('btn-profile-update' == event.submitter.id) {
+                    console.log("stealing the thunder");
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
+                } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
+                    if (event.submitter.id == 'accept')
+                        view.friendRequest(UserToken, true,  event.submitter.value)
+                    else
+                        view.friendRequest(UserToken, false,  event.submitter.value)
+                    navigateTo("/profile/")
+                } else if (event.submitter.id == 'friend-form') {
+                    friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
+                } else if (event.submitter.id == 'unfriend') {
+                    console.log("unfriend");
+                    view.deleteFriend(UserToken, event.submitter);
+                    navigateTo("/profile/")
                 } else {
+                    console.log("last")
                     const email = document.querySelector('input[name="email"]');
                     const phone_number = document.querySelector('input[name="phone_number"]');
                     const otp = document.querySelector('input[name="otp"]');
@@ -290,19 +331,16 @@ const router = async () => {
         });
     }
 
-    if (!UserToken)
-            UserToken = getCookie("token");
-        displayUser();
-    };
+    displayUser();
+};
     
-    
-    async function getToken() {
-        return UserToken;
-    }
-    
-    async function displayUser()
-    {
-        let tempToken = await getToken();
+async function getToken() {
+    return UserToken;
+}
+
+async function displayUser()
+{
+    let tempToken = await getToken();
 
     if (!tempToken) 
         return ;
@@ -324,9 +362,10 @@ const router = async () => {
         return ;
     }
     const UserInformation = await response.json();
+    console.log(UserInformation);
     const userElement = document.getElementById('user');
     if (userElement) {
-        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
+        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
     </div>`;
@@ -351,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target.matches('#disconnect'))
         {
             eraseCookie("token");
-            UserToken = null;
+            UserToken = logout(UserToken);
             document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
         }
         // Get references to the elements
@@ -359,9 +398,11 @@ document.addEventListener("DOMContentLoaded", () => {
         var emailCode = document.getElementById('email-code');
         var smsCode = document.getElementById('sms-code');
         var clickOff = document.getElementById('click-off');
+        var friendRequest = document.getElementById('friend-request-code');
         var popup = document.querySelectorAll('#simple-popup');
         const ispopup = Array.from(popup).some(div =>  div.contains(event.target));
 
+        console.log(event.target);
         if (event.target.matches('#setup-email')) {
             emailCode.style.display = 'block';
             clickOff.style.filter = 'blur(5px)';
@@ -370,6 +411,9 @@ document.addEventListener("DOMContentLoaded", () => {
             clickOff.style.filter = 'blur(5px)';
         } else if (event.target.matches('#setup-app')) {
             qrCode.style.display = 'flex';
+            clickOff.style.filter = 'blur(5px)';
+        } else if (event.target.matches('#friend-request')) {
+            friendRequest.style.display = 'flex';
             clickOff.style.filter = 'blur(5px)';
         } else if (!ispopup) {
             hidePopstate();

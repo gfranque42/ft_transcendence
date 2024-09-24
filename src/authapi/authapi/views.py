@@ -1,40 +1,108 @@
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.db import IntegrityError
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 from django.http import JsonResponse    
 
+
+from django.contrib.auth import authenticate, login
+
 from .urls import CheckForTFA
-from .utils import generate_qr_code
-from .models import UserProfile, Friend_request
-from .forms import verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
-from .serializers import UserSerializer, FriendRequestSerializer
+from .utils import generate_qr_code, GetFriendRequests, gameStats, CreateToken, CheckToken
+from .models import UserProfile, Friend_request, GameHistory
+from .forms import SendFriendForm, verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
+from .serializers import UserSerializer, FriendRequestSerializer, GamesSerializer
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
+# from jwt import ExpiredSignatureError, InvalidTokenError
 
-import jwt, datetime, pyotp
 
+import jwt, pyotp, json
+
+
+# !GAMES
+
+class Games(APIView):
+    def post(self, request):
+        winner_id = request.data['winner_id']
+        loser_id = request.data['loser_id']
+        score_winner = request.data['score_winner']
+        score_loser = request.data['score_loser']
+        game_type = request.data['game_type']
+        try :
+            winner = UserProfile.objects.get(id=winner_id)
+            loser = UserProfile.objects.get(id=loser_id)
+            game_history = GameHistory.objects.create(winner=winner,
+                                                     loser=loser,
+                                                      score_winner=score_winner,
+                                                      score_loser=score_loser,
+                                                      game_type=game_type)
+            print (game_history)
+            game_history.save()
+            serializer = GamesSerializer(game_history)
+
+            return Response({'success': 'Game history created', 'history': serializer.data}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+ 
+
+# !USER
+
+class UserStatus(APIView):
+    def get(self, request):
+        auth_header = request.headers.get('Authorization')
+        try:
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            user = UserProfile.objects.get(id=user_id)
+            user.status = not user.status
+            user.save()
+            return Response({'success': 'Status changed'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+# !FRIEND
+
+class Friend(APIView):
+    def delete(self, request):
+        auth_header = request.headers.get('Authorization')
+        try: 
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            friend_id = request.data.get('friend_id')
+            friend = UserProfile.objects.get(id=friend_id)
+            user = UserProfile.objects.get(id=user_id)
+            user.friends.remove(friend)
+            friend.friends.remove(user)
+            return Response({'Succes': "You lost a friend :'("}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class FriendRequest(APIView):
     def post(self, request):
-        from_user_id = request.data['from_user_id']
-        to_user_id = request.data['to_user_id']
+        formFriend = SendFriendForm(request.data)
+        print(formFriend)
+        from_user_id = formFriend.cleaned_data['from_user_id']
+        to_user_id = formFriend.cleaned_data['to_user_id']
+        if (to_user_id == from_user_id):
+            return Response({'success': 'Find friends'}, status=status.HTTP_201_CREATED)
         try:
             from_user = UserProfile.objects.get(id=from_user_id)
             to_user = UserProfile.objects.get(id=to_user_id)
+            if (to_user.friends.filter(id=from_user_id).exists()):
+                return Response({'success': 'Already Friends'}, status=status.HTTP_400_BAD_REQUEST)
             friend_request = Friend_request(from_user=from_user, to_user=to_user)
             friend_request.save()
             return Response({'success': 'Invite sent'}, status=status.HTTP_201_CREATED)
@@ -59,17 +127,38 @@ class FriendRequest(APIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request):
-        from_user_id = request.data['from_user_id']
-        to_user_id = request.data['to_user_id']
+
+        data = json.loads(request.body)
+        from_user_id = data.get('from_user_id')
+        token = data.get('token')
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        to_user = UserProfile.objects.get(id=decoded['id'])
         try:
             from_user = UserProfile.objects.get(id=from_user_id)
-            to_user = UserProfile.objects.get(id=to_user_id)
             friend_request = Friend_request.objects.filter(to_user=to_user, from_user=from_user)
             friend_request.delete()
-            to_user.friends = from_user
-            from_user.friends = to_user
+            to_user.friends.add(from_user)
+            from_user.friends.add(to_user)
             to_user.save()
             from_user.save()
+            return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except friend_request.DoesNotExist:
+            return Response({'error': 'friend request not found'}, status=status.HTTP_404_NOT_FOUND)
+  
+    def delete(self, request):
+        from_user_id = request.data['from_user_id']
+        token = request.data['token']
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        to_user = UserProfile.objects.get(id=decoded['id'])
+        try:
+            from_user = UserProfile.objects.get(id=from_user_id)
+            friend_request = Friend_request.objects.filter(to_user=to_user, from_user=from_user)
+            friend_request.delete()
+            to_user.save()
+            from_user.save()
+            return Response({'success': 'Friend request deleted'}, status=status.HTTP_200_OK)
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except friend_request.DoesNotExist:
@@ -112,7 +201,6 @@ class AddVerification(APIView):
         token = request.data['token']
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=decoded['id'])
-        print("57: ",request.data)
 
         formSMS = verificationSMS(request.data)
         formEmail = verificationEmail(request.data)
@@ -171,27 +259,73 @@ class Profile(APIView):
         formSMS = verificationSMS()
         formApp = verificationApp()
         formOTP = Get2faForm()
-        # print("here\n\n\n\n", formEmail)
+        formSendFriend= SendFriendForm()
+        friend_requests=GetFriendRequests(userProfile)
         # print("here\n\n\n\n", formSMS)
         qr_code_base64 = generate_qr_code(userProfile)
-        return render(request, "profile.html", {"user": userProfile, "formApp":formApp, "formSMS":formSMS, "formEmail":formEmail, "formOTP":formOTP, "formAvatar":formAvatar, "formUsername":formUsername, 'qr_code_base64': qr_code_base64})
+        print("\n\n\n", gameStats(userProfile), "\n\n\n\n")
+
+        # friends = userProfile.friends.all()
+
+        # Create a list of friends with their login status
+        friends_with_status = []
+        for friend in userProfile.friends.all():
+            is_logged_in = CheckToken(friend)  # Call the method here
+            friends_with_status.append({
+                'friend': friend,
+                'is_logged_in': is_logged_in
+            })
+
+
+
+            # for userProfile_key, userProfile_value in friend_requests.items:
+            
+        return render(request, "profile.html", {"friend_requests": friend_requests,
+                                                "user": userProfile,
+                                                "formSendFriend": formSendFriend,
+                                                "formApp":formApp,
+                                                "formSMS":formSMS,
+                                                "formEmail":formEmail,
+                                                "formOTP":formOTP,
+                                                "formAvatar":formAvatar,
+                                                "formUsername":formUsername,
+                                                'qr_code_base64': qr_code_base64,
+                                                'friends': friends_with_status,
+                                                "token": CreateToken(userProfile),
+                                                "games": userProfile.games(),
+                                                "stats": gameStats(userProfile)
+                                                })
             
     
     def patch(self, request):
-        new_username = request.data['username']
-        new_avatar = request.data['avatar']
+        formUsername = changeUsername(request.data)
+        formAvatar = changeAvatar(request.data, request.FILES)
         token = request.data['token']
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=decoded['id'])
+        # print("\n\n\n\n")
+        # formAvatar.is_valid()
+        # print(formUsername)
+        # print(formAvatar.cleaned_data["avatar"])
 
-        if new_username:
+        # print ("\n\n\n\nCOMPARED To ------------------------------")
+
+        # print(request.FILES["avatar"])
+        # print("\n\n\n\n")
+
+
+        # new_avatar = formAvatar.cleaned_data['avatar']
+
+        if formUsername.is_valid() and formUsername.cleaned_data['username'] and userProfile.user.username != formUsername.cleaned_data['username']:
+            new_username = formUsername.cleaned_data['username']
             if User.objects.filter(username=new_username).exists():
                 return Response({'error': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
             userProfile.user.username = new_username
             userProfile.user.save()
             # userProfile.save
-        if new_avatar:
-            userProfile.avatar = new_avatar
+        if formAvatar.is_valid() and formAvatar.cleaned_data["avatar"]:
+            print("\n\n\n\n THIS IS NEW AVATAR ---------------------\n\n\n\n",request.FILES, "\n\n\n\n")
+            userProfile.avatar = formAvatar.cleaned_data["avatar"]
             userProfile.save()
         return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
 
@@ -239,6 +373,28 @@ class VerifyOTPView(APIView):
         # print(form.errors)
         return Response({'error': 'Form invalid.', 'form':form.cleaned_data})        
 
+
+# !LOGOUT
+
+
+class LogOut(APIView):
+    def get(self, request):
+        auth_header = request.headers.get('Authorization')
+        print("logging out...")
+        try:
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            userProfile = UserProfile.objects.get(id=user_id)
+            userProfile.jwt = "!".join(userProfile.jwt)
+            userProfile.save()
+            return Response({'Success': 'User logged out'}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token is expired'}, status=status.HTTP_404_NOT_FOUND)
+
+
 # !LOGIN
 
 class LoginForm(APIView):
@@ -252,22 +408,18 @@ class LoginForm(APIView):
 
     def post(self, request):
         try:
-            user = User.objects.get(username=request.data['username'])
-            if not user.check_password(request.data['password']):
+            user = authenticate(username=request.data['username'], password=request.data['password'])
+            if not user:
                 return Response({"detail": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-            
-            payload = {
-                'id': user.id,
-                'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
-                'iat': datetime.datetime.utcnow(),
-            }
-            token = jwt.encode(payload, 'secret', algorithm='HS256')
+            login(request, user)
+            userprofile = UserProfile.objects.get(user=user)
             serializer = UserSerializer(instance=user)
-            return Response({"token": token, "user": serializer.data})
+            return Response({"token": CreateToken(userprofile), "user": serializer.data})
         except User.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         except KeyError:
             return Response({"detail": "Username and password required."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 # !REGISTER
 
@@ -281,20 +433,24 @@ class RegisterForm(APIView):
     def post(self, request):
         form = CreateUserForm(request.data)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(request.data['password1'])  # Set the password correctly
+            user = User.objects.create_user(form.cleaned_data["username"], form.cleaned_data["email"], form.cleaned_data["password1"])
             user.save()
-            UserProfile.objects.create(user=user)
-            payload = {
-                'id': user.id,
-                'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
-                'iat': datetime.datetime.utcnow(),
-            }
-            token = jwt.encode(payload, 'secret', algorithm='HS256')
+            userprofile = UserProfile.objects.create(user=user)
 
             serializer = UserSerializer(instance=user)
-            return Response({"token": token, "user": serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"token": CreateToken(userprofile), "uuid": userprofile.uuid, "user": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'form': form.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_token(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"token": CreateToken(userProfile) }, status=status.HTTP_201_CREATED)
+    except jwt.ExpiredSignatureError:
+        return Response({"token": None}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def test_token(request):
@@ -306,11 +462,11 @@ def test_token(request):
 
 @api_view(['GET'])
 def test_OTP(request):
-    print('Test\n\n\n\n\')
-    auth_header = request.headers.get('Authorization')
-    token = auth_header.split(' ')[1]
-    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-    userProfile = UserProfile.objects.get(id=payload['id'])
-    print(userProfile.tfa)
-    print(any(userProfile.tfa.values()))
-    return Response({"method": any(userProfile.tfa.values())})
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"method": any(userProfile.tfa.values())})
+    except jwt.ExpiredSignatureError:
+        return Response({"method": False}, status=status.HTTP_200_OK)

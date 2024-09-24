@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfile, Friend_request
+from .models import UserProfile, Friend_request, GameHistory
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserProfile
-		fields = ['user']
+		fields = ['user', 'avatar']
 
 class FriendRequestSerializer(serializers.ModelSerializer):
 	from_user = UserProfileSerializer()
@@ -21,3 +21,9 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Friend_request
 		fields = ['id', 'from_user', 'to_user']
+
+class GamesSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = GameHistory
+		fields = ['id', 'winner', 'loser', 'score_winner', 'score_loser', 'game_type', 'created_at']
