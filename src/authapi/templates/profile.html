@@ -161,6 +161,7 @@
                                 <div class="match-score">{{item.score_loser}} / {{item.score_winner}}</div>
                                 {% endif %}
                                 
+                                <div class="match-score">{{item.created_at|date:"m/d/y - H:i" }}</div>
                             </div>
                             <div class="match-status-card">
                                 {% if item.winner == user %}
