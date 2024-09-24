@@ -142,36 +142,39 @@
 
         <div class="col-sm-4">
             <div class="scroll-match-history">
-            {% for item in games %}
-                {% if item.game_type == "pong" %}
-                <div class="match-history-card match-history-card-pong">
-                    <img class="match-game-type-pong" src="{% static 'pages/Group.svg' %}" alt="Pong">
-                {% else %}
-                <div class="match-history-card match-history-card-sudoku">
-                
-                    <img class="" src="{% static 'pages/sudoku.svg' %}" alt="Pong">
-                {% endif %}
-                    <div class="match-information">
-                        <div class="match-player-info">
-                            {% if user == item.winner %}
-                            <div class="match-users">{{item.winner}} vs {{item.loser}}</div>
-                            <div class="match-score">{{item.score_winner}} / {{item.score_loser}}</div>
-                            {% else %}
-                            <div class="match-users">{{item.loser}} vs {{item.winner}}</div>
-                            <div class="match-score">{{item.score_loser}} / {{item.score_winner}}</div>
-                            {% endif %}
-                            
-                        </div>
-                        <div class="match-status-card">
-                        {% if item.winner == user %}
-                            <div class="match-history-win">WIN</div>
+                {% if games %}
+                    {% for item in games %}
+                        {% if item.game_type == "pong" %}
+                        <div class="match-history-card match-history-card-pong">
+                            <img class="match-game-type-pong" src="{% static 'pages/Group.svg' %}" alt="Pong">
                         {% else %}
-                            <div class="match-history-loss">LOSS</div>
+                        <div class="match-history-card match-history-card-sudoku">
+                            <img class="" src="{% static 'pages/sudoku.svg' %}" alt="Pong">
                         {% endif %}
+                        <div class="match-information">
+                            <div class="match-player-info">
+                                {% if user == item.winner %}
+                                <div class="match-users">{{item.winner}} vs {{item.loser}}</div>
+                                <div class="match-score">{{item.score_winner}} / {{item.score_loser}}</div>
+                                {% else %}
+                                <div class="match-users">{{item.loser}} vs {{item.winner}}</div>
+                                <div class="match-score">{{item.score_loser}} / {{item.score_winner}}</div>
+                                {% endif %}
+                                
+                            </div>
+                            <div class="match-status-card">
+                                {% if item.winner == user %}
+                                <div class="match-history-win">WIN</div>
+                                {% else %}
+                                <div class="match-history-loss">LOSS</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <div class="match-history-card">No match history yet.</div>
+                {% endif %}
             </div>
         </div>
         
@@ -196,9 +199,9 @@
                 </div>
                 <div class="stats">
                     <div>Greatest Rival: </div>
+                {% if stats.0.rival.user %}
                 </div>
 
-                
                 <form class="friend-card">
                     <img src="http://localhost:8000{{ stats.0.rival.user.avatar.url }}" alt="{{ stats.0.rival.user.user.username }}'s avatar" class="friend-avatar" />
                     <div style="width:100%">
@@ -220,6 +223,10 @@
                         </div>
                     </div>
                 </form>
+                {% else %}
+                    <div>No Rivals</div>
+                </div>
+                {% endif %}
 
             </div>
         </div>

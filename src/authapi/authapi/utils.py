@@ -29,14 +29,19 @@ def gameStats(user):
 
     games_played_count = len(total_games)
     games_won_count = len(won_games)
-    win_ratio = (len(won_games) / len(total_games))
-    opponents = []
-    for game in total_games:
-        if game.winner == user:
-            opponents.append(game.loser)
-        else:
-            opponents.append(game.winner)
-    rival = most_common(opponents)
+    if (len(total_games) == 0) :
+        win_ratio = 0
+        rival = None
+    else:
+        print("\n\n\n\n", total_games, "\n\n\n\n")
+        win_ratio = (len(won_games) / len(total_games))
+        opponents = []
+        for game in total_games:
+            if game.winner == user:
+                opponents.append(game.loser)
+            else:
+                opponents.append(game.winner)
+        rival = most_common(opponents)
 
     games_lost_count = (games_played_count - games_won_count)
 
@@ -53,6 +58,8 @@ def gameStats(user):
 
 
 def CheckToken(user):
+    if (not user):
+        return False
     token = user.jwt
     try:
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
@@ -72,7 +79,7 @@ def CreateToken(userProfile):
     user = userProfile.user
     payload = {
         'id': user.id,
-        'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=2),
         'iat': datetime.datetime.utcnow(),
     }
     token = jwt.encode(payload, 'secret', algorithm='HS256')

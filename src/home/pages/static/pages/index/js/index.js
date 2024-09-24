@@ -293,7 +293,6 @@ const router = async () => {
                 console.log(event.submitter);
                 const formElement = event.target;
                 const accept = formElement.querySelector('#reject');
-                console.log(accept);
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
                 const to_user = document.querySelector('input[name="to_user"]');
@@ -303,15 +302,15 @@ const router = async () => {
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
                 } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
                     if (event.submitter.id == 'accept')
-                        view.friendRequest(UserToken, true,  event.submitter.value)
+                        FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value))
                     else
-                        view.friendRequest(UserToken, false,  event.submitter.value)
-                    navigateTo("/profile/")
+                        FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value))
+                    // navigateTo("/profile/")
                 } else if (event.submitter.id == 'friend-form') {
                     friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
                 } else if (event.submitter.id == 'unfriend') {
                     console.log("unfriend");
-                    view.deleteFriend(UserToken, event.submitter);
+                    FollowingProfile(view.deleteFriend(UserToken, event.submitter));
                     navigateTo("/profile/")
                 } else {
                     console.log("last")
