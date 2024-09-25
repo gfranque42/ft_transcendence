@@ -5,6 +5,8 @@ from .serializers import PlayerSerializer, RoomSerializer
 import os
 from django.shortcuts import render
 from django.http import JsonResponse
+from app.consumers import gRoomsManager
+from app.rooms import room
 
 @api_view(['GET'])
 def	getPlayer(request):
@@ -58,6 +60,9 @@ def	postRoom(request):
 	serializer = RoomSerializer(data=request.data)
 	if serializer.is_valid():
 		serializer.save()
+		#create a new party
+		gRoomsManager[request.data["url"]] = room(request.data["url"],
+											request.data["maxPlayers"], request.data["difficulty"])
 		return (Response(serializer.data))
 	print(serializer.is_valid())
 	print(serializer.errors)
