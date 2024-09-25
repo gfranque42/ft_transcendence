@@ -58,3 +58,7 @@ def generate_sudoku(difficulty):
 	solve_sudoku(board)
 	board = remove_elements(board, difficulty)
 	return board
+
+def generate_random_url():
+	characters = string.ascii_letters + string.digits  # Uppercase, lowercase, and digits
+	return ''.join(random.choice(characters) for _ in range(10))

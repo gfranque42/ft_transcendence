@@ -1,13 +1,3 @@
-export function generateRandomUrl() {
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	let str = '';
-	for (let i = 0; i < 10; i++) {
-		const randomIndex = Math.floor(Math.random() * characters.length);
-		str += characters[randomIndex];
-	}
-	return str;
-}
-
 //create a waiting loop and get the elo from the user data
 export function joinRoom()
 {

@@ -132,17 +132,59 @@ export async function Start(view)
 	console.log('Start button clicked');
 	if (gameMode == -1)
 		return ;
+
 	const roomData = {
 		difficulty: gameMode,
 	};
 
+	try
+	{
+		const tempContentHtml = document.body.innerHTML;
+		console.log('tempContentHtml: ', tempContentHtml);
+		// Extract CSRF token from HTML form
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(tempContentHtml, 'text/html');
+		const csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
+		console.log('csrfToken: ', csrfToken);
+
+		// console.log('dns: ', dns);
+		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+		// console.log('fetchurl: ', fetchurl);
+		const response = await fetch('/sudokubattle/api/sudoku/create/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrfToken,
+			},
+			body: JSON.stringify(roomData),
+		});
+
+		if (response.ok)
+		{
+			const responseData = await response.json();
+			console.log('Room created: ', responseData);
+
+			const roomUrl = responseData.roomUrl;
+			const link = document.createElement('a');
+			link.href = '/sudoku/' + roomUrl + '/';
+			link.setAttribute('data-link', '');
+			document.body.appendChild(link);
+			console.log(link);
+			link.click();
+			document.body.removeChild(link);
+
+		}
+		else
+		{
+			console.error('Failed to create a room: ', response.statusText);
+		}
+	}
+	catch (error)
+	{
+		console.error('Error: ', error);
+		return ;
+	}
 	console.log("Start !");
-	const link = document.createElement('a');
-    link.href = '/sudoku/waiting-room/';
-    link.setAttribute('data-link', '');
-    document.body.appendChild(link);
-    console.log(link);
-    link.click();
-    document.body.removeChild(link);
+
 	// Send a post request to go to the waiting room with the gamemode
 }
