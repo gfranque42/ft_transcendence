@@ -1,4 +1,4 @@
-import { setGame } from './board.js';
+import { setBoard, setGame } from './board.js';
 import { startTimer, setStartTime } from './timer.js';
 import { showModal } from './modal.js';
 let sudokuSocket = null;
@@ -26,6 +26,19 @@ export function initializeWebSocket(roomName) {
 
 function handleSocketMessage(e) {
 	const data = JSON.parse(e.data);
+	if (data.type === 'game_start') {
+		console.log('Game is starting! Setting the board...');
+
+		// Get the board from the message and pass it to setBoard function
+		const board = data.board;
+		const startTime = data.time;
+
+		setStartTime(startTime);
+		startTimer();
+		setBoard(board);
+		setGame(sudokuSocket);
+	}
+
 	if (data.type === 'board_complete') {
 		// Show the game result modal
 		const timeUsed = data.time_used || "N/A";  // Assuming winner_time is sent
@@ -48,9 +61,6 @@ export function initialize() {
 	const sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {
 		sudokuSocket.onmessage = handleSocketMessage;
-		setGame(sudokuSocket);
-		setStartTime();
-		startTimer();
 	}
 }
 

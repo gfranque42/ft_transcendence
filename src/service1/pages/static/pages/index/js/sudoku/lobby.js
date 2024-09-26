@@ -11,8 +11,6 @@ let	gameMode = -1;
 export async function changeUsername(view)
 {
 	const username = document.querySelector('.username');
-
-	user = await view.getUser();
 }
 
 export function Solo()
@@ -128,15 +126,18 @@ export function getCookie(name)
 
 export async function Start(view)
 {
-	view.getUser();
+	const userInfo = await view.getUser();
 	console.log('Start button clicked');
 	if (gameMode == -1)
 		return ;
 
 	const roomData = {
 		difficulty: gameMode,
+		user: userInfo.Username,
+		id: userInfo.ID,
 	};
-
+	console.log('roomData: ', userInfo);
+	console.log('roomData: ', roomData);
 	try
 	{
 		const tempContentHtml = document.body.innerHTML;

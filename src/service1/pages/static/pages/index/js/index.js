@@ -9,7 +9,6 @@ import SudokuWaiting from "../views/waiting_sudoku.js";
 
 
 import { initialize } from "./sudoku/sudoku.js";
-import {setBoard} from "./sudoku/board.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
@@ -164,7 +163,6 @@ const router = async () => {
 			}
 		});
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
-		setBoard();
 		initialize();
 	}
     if (!UserToken)

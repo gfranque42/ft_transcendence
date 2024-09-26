@@ -1,24 +1,24 @@
 export var timerInterval = null;
 let startTime = null;
 
-export function setStartTime() {
-	let tmp = document.getElementById("start-time").value;
-	console.log('Fetched start time:', tmp);  // Debugging step
-    startTime = new Date(tmp);
+export function setStartTime(startTimeStr) {
+    // Parse the start time from the WebSocket message
+    startTime = new Date(startTimeStr);
+    console.log('Parsed start time:', startTime);  // Debugging step
 
     // Check if the date is valid
     if (isNaN(startTime)) {
-        console.error('Invalid start time:', tmp);  // Log an error if the date is not valid
+        console.error('Invalid start time:', startTimeStr);  // Log an error if the date is not valid
         return;
     }
-    console.log('Parsed start time:', startTime);  // Debugging step
 }
 
 export function startTimer() {
-    startTime = new Date(startTime);
+    // Start the timer from the correct start time
     if (timerInterval) {
         clearInterval(timerInterval);
     }
+
     timerInterval = setInterval(updateTimer, 1000);
 }
 

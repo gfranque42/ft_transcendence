@@ -1,5 +1,5 @@
 # sudoku/utils.py
-import random
+import random, string
 
 def is_valid(board, row, col, num):
 	for x in range(9):

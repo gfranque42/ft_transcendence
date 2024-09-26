@@ -5,10 +5,9 @@ var numSelected = null;
 var tileSelected = null;
 let board = null;
 
-
-export function setBoard() {
-	let tmp = document.getElementById("board_value").value;
-	board = JSON.parse(tmp);
+export function setBoard(newboard)
+{
+	board = newboard;
 }
 
 export function setGame(socket) {
@@ -25,10 +24,8 @@ export function setGame(socket) {
 	
 	//console.log()
 	// Board 9x9
-	console.log(board);
 	for (let r = 0; r < 9; r++) {
 		for (let c = 0; c < 9; c++) {
-			console.log("in the boucle");
 			let tile = document.createElement("div");
 			tile.id = r.toString() + "-" + c.toString();
 			if (board[r][c] != 0)
@@ -76,10 +73,7 @@ export function setGame(socket) {
 				selectTile.call(this, socket);  // `this` refers to the clicked tile
 			});
 			tile.classList.add("tile");
-			console.log(tile);
 			document.getElementById("board").appendChild(tile);
-			const brd = document.getElementById("board");
-			console.log(brd);
 		}
 	}
 	document.addEventListener("keydown", handleKeyPress);
@@ -94,7 +88,6 @@ function selectNumber() {
 }
 
 function selectTile(socket) {
-		console.log(this);
 		if (numSelected) {
 			if (this.classList.contains("tile-start")) {
 				return;
@@ -132,7 +125,6 @@ function selectTile(socket) {
 			clearHighlights();
 		}
 		tileSelected = this;
-		console.log(this);
 		tileSelected.classList.add("tile-selected");
 		highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
 		let number = tileSelected.innerText;
