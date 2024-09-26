@@ -38,11 +38,17 @@ class	roomsManager:
 	def	__repr__(self):
 		return repr(self.data)
 
+#party types:
+# 1 - 2 - 3 ai ? 
+# 0 player vs player
+# 4 player vs player in local
+
 class	room:
 	def	__init__(self, roomName: str, nbPlayers: int, partyType: int) -> None:
 		self.roomName: str						= roomName
 		self.channelLayer						= None
 		self.roomGroupName						= None
+		self.channelName						= None
 		self.nbPlayers: int						= nbPlayers
 		self.partyType: int						= partyType
 		self.paddleL: Paddle					= Paddle(Vec2(3, 32.5), Vec2(3, 35), 1.5, 0)
@@ -84,9 +90,9 @@ class	room:
 		else:
 			raise roomException("Room ", self.roomName, " haven't te good amount of players or is already in game", 1003)
 	
-	def	start(self) -> None:
+	async def	start(self) -> None:
 		try:
-			self.countDown()
+			await self.countDown()
 			self.inGame = True
 			self.thread = threading.Thread(target=self.gameLoop)
 			self.thread.start()
@@ -94,13 +100,14 @@ class	room:
 				self.thread.join()
 		except roomException as e:
 					print(f"Error from start: {e}")
-		
+	
 	def	gameLoop(self) -> None:
 		while self.inGame == True:
 			with self.lock:
 				gameUpdate(self.PaddleL, self.PaddleR, self.Ball, self.ScoreL, self.ScoreR)
 				if self.scoreL == 5 or self.scoreR == 5:
-					self.inGame = False
+					# self.inGame = False
+					finish = True
 					#send the finish group
 			#send to the group with the channel layer
 

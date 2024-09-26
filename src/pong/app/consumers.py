@@ -15,9 +15,19 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
 		self.room_group_name = "pong_%s" % self.room_name
 
+		if gRoomsManager[self.room_name].ready == True:
+			#maybe send an error message to display ?
+			self.close()
+			return
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-
+		if gRoomsManager[self.room_name].partyType == 4:
+			gRoomsManager[self.room_name].addPlayer("Player1")
+			gRoomsManager[self.room_name].addPlayer("Player2")
+		if gRoomsManager[self.room_name].channelLayer == None:
+			gRoomsManager[self.room_name].channelLayer = self.channel_layer
+			gRoomsManager[self.room_name].roomGroupName = self.room_group_name
+			gRoomsManager[self.room_name].channelName = self.channel_name
 		await self.accept()
 
 	async def disconnect(self, close_code):
@@ -30,22 +40,14 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
 		type_data = text_data_json["type"]
+		if type_data == "username":
+			self.username = text_data_json["username"]
+			if gRoomsManager[self.room_name].partyType != 4:
+				gRoomsManager[self.room_name].addPlayer(self.username)
+		elif type_data == "ping":
+			gRoomsManager[self.room_name].updateData(text_data_json)
 
 	# Receive message from room group
-	async def update(self, event):
-		print(self.username, ': bisous de update', flush=True)
-		message = event["message"]
-		print(self.username, ":", message, flush=True)
-		if (message == "ready for playing"):
-			print(self.username, ': update ready', flush=True)
-			self.player1Name = event["player1Name"]
-			self.player2Name = event["player2Name"]
-			self.player1id = event["player1id"]
-			self.player2id = event["player2id"]
-			await self.send(text_data=json.dumps({"type": message, "player1Name": self.player1Name, "player2Name": self.player2Name}))
-			await self.set_game()
-			await self.send_updated_game(message)
-			await self.count_down()
 
 	async def game_update(self, event):
 		print(self.username, ': bisous de game_update', flush=True)
@@ -76,10 +78,6 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.paddleR.vel = event["paddleRv"]
 			self.scoreL = event["scoreL"]
 			self.scoreR = event["scoreR"]
-		elif (message == "game is finished"):
-			self.scoreL = event["scoreL"]
-			self.scoreR = event["scoreR"]
-		await self.send_updated_game(message)
 
 	async def quit(self, event):
 		print(self.username, ': bisous de quit', flush=True)
