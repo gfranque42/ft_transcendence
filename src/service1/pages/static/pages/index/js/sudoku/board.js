@@ -4,13 +4,25 @@ import { showModal } from './modal.js';
 var numSelected = null;
 var tileSelected = null;
 let board = null;
+let socket = null;
+let currentUser = null;
 
 export function setBoard(newboard)
 {
 	board = newboard;
 }
 
-export function setGame(socket) {
+export function setCurrentUser(newuser)
+{
+	currentUser = newuser;
+}
+
+export function setSocket(newsocket)
+{
+	socket = newsocket;
+}
+
+export function setGame() {
 	//Digits 1-9
 
 	for (let i = 1; i<=9; i++) {
@@ -69,9 +81,7 @@ export function setGame(socket) {
 			if (c == 0 || c == 8) {
 				tile.classList.add("outer-line");
 			}
-			tile.addEventListener("click", function () {
-				selectTile.call(this, socket);  // `this` refers to the clicked tile
-			});
+			tile.addEventListener("click", selectTile);
 			tile.classList.add("tile");
 			document.getElementById("board").appendChild(tile);
 		}
@@ -87,7 +97,7 @@ function selectNumber() {
 	numSelected.classList.add("number-selected");
 }
 
-function selectTile(socket) {
+function selectTile() {
 		if (numSelected) {
 			if (this.classList.contains("tile-start")) {
 				return;
@@ -110,14 +120,14 @@ function selectTile(socket) {
 
 		// Vérifier si le jeu est terminé
 		if (isBoardComplete(board) && isValidSudoku(board)) {
+			console.log("Grille complète");
 			const timeUsed = document.getElementById("timer").innerText;
 			socket.send(JSON.stringify({
 				'type': 'board_complete',
 				'message': 'Board completed!',
 				'time_used': timeUsed,
-				"is_winner": true
+				'username': currentUser,
 			}));
-			showModal(true, timeUsed);
 		}
 
 		if (tileSelected != null) {

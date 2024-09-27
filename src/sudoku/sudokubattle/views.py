@@ -52,7 +52,7 @@ def check_or_create_sudoku_room(request):
 			board=board,
 			player1=current_user
 		)
-		return JsonResponse({'status': 'Room created', 'roomUrl': room_url, 'board': board}, status=201)
+		return JsonResponse({'status': 'Room created', 'roomUrl': room_url, 'board': board, 'username': username}, status=201)
 	# except Exception as e:
 	# 	return JsonResponse({'error': str(e)}, status=400)
 

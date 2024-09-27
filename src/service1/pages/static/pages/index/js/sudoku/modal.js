@@ -1,14 +1,15 @@
-export function showModal(isWinner, timeUsed, winnerTime) {
+export function showModal(timeUsed, winningUser, currentUser) {
 	const modal = document.getElementById("game-result-modal");
 	const resultTitle = document.getElementById("result-title");
 	const resultMessage = document.getElementById("result-message");
 
-	if (isWinner) {
+	console.log("users are: ", winningUser, currentUser);
+	if (winningUser === currentUser) {
 		resultTitle.textContent = "You Won!";
 		resultMessage.textContent = `Time used: ${timeUsed}`;
 	} else {
 		resultTitle.textContent = "You Lost!";
-		resultMessage.textContent = `Winner's time: ${winnerTime}`;
+		resultMessage.textContent = `Winner's time: ${timeUsed}`;
 	}
 
 	// Display the modal

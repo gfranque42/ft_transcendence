@@ -1,7 +1,12 @@
-import { setBoard, setGame } from './board.js';
+import { setBoard, setCurrentUser, setGame, setSocket } from './board.js';
 import { startTimer, setStartTime } from './timer.js';
 import { showModal } from './modal.js';
+import { getUser } from '../getUser.js';
+
+
+
 let sudokuSocket = null;
+let currentUser = null;
 
 export function initializeWebSocket(roomName) {
 
@@ -33,32 +38,41 @@ function handleSocketMessage(e) {
 		const board = data.board;
 		const startTime = data.time;
 
+		console.log("data: ", data);
+		console.log("users are before set: ", currentUser);
+
 		setStartTime(startTime);
 		startTimer();
 		setBoard(board);
-		setGame(sudokuSocket);
+		setSocket(sudokuSocket);
+		setCurrentUser(currentUser);
+		setGame();
 	}
 
 	if (data.type === 'board_complete') {
 		// Show the game result modal
-		const timeUsed = data.time_used || "N/A";  // Assuming winner_time is sent
-		const isWinner = data.is_winner || false;  // Assuming the current player won
+		const timeUsed = data.time_used || "N/A";
+		const winningUser = data.winner || "N/A";
+		//const winningTime = data.winner_time || "N/A";
+		console.log("users are: ", winningUser, currentUser);
 
-		//TODO : Use the username to display the winner's time and the you lost / won message
-		showModal(isWinner, timeUsed);  // Assuming the current player lost
+		showModal(timeUsed, winningUser, currentUser);  // Assuming the current player lost
 	}
 }
 
-export function initialize() {
-	const roomName = document.getElementById('room-name');  // Retrieve the room name from the hidden input
+export async function initialize() {
+	const roomName = document.getElementById('room-name');
+	const userInfo = await getUser();
+
 	if (!roomName) {
 		console.error("Room name is not available in the HTML!");
 		return;
 	}
-	console.log('Room name:', roomName);
 
+	currentUser = userInfo.Username;
+	console.log('Current user:', currentUser);
 	// Initialize WebSocket and assign to sudokuSocket
-	const sudokuSocket = initializeWebSocket(roomName);
+	sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {
 		sudokuSocket.onmessage = handleSocketMessage;
 	}

@@ -6,6 +6,9 @@ from asgiref.sync import sync_to_async
 from .models import SudokuRoom
 from django.utils import timezone
 
+def get_player1(room):
+    return room.player1
+
 class SudokuConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -39,7 +42,8 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         print(message_type)
         if message_type == 'board_complete':
             time_used = data.get('time_used')
-            is_winner = data.get('is_winner')
+            username = data.get('username')
+
             # Broadcast the completion message to the room group
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -47,25 +51,27 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                     'type': 'board_complete',
                     'message': data['message'],
                     'time_used': time_used,
-                    'is_winner': is_winner
+                    'winner': username  # Include the winner's username
                 }
             )
 
     async def board_complete(self, event):
         message = event['message']
         time_used = event.get('time_used')
-        is_winner = event.get('is_winner')
+        winner = event.get('winner')  # Winner's username
 
-        # Send message to WebSocket
+        # Broadcast the board complete message to both players with the winning details
         await self.send(text_data=json.dumps({
             'type': 'board_complete',
             'message': message,
             'time_used': time_used,
-            'is_winner': event.get('is_winner')
+            'winner': winner  # Send the winner's username
         }))
-        
+
     async def send_start_game(self, room):
         board = room.board
+
+        user = await sync_to_async(get_player1)(room)
         
         start_time = timezone.now().isoformat()
 
@@ -75,7 +81,8 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                 'type': 'game_start',
                 'message': 'Both players are connected. The game is starting!',
                 'board': board,
-                'time': start_time
+                'time': start_time,
+                'username': user.username
             }
         )
     
@@ -83,11 +90,13 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         message = event['message']
         board = event['board']
         start_time = event['time']
+        username = event['username']
 
         # Send the "game start" message to WebSocket
         await self.send(text_data=json.dumps({
             'type': 'game_start',
             'message': message,
             'board': board,
-            'time': start_time
+            'time': start_time,
+            'username': username
         }))

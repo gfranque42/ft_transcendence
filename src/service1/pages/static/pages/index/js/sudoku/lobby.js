@@ -1,3 +1,6 @@
+import { getUser } from '../getUser.js';
+
+
 /*
 game modes:
 	-1 = no modes
@@ -124,9 +127,9 @@ export function getCookie(name)
 // 	return UserInformation;
 // }
 
-export async function Start(view)
+export async function Start()
 {
-	const userInfo = await view.getUser();
+	const userInfo = await getUser();
 	console.log('Start button clicked');
 	if (gameMode == -1)
 		return ;
@@ -136,6 +139,7 @@ export async function Start(view)
 		user: userInfo.Username,
 		id: userInfo.ID,
 	};
+
 	console.log('roomData: ', userInfo);
 	console.log('roomData: ', roomData);
 	try
