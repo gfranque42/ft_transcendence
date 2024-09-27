@@ -14,7 +14,6 @@ async function updateUserStatus(UserToken) {
 
 	const data = await response.json();
 
-	console.log(data);
 
 	return data;
 }

@@ -108,7 +108,7 @@ button, input, optgroup, select, textarea {
 .btn-profile {
 	width: 100%;
     border-radius: 12px;
-    font: 1.7rem oswald;
+    font: 1.5rem oswald;
     text-align: center;
 
     color: #FFFBFC;
@@ -393,6 +393,7 @@ button, input, optgroup, select, textarea {
 }
 
 #fight {
+    visibility: hidden;
     color: #FFFBFC;
     background-color: #2E2C2F;
 }
@@ -461,8 +462,13 @@ button, input, optgroup, select, textarea {
     margin: 0.5vh;
 }
 
+.match-game-type-pong svg {
+    fill: #FFFBFC;
+}
+
 .match-users {
     font: 1.4rem 'Oswald';
+    line-height: 1.2; 
 }
 
 .match-history-card-pong {
@@ -470,7 +476,7 @@ button, input, optgroup, select, textarea {
 }
 
 .match-history-card-sudoku {
-    background-color: #F08080;
+    background-color: #726DA8;
 }
 
 .match-information {
@@ -508,7 +514,7 @@ button, input, optgroup, select, textarea {
 }
 
 .match-score {
-    font: 1rem 'Oswald';
+    font: 0.8rem 'Oswald';
     margin-left: 0.1vw;
 }
 

@@ -3,6 +3,12 @@ import {getCookie} from "../js/cookie.js";
 import {navigateTo} from "../js/index.js";
 
 
+// var DICT = {
+//     "sms": false,
+//     "email": false,
+//     "app": false,
+// };
+
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
 }
@@ -37,7 +43,7 @@ export default class extends abstractviews {
         // Extract CSRF token from HTML form
         const parser = new DOMParser();
         const doc = parser.parseFromString(tempContentHtml, 'text/html');
-        this.csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
+        this.csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;      
 
         return tempContentHtml;
     }
@@ -53,7 +59,7 @@ export default class extends abstractviews {
 
         formdata.append('username', username.value);
         formdata.append('avatar', avatar.files[0]);
-        formdata.append('token', token);
+        formdata.append('token', await token);
 
         let response = await fetch('https://localhost:8083/auth/profile', {
             method: 'PATCH',
@@ -77,19 +83,21 @@ export default class extends abstractviews {
 
         // Always include the CSRF token and token
         body["csrfmiddlewaretoken"] = this.csrfToken;
-        body["token"] = token;
+        body["token"] = await token;
 
-        console.log("!", app, "!");
+
+        // console.log("!", DICT, "!");
 
         // Conditionally add properties if they have values
         if (sms !== null && !isEmptyOrWhitespace(sms.value))
             body["phone_number"] = sms.value;
         if (email !== null && !isEmptyOrWhitespace(email.value))
             body["email"] = email.value;
+        if (app.checked)
+            body["app"] = app.value;
         if (otp && !isEmptyOrWhitespace(otp.value))
             body["otp"] = otp.value;
-        if (app && !isEmptyOrWhitespace(app.value))
-            body["app"] = app.value;
+        // console.log("!", DICT, "!");
         let response = await fetch('https://localhost:8083/auth/verification-add', {
             method: 'POST',
             body: JSON.stringify(body),
@@ -99,10 +107,48 @@ export default class extends abstractviews {
             },
         });
         const data = await response.json();
+        // console.log(DICT);
 
-        console.log(data);
+        // if (data.otp)
+        // {
+        //     DICT["email"] = false;
+        //     DICT["app"] = false;
+        //     DICT["sms"] = false;
+        // }
+        // console.log(DICT);
+                
         return data;
     }
+
+
+    // async VerificationNotVerified(token) {
+    //     if (this.csrfToken === null) {
+    //         throw new Error('CSRF token not available');
+    //     }
+    //     console.log("Deleting Verification");
+    //     // Always include the CSRF token and token
+    //     DICT["csrfmiddlewaretoken"] = this.csrfToken;
+    //     DICT["token"] = await token;
+
+    //     // Conditionally add properties if they have values
+    //     console.log(DICT);
+    //     let response = await fetch('https://localhost:8083/auth/verification-add', {
+    //         method: 'DELETE',
+    //         body: JSON.stringify(DICT),
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRFToken': this.csrfToken
+    //         },
+    //     });
+    //     const data = await response.json();
+
+    //     // DICT["email"] = false;
+    //     // DICT["app"] = false;
+    //     // DICT["sms"] = false;
+
+    //     console.log(data);
+    //     return data;
+    // }
 
     async friendRequest(token, checkbox, fromUser) {
         // let formdata = new FormData();
@@ -165,7 +211,6 @@ export default class extends abstractviews {
 
         const data = await response.json();
 
-        console.log(data);
 
         return data;
     }
@@ -177,8 +222,8 @@ export default class extends abstractviews {
         const body = {};
 
         // Always include the CSRF token and token
-        body["token"] = await token;
         body["friend_id"] = friend.value;
+        body["token"] = await token;
 
         const response = await fetch('https://localhost:8083/auth/friends', {
             method: 'DELETE',
@@ -192,7 +237,6 @@ export default class extends abstractviews {
 
         const data = await response.json();
 
-        console.log(data);
 
         return data;
     }
