@@ -12,6 +12,7 @@ import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
+// var view = null;
 
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
@@ -19,11 +20,16 @@ function isEmptyOrWhitespace(str) {
 
 
 window.addEventListener('beforeunload', function (event) {
-    // Perform cleanup actions here, like saving data or closing connections.
+    console.log("UNLOADING");
+    // if (view && view instanceof Profile)
+    // {
+    //     console.log("IN PROFILE");
+    //     console.log(view instanceof Profile);
+    //     view.VerificationNotVerified(UserToken);
+    // }
     logout(UserToken);
 });
 
-// Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
@@ -35,16 +41,13 @@ const getParams = match => {
     }));
 };
 
-// Function to navigate to a URL
 export const navigateTo = url => {
     history.pushState(null, null, url);
     router();
 };
 
 function JSONItirator(form) {
-    // console.log(form);
     const valuesArray = [];
-
     
     for(const key in form) {
         for (const value in form[key]) {
@@ -53,7 +56,6 @@ function JSONItirator(form) {
     }
     
     const errorElements = document.querySelectorAll(".error");
-    // console.log(errorElements);
     
     if (form.detail == "Username is taken") {
         errorElements[0].textContent = form.detail;
@@ -203,46 +205,32 @@ const router = async () => {
         VerificationRoute();
     }
 
-    async function FollowingProfile(TmpIsCorrect, isOTP) {
+    async function FollowingProfile(TmpIsCorrect, verif) {
         const IsCorrect = await TmpIsCorrect;
+        const isOTP = await verif;
         if (IsCorrect)
         {
-            if (!isOTP)
+            if (isOTP.otp)
                 navigateTo("/profile/")
             return true;
         }
         return false;
     }
 
-    function UnFinishedOTP() {
-        window.addEventListener('beforeunload', function () {
-            const otpPopup = document.getElementById('profile-otp-code');
-        
-            if (window.getComputedStyle(otpPopup).display == 'block') {
-                view.profileUserPost(UserToken, "", "", "00");
-                console.log("UNLOADDING with profile");
-            }
-            console.log("UNLOADDING");
-        });
-    }
-
-    async function profileUtils(isOkay, view) {
+    async function profileUtils(isOkay, verif) {
+        const check_otp = await verif;
+        if (check_otp.otp)
+            return ;
         const status = await isOkay;
         const token = await UserToken;
-        if (status) {
-            var data = await view.LastCheckAddVerification(token);
-        }
-        if (data.success)
-        {
-            // console.log("all good");
-            hidePopstate();
-            const otpPopup = document.getElementById('profile-otp-code');
-            const clickOff = document.getElementById('click-off');
 
-            otpPopup.style.display = 'block';
-            clickOff.style.filter = 'blur(5px)';
-        }
-        UnFinishedOTP(view);
+        hidePopstate();
+        const otpPopup = document.getElementById('profile-otp-code');
+        const clickOff = document.getElementById('click-off');
+
+        otpPopup.style.display = 'block';
+        clickOff.style.filter = 'blur(5px)';
+        // }
     }
 
 
@@ -290,40 +278,32 @@ const router = async () => {
         profileForm.forEach((form) => {
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
-                console.log(event.submitter);
                 const formElement = event.target;
                 const accept = formElement.querySelector('#reject');
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
                 const to_user = document.querySelector('input[name="to_user"]');
-                console.log(event.submitter.value)
                 if ('btn-profile-update' == event.submitter.id) {
-                    console.log("stealing the thunder");
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
                 } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
                     if (event.submitter.id == 'accept')
                         FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value))
                     else
                         FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value))
-                    // navigateTo("/profile/")
                 } else if (event.submitter.id == 'friend-form') {
                     friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
                 } else if (event.submitter.id == 'unfriend') {
-                    console.log("unfriend");
                     FollowingProfile(view.deleteFriend(UserToken, event.submitter));
                     navigateTo("/profile/")
                 } else {
-                    console.log("last")
                     const email = document.querySelector('input[name="email"]');
                     const phone_number = document.querySelector('input[name="phone_number"]');
                     const otp = document.querySelector('input[name="otp"]');
                     const app = document.querySelector('input[name="app"]');
 
                     const verif = view.profileUserPost(UserToken, email, phone_number, otp, app);
-                    // console.log(verif);
-                    const isOkay = FollowingProfile(checkForm(verif), isEmptyOrWhitespace(otp.value));
-                    if (isEmptyOrWhitespace(otp.value))
-                        profileUtils(isOkay, view);
+                    const isOkay = FollowingProfile(checkForm(verif), verif);
+                    profileUtils(isOkay, verif);
                     // const otpPopup = document.getElementById('profile-otp-code');
                 }
             });
@@ -343,7 +323,6 @@ async function displayUser()
 
     if (!tempToken) 
         return ;
-    console.log("pass through here");
     setCookie("token", tempToken, 42)
     const options = {
         method: 'GET', // HTTP method
@@ -361,7 +340,6 @@ async function displayUser()
         return ;
     }
     const UserInformation = await response.json();
-    console.log(UserInformation);
     const userElement = document.getElementById('user');
     if (userElement) {
         userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
@@ -401,7 +379,6 @@ document.addEventListener("DOMContentLoaded", () => {
         var popup = document.querySelectorAll('#simple-popup');
         const ispopup = Array.from(popup).some(div =>  div.contains(event.target));
 
-        console.log(event.target);
         if (event.target.matches('#setup-email')) {
             emailCode.style.display = 'block';
             clickOff.style.filter = 'blur(5px)';

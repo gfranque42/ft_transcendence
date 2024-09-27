@@ -253,8 +253,8 @@ POST http://localhost:8000/auth/games
 Content-Type: application/json
 
 {
-    "winner_id": "1",
-    "loser_id": "2",
+    "winner_id": "2",
+    "loser_id": "1",
     "score_winner": "11",
     "score_loser": "0",
     "game_type": "pong"

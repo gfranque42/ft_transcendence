@@ -18,6 +18,8 @@ from .models import UserProfile, Friend_request, GameHistory
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 
+import vonage
+
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
@@ -33,7 +35,6 @@ def gameStats(user):
         win_ratio = 0
         rival = None
     else:
-        print("\n\n\n\n", total_games, "\n\n\n\n")
         win_ratio = (len(won_games) / len(total_games))
         opponents = []
         for game in total_games:
@@ -64,7 +65,6 @@ def CheckToken(user):
     try:
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         UserProfile.objects.get(id=decoded['id'])
-        print("\n\n\n\n this i happening in chectoken \n\n\n\n\n")
         return True    
     except jwt.ExpiredSignatureError:
         # The token has expired
@@ -88,6 +88,7 @@ def CreateToken(userProfile):
     return (token)
 
 def JsonItieator(json_data):
+    print ("printing json data :", json_data)
     for key, value in json_data.items():
         if (value == True):
             return key
@@ -125,14 +126,18 @@ def generate_qr_code(userProfile):
 
 def SendOTPbySMS(userProfile):
     totp = pyotp.TOTP(userProfile.otp_secret)
-    print(userProfile.sms)
-    send_sms(
-        "Verifiaction",
-        totp.now(),
-        settings.SMS_HOST_USER,
-        [userProfile.sms],
-        # fail_silently=False
-    )
+
+    client = vonage.Client(key=settings.VONAGE_API_KEY, secret=settings.VONAGE_API_SECRET)
+    response = client.sms.send_message({
+        'from': settings.VONAGE_VIRTUAL_NUMBER,
+        'to': [userProfile.sms],
+        'text': totp.now(),
+    })
+    if response["messages"][0]["status"] == "0":
+        print("Message sent successfully.")
+    else:
+        print(f"Message failed with error: {response['messages'][0]['error-text']}")
+
 
 
 def SendOTPbyApp(userProfile):
@@ -147,11 +152,16 @@ def CheckForTFA(userprofile):
         'sms': SendOTPbySMS,
         'app': SendOTPbyApp,
     }
+    print ("printing json data :", userprofile.tfa)
     methode = JsonItieator(userprofile.tfa)
-    if (methode):
-        otp_methods[methode](userprofile)
-        print(methode)
-        return_value = True
+    for key, value in userprofile.tfa.items():
+        if (value == True):
+            otp_methods[key](userprofile)
+    # print("methode :", methode)
+    # if (methode):
+        # print(methode)
+    return_value = True
+
     return return_value
 
 def GetFriendRequests(userProfile):

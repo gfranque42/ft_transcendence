@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,13 +33,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'stanislas.barrage@gmail.com'
-EMAIL_HOST_PASSWORD = 'uees wujd bwwz mohu'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 
-SMS_BACKEND = 'sms.backends.dummy.SmsBackend'
-SMS_HOST_USER = '+123456789'
-
+VONAGE_API_KEY = os.getenv('VONAGE_API_KEY')
+VONAGE_API_SECRET = os.getenv('VONAGE_API_SECRET')
+VONAGE_VIRTUAL_NUMBER = os.getenv('VONAGE_VIRTUAL_NUMBER')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,6 +57,8 @@ INSTALLED_APPS = [
     # 'rest_framework_simplejwt.token_blacklist',
 
     'bootstrap5',
+	
+    "vonage",
 	
     'sms',
 
@@ -112,8 +116,6 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF_COOKIE_SAMESITE = 'None'
 
 ROOT_URLCONF = 'authapi.urls'
-
-import os
 
 TEMPLATES = [
     {

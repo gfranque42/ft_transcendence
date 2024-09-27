@@ -121,7 +121,7 @@ class verificationEmail(forms.Form):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
         token = cleaned_data.get('token')
-        print("\n\n\n\nclening to verify email\n\n\n\n")
+        print("clening to verify email")
         if email and token:
             try:
                 # Decode the token to get user ID
@@ -132,16 +132,12 @@ class verificationEmail(forms.Form):
                 
                 # Verify the email
                 if userProfile.user.email!= email:
-                    print("\n\n1\n\n")
                     raise forms.ValidationError('Email not verified')
             except jwt.ExpiredSignatureError:
-                print("\n\n2\n\n")
                 raise forms.ValidationError('Token has expired')
             except jwt.InvalidTokenError:
-                print("\n\n3\n\n")
                 raise forms.ValidationError('Invalid token')
             except UserProfile.DoesNotExist:
-                print("\n\n4\n\n")
                 raise forms.ValidationError('User not found')
         print("finished verifying email")
         return cleaned_data
@@ -159,7 +155,6 @@ class verificationSMS(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
 
-        print (cleaned_data)
         phone_number = self.cleaned_data.get('phone_number')
         if not phone_number:
             cleaned_data['phone_number'] = False
@@ -173,9 +168,9 @@ class verificationSMS(forms.Form):
         
         # Check and format the phone number
         if len(phone_number) == 10 and phone_number.startswith('0'):
-            cleaned_data['phone_number'] = '+33' + phone_number[1:] 
-        elif len(phone_number) == 9:
             cleaned_data['phone_number'] = '+33' + phone_number
+        elif len(phone_number) == 9:
+            cleaned_data['phone_number'] = '+330' + phone_number
         else:
             raise forms.ValidationError("Enter a valid French phone number.")
         return cleaned_data 
@@ -223,7 +218,6 @@ class AnswerFriendForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
 
-        print("\n\n\n\n\n stan\n\n\n\n")
 
         token = cleaned_data.get('token')
         try:
