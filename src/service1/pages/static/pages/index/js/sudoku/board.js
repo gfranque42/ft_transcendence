@@ -113,6 +113,19 @@ function selectTile() {
 			clearHighlights();
 		}
 
+		
+		if (tileSelected != null) {
+			tileSelected.classList.remove("tile-selected");
+			clearHighlights();
+		}
+		tileSelected = this;
+		tileSelected.classList.add("tile-selected");
+		highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
+		let number = tileSelected.innerText;
+		if (number != 0) {
+			highlightSameNumberTiles(number); // Mettre en évidence les chiffres similaires
+		}
+
 		// Vérifier la validité de la grille
 		if (!isValidSudoku(board)) {
 			console.log("Grille invalide");
@@ -129,18 +142,6 @@ function selectTile() {
 				'username': currentUser,
 			}));
 		}
-
-		if (tileSelected != null) {
-			tileSelected.classList.remove("tile-selected");
-			clearHighlights();
-		}
-		tileSelected = this;
-		tileSelected.classList.add("tile-selected");
-		highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
-		let number = tileSelected.innerText;
-		if (number != 0) {
-			highlightSameNumberTiles(number); // Mettre en évidence les chiffres similaires
-		}
 }
 
 function handleKeyPress(event) {
@@ -155,6 +156,22 @@ function handleKeyPress(event) {
 			tileSelected = null;
 			clearHighlights();
 		}
+	}
+	// Vérifier la validité de la grille
+	if (!isValidSudoku(board)) {
+		console.log("Grille invalide");
+	}
+
+	// Vérifier si le jeu est terminé
+	if (isBoardComplete(board) && isValidSudoku(board)) {
+		console.log("Grille complète");
+		const timeUsed = document.getElementById("timer").innerText;
+		socket.send(JSON.stringify({
+			'type': 'board_complete',
+			'message': 'Board completed!',
+			'time_used': timeUsed,
+			'username': currentUser,
+		}));
 	}
 }
 

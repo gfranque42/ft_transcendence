@@ -1,3 +1,4 @@
+// TODO: Change the modal to have a play again button and a go back to lobby button
 export function showModal(timeUsed, winningUser, currentUser) {
 	const modal = document.getElementById("game-result-modal");
 	const resultTitle = document.getElementById("result-title");
@@ -26,9 +27,8 @@ export function showModal(timeUsed, winningUser, currentUser) {
 		}
 	};
 
-	// Add functionality for "Play Again" button
 	document.getElementById("play-again").onclick = function() {
-		location.reload();  // This reloads the page to start a new game
+		window.location.href = "https://localhost:8083/sudoku/";  // Redirect to the lobby page
 	};
 }
 
