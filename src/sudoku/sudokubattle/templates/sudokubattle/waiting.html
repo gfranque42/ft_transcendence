@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sudoku</title>
+	<link href="{% static 'css/waiting.css' %}" rel="stylesheet">
+	<link href="{% static 'css/navbar.css' %}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
+	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
+	<link rel="stylesheet" type="text/css" href="/static/pages/pages.css">
+	<!-- <meta name="csrf-token" content="{{ csrf_token }}"> -->
+</head>
+<body>
+	{% csrf_token %}
+	<div class="main_text">
+		<h1>Waiting for an opponent...</h1>
+	</div>
+</body>
+</html>

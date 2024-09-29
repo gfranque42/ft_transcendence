@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sudoku</title>
+	<link href="{% static 'css/lobby.css' %}" rel="stylesheet">
+	<link href="{% static 'css/navbar.css' %}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
+	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
+    <link rel="stylesheet" type="text/css" href="/static/pages/pages.css">
+	<!-- <meta name="csrf-token" content="{{ csrf_token }}"> -->
+</head>
+<body>
+	{% csrf_token %}
+    <div class="navbar">
+		<a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+		<a href="/" class="navbar-content" id="home" data-link>HOME</a>
+		<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
+	  </div>
+	<button class="PvP Button" data-action="PvP">Player vs Player</button>
+	<button class="Solo Button" data-action="Solo">Solo Play</button>
+	<button class="Start Button" data-action="Start">Start Game</button>
+	<button class="Easy Difficulty" data-action="Easy">Easy</button>
+	<button class="Medium Difficulty" data-action="Medium">Medium</button>
+	<button class="Hard Difficulty" data-action="Hard">Hard</button>
+	<script>
+		const dns = "{{ dns|escapejs }}";
+	</script>
+	<script src="{% static 'js/lobby.js' %}" defer></script>
+</body>
+<footer>
+	<div class="background-text">Sudoku</div>
+</footer>
+</html>

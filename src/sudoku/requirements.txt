@@ -1,4 +1,8 @@
-Django
+Django==4.2
 psycopg2-binary
 channels
-redis
+django-admin
+daphne
+channels_redis
+django-cors-headers
+djangorestframework
