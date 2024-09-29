@@ -45,7 +45,7 @@ class CreateUserForm(UserCreationForm):
         if email:
             try:
                 validate_email(email)
-            except ValidationError:
+            except forms.ValidationError:
                 raise forms.ValidationError('Enter a valid email address.')
             if User.objects.filter(email=email).exists():
                 raise forms.ValidationError('A user with that email already exists.')

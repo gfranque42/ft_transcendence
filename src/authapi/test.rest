@@ -259,9 +259,18 @@ Content-Type: application/json
     "score_loser": "0",
     "game_type": "pong"
 }
+
 ###
 
+GET http://localhost:8000/auth/games
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3NjIwNDk4LCJpYXQiOjE3Mjc2MTc5Nzh9.P5nRaAm5RFZs88gH1-k3R4wuZL4MxJ2hUSU5Cxe640s
 
+
+{
+}
+
+###
 
 GET http://localhost:8000/auth/get_token
 Content-Type: application/json

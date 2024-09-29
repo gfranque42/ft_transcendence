@@ -31,20 +31,27 @@ import jwt, pyotp, json
 # !GAMES
 
 class Games(APIView):
-    def get (request):
+    def get(self, request):
         auth_header = request.headers.get('Authorization')
         try:
             token = auth_header.split(' ')[1]
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
-            UserProfile.objects.get(id=user_id)
-            return Response({'csrf_token': get_token(request)}, status=status.HTTP_200_OK)
+            # You might want to check if the user exists here, based on your application logic
+            UserProfile.objects.get(id=user_id)  # Ensure to handle potential DoesNotExist exception
+            
+            # Instead of getting CSRF_COOKIE from META, retrieve it from cookies
+            csrf_token = request.COOKIES.get('csrftoken')  # Default name is 'csrftoken'
+
+            return Response({'csrf_token': csrf_token}, status=status.HTTP_200_OK)
+
         except jwt.ExpiredSignatureError:
-            # The token has expired
             return Response({'error': 'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
             return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
     def post(self, request):
         winner_id = request.data['winner_id']
         loser_id = request.data['loser_id']

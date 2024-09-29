@@ -12,6 +12,7 @@ import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
+var isLoaded = false;
 // var view = null;
 
 function isEmptyOrWhitespace(str) {
@@ -254,14 +255,17 @@ const router = async () => {
     }
 
 
-    if (!UserToken)
-        {
-            const token = getCookie("token")
-                
-            if (token != null)
-                UserToken = getRenewedToken(token)
-        }
-    if (match.route.path == "/register/") {
+    if (!UserToken) {
+        const token = getCookie("token")
+            
+        if (token != null)
+            UserToken = getRenewedToken(token)
+    }
+    if (match.route.path == "/") {
+        if (isLoaded)
+            document.querySelector('#app').style.display = 'block';
+    }
+    else if (match.route.path == "/register/") {
                                                                             // REGISTER     It send the information given by the user to the authapi and adds a cookie
         console.log("post awaited");
         const registrationForm = document.querySelector('form.form-register');
@@ -362,9 +366,14 @@ async function displayUser()
     const UserInformation = await response.json();
     const userElement = document.getElementById('user');
     if (userElement) {
+        let profileButton = '';
+        if (window.location.pathname === '/' || window.location.pathname === '/home/') {
+            profileButton = `<div class="profile" id="profile">Profile</div>`;
+        }
         userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
+        ${profileButton}
     </div>`;
     }
 }
@@ -374,14 +383,45 @@ window.addEventListener("popstate", router);
 
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
+    //Loader
+    console.log("DOM loading")
+
+    const handleHomePageLoad = () => {
+        console.log("handleHomePageLoad");
+            
+        setTimeout(function() {
+            const app = document.querySelector('#app');
+            const loader = document.querySelector('.loader');
+            if (app)
+                document.querySelector('#app').style.display = 'none';
+            if (loader)
+                document.querySelector('.loader').style.display = 'block';
+            console.log("Display swicthed")
+        },40);
+        
+        
+        setTimeout(function() {
+            const app = document.querySelector('#app');
+            const loader = document.querySelector('.loader');
+            console.log("Display swicthed agains")
+            if (loader)
+                document.querySelector('.loader').style.display = 'none';
+            if (app)
+                document.querySelector('#app').style.display = 'block';
+            isLoaded = true;
+        },1000);
+    };
     
-    
+    handleHomePageLoad();
+//fin Loader
+
     document.addEventListener('click', function(event) {
         if (event.target.matches('a[data-link]')) {
             event.preventDefault();
             navigateTo(event.target);
         }
     });
+
     document.addEventListener("click", function(event) {
         const UserTest = document.querySelector(".navbar-content.user-present")
         if (event.target.matches('#disconnect'))
@@ -389,6 +429,8 @@ document.addEventListener("DOMContentLoaded", () => {
             eraseCookie("token");
             UserToken = logout(UserToken);
             document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+        } else if (event.target.matches('#profile')) {
+            navigateTo('/profile/');
         }
         // Get references to the elements
         var qrCode = document.getElementById('qr-code');
@@ -422,4 +464,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     router();
 });
-
