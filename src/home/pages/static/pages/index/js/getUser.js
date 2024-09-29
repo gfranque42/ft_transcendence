@@ -4,7 +4,10 @@ import {setCookie, getCookie, eraseCookie} from "../js/cookie.js";
 export async function getUser()
 {
 	const token = getCookie('token');
-
+	if (!token)
+	{
+		return null;
+	}
 	const options = {
 		method: 'GET',
 		headers: {
