@@ -368,21 +368,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const handleHomePageLoad = () => {
         console.log("handleHomePageLoad");
-        
+            
         setTimeout(function() {
-            document.querySelector('#app').style.display = 'none';
-            document.querySelector('.loader').style.display = 'block';
+            const app = document.querySelector('#app');
+            const loader = document.querySelector('.loader');
+            if (app)
+                document.querySelector('#app').style.display = 'none';
+            if (loader)
+                document.querySelector('.loader').style.display = 'block';
             console.log("Display swicthed")
         },40);
-
-
+        
+        
         setTimeout(function() {
+            const app = document.querySelector('#app');
+            const loader = document.querySelector('.loader');
             console.log("Display swicthed agains")
-            document.querySelector('.loader').style.display = 'none';
-            document.querySelector('#app').style.display = 'block';
+            if (loader)
+                document.querySelector('.loader').style.display = 'none';
+            if (app)
+                document.querySelector('#app').style.display = 'block';
             isLoaded = true;
         },1000);
     };
+    
     handleHomePageLoad();
 //fin Loader
 
