@@ -282,51 +282,40 @@ const router = async () => {
         profileForm.forEach((form) => {
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
-                console.log(event.submitter);
                 const formElement = event.target;
                 const accept = formElement.querySelector('#reject');
-                console.log(accept);
                 const username = document.querySelector('input[name="username"]');
                 const avatar = document.querySelector('input[name="avatar"]');
                 const to_user = document.querySelector('input[name="to_user"]');
-                console.log(event.submitter.value)
                 if ('btn-profile-update' == event.submitter.id) {
-                    console.log("stealing the thunder");
                     FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
                 } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
                     if (event.submitter.id == 'accept')
-                        view.friendRequest(UserToken, true,  event.submitter.value)
+                        FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value))
                     else
-                        view.friendRequest(UserToken, false,  event.submitter.value)
-                    navigateTo("/profile/")
+                        FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value))
                 } else if (event.submitter.id == 'friend-form') {
                     friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
                 } else if (event.submitter.id == 'unfriend') {
-                    console.log("unfriend");
-                    view.deleteFriend(UserToken, event.submitter);
+                    FollowingProfile(view.deleteFriend(UserToken, event.submitter));
                     navigateTo("/profile/")
                 } else {
-                    console.log("last")
                     const email = document.querySelector('input[name="email"]');
                     const phone_number = document.querySelector('input[name="phone_number"]');
                     const otp = document.querySelector('input[name="otp"]');
                     const app = document.querySelector('input[name="app"]');
 
                     const verif = view.profileUserPost(UserToken, email, phone_number, otp, app);
-                    // console.log(verif);
-                    const isOkay = FollowingProfile(checkForm(verif), isEmptyOrWhitespace(otp.value));
-                    if (isEmptyOrWhitespace(otp.value))
-                        profileUtils(isOkay, view);
+                    const isOkay = FollowingProfile(checkForm(verif), verif);
+                    profileUtils(isOkay, verif);
                     // const otpPopup = document.getElementById('profile-otp-code');
                 }
             });
         });
     }
 
-    if (!UserToken)
-            UserToken = getCookie("token");
-        displayUser();
-    };
+    displayUser();
+};
     
     
     async function getToken() {
