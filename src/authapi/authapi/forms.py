@@ -56,8 +56,8 @@ class CreateUserForm(UserCreationForm):
 
 
 class GetUserForm(forms.Form):
-    username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
     def clean(self):
         cleaned_data = super().clean()
