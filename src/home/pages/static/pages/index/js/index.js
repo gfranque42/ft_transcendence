@@ -5,7 +5,14 @@ import Login from "../views/login.js";
 import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
 import Profile from "../views/profile.js";
+import Sudoku from "../views/sudoku.js";
+import SudokuLobby from "../views/lobby_sudoku.js";
+import SudokuWaiting from "../views/waiting_sudoku.js";
 
+
+
+import { initialize } from "./sudoku/sudoku.js";
+import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
 import {getRenewedToken} from "./token.js"
 import {logout} from "./logout.js"
@@ -147,7 +154,10 @@ const router = async () => {
         { path: "/", view: Home },
         { path: "/login/", view: Login },
         { path: "/profile/", view: Profile },
-        { path: "/register/", view: Register }
+        { path: "/register/", view: Register },
+        { path: "/sudoku/", view: Sudoku },
+        { path: "/sudoku/waiting-room", view: SudokuWaiting },
+		{ path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
     
@@ -332,7 +342,32 @@ const router = async () => {
                 }
             });
         });
-    }
+	} else if (match.route.path == "/sudoku/") {
+        console.log("post awaited");
+
+		const actionHandlers = {
+			PvP: PvP,
+			Solo: Solo,
+			Start: Start,
+			Easy: Easy,
+			Medium: Medium,
+			Hard: Hard,
+			Start: Start,
+		};
+
+		changeUsername(view);
+		document.addEventListener('click', function(event) {
+			// Handling data-action for button actions
+			const action = event.target.getAttribute('data-action');
+			if (action && actionHandlers[action]) {
+				actionHandlers[action](view); // Call the corresponding function from the lookup table
+			} else if (action) {
+				console.warn('No action defined for', action);
+			}
+		});
+    } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
+		initialize();
+	}
 
     displayUser();
 };
