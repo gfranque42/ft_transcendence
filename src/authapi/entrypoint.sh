@@ -22,10 +22,6 @@ createdb -O $DATABASEUSER $MYDATABASE
 
 EOF
 
-python manage.py collectstatic --noinput
-
-echo "static files collected"
-
 python manage.py makemigrations
 
 python manage.py migrate
