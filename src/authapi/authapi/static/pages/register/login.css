@@ -51,6 +51,7 @@
     padding-top: 21vh;
     align-content: flex-start;
     flex-direction: column;
+    margin: 11% 0%;
 }
 
 .form-control {
