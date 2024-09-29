@@ -12,6 +12,7 @@ urlpatterns = [
     re_path(r'^auth/register$', views.RegisterForm.as_view(), name='register'), 
     re_path(r'^auth/verification$', views.VerifyOTPView.as_view(), name='verification'), 
     re_path(r'^auth/test_token$', views.test_token, name='test_token'),
+    re_path(r'^auth/get_token$', views.get_token, name='get_token'),
     re_path(r'^auth/test_OTP$', views.test_OTP, name='test_OTP'),
     re_path(r'^auth/profile$', views.Profile.as_view(), name='profile'),
     re_path(r'^auth/verification-add$', views.AddVerification.as_view(), name='addVerification'), 

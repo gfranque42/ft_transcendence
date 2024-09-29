@@ -21,9 +21,8 @@ a .navbar{
 
 
 .navbar-logo {
+    transform: translate(0%, -25%);
     height: 3vw;
-    left: 5vw;
-    position: fixed;
 }
 
 .navbar-home {

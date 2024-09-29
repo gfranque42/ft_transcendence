@@ -1,6 +1,5 @@
 
 export async function logout(userToken) {
-	console.log(await userToken);
 	const token = await userToken;
 	
 	if (!token)

@@ -7,16 +7,30 @@ import Register from "../views/register.js";
 import Profile from "../views/profile.js";
 
 
+import {getRenewedToken} from "./token.js"
 import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
 var isLoaded = false;
+// var view = null;
 
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
 }
-// Define a function to convert path to regex
+
+
+window.addEventListener('beforeunload', function (event) {
+    console.log("UNLOADING");
+    // if (view && view instanceof Profile)
+    // {
+    //     console.log("IN PROFILE");
+    //     console.log(view instanceof Profile);
+    //     view.VerificationNotVerified(UserToken);
+    // }
+    logout(UserToken);
+});
+
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
@@ -28,16 +42,13 @@ const getParams = match => {
     }));
 };
 
-// Function to navigate to a URL
 export const navigateTo = url => {
     history.pushState(null, null, url);
     router();
 };
 
 function JSONItirator(form) {
-    // console.log(form);
     const valuesArray = [];
-
     
     for(const key in form) {
         for (const value in form[key]) {
@@ -46,7 +57,6 @@ function JSONItirator(form) {
     }
     
     const errorElements = document.querySelectorAll(".error");
-    // console.log(errorElements);
     
     if (form.detail == "Username is taken") {
         errorElements[0].textContent = form.detail;
@@ -196,51 +206,41 @@ const router = async () => {
         VerificationRoute();
     }
 
-    async function FollowingProfile(TmpIsCorrect, isOTP) {
+    async function FollowingProfile(TmpIsCorrect, verif) {
         const IsCorrect = await TmpIsCorrect;
+        const isOTP = await verif;
         if (IsCorrect)
         {
-            if (!isOTP)
+            if (isOTP.otp)
                 navigateTo("/profile/")
             return true;
         }
         return false;
     }
 
-    function UnFinishedOTP() {
-        window.addEventListener('beforeunload', function () {
-            const otpPopup = document.getElementById('profile-otp-code');
-            logout(UserToken);
-            if (window.getComputedStyle(otpPopup).display == 'block') {
-                view.profileUserPost(UserToken, "", "", "00");
-                console.log("UNLOADDING with profile");
-            }
-            console.log("UNLOADDING");
-        });
-    }
-
-    async function profileUtils(isOkay, view) {
+    async function profileUtils(isOkay, verif) {
+        const check_otp = await verif;
+        if (check_otp.otp)
+            return ;
         const status = await isOkay;
         const token = await UserToken;
-        if (status) {
-            var data = await view.LastCheckAddVerification(token);
-        }
-        if (data.success)
-        {
-            // console.log("all good");
-            hidePopstate();
-            const otpPopup = document.getElementById('profile-otp-code');
-            const clickOff = document.getElementById('click-off');
 
-            otpPopup.style.display = 'block';
-            clickOff.style.filter = 'blur(5px)';
-        }
-        UnFinishedOTP(view);
+        hidePopstate();
+        const otpPopup = document.getElementById('profile-otp-code');
+        const clickOff = document.getElementById('click-off');
+
+        otpPopup.style.display = 'block';
+        clickOff.style.filter = 'blur(5px)';
+        // }
     }
 
 
-    if (!UserToken)
-        UserToken = getCookie("token");
+    if (!UserToken) {
+        const token = getCookie("token")
+            
+        if (token != null)
+            UserToken = getRenewedToken(token)
+    }
     if (match.route.path == "/") {
         if (isLoaded)
             document.querySelector('#app').style.display = 'block';
@@ -317,18 +317,16 @@ const router = async () => {
     displayUser();
 };
     
-    
-    async function getToken() {
-        return UserToken;
-    }
-    
-    async function displayUser()
-    {
-        let tempToken = await getToken();
+async function getToken() {
+    return UserToken;
+}
+
+async function displayUser()
+{
+    let tempToken = await getToken();
 
     if (!tempToken) 
         return ;
-    console.log("pass through here");
     setCookie("token", tempToken, 42)
     const options = {
         method: 'GET', // HTTP method
@@ -352,7 +350,7 @@ const router = async () => {
         if (window.location.pathname === '/' || window.location.pathname === '/home/') {
             profileButton = `<div class="profile" id="profile">Profile</div>`;
         }
-        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${UserInformation.Username}
+        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
         ${profileButton}
@@ -414,7 +412,6 @@ document.addEventListener("DOMContentLoaded", () => {
         var popup = document.querySelectorAll('#simple-popup');
         const ispopup = Array.from(popup).some(div =>  div.contains(event.target));
 
-        console.log(event.target);
         if (event.target.matches('#setup-email')) {
             emailCode.style.display = 'block';
             clickOff.style.filter = 'blur(5px)';

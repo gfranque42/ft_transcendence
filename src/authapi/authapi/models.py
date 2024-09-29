@@ -36,7 +36,7 @@ class UserProfile(models.Model):
     tfa = models.JSONField(default=default_preferences)
 
 
-    sms = models.CharField(max_length=12, blank=True, validators=[phone_regex])
+    sms = models.CharField(max_length=13, blank=True, validators=[phone_regex])
     def __str__(self):
         return self.user.username
     def is_logged_in(self):

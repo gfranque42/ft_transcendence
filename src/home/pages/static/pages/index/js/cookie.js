@@ -7,12 +7,9 @@ export function setCookie(name, value, minutes) {
         expires = "; expires=" + date.toUTCString();
     }
     // document.cookie = name + "=" + (value || "") + expires + "; path=/cookie/; SameSite=None; Secure";
-    console.log(document.cookie);
 
     document.cookie = name + "=" + (value || "") + "; expires=" + expires + "; path=/; SameSite=None; Secure";
 
-    console.log(document.cookie);
-    console.log(name);
 
 }
 

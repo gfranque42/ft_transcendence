@@ -3,8 +3,6 @@ export default class {
         this.csrfToken = null;
     }
 
-
-
     async LastCheckAddVerification(tmpToken) { 
         const token = await tmpToken;
 

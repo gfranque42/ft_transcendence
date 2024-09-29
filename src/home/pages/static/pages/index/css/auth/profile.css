@@ -108,7 +108,7 @@ button, input, optgroup, select, textarea {
 .btn-profile {
 	width: 100%;
     border-radius: 12px;
-    font: 1.7rem oswald;
+    font: 1.5rem oswald;
     text-align: center;
 
     color: #FFFBFC;
@@ -393,9 +393,11 @@ button, input, optgroup, select, textarea {
 }
 
 #fight {
+    visibility: hidden;
     color: #FFFBFC;
     background-color: #2E2C2F;
 }
+
 
 #unfriend {
     color: #2E2C2F;
@@ -448,22 +450,33 @@ button, input, optgroup, select, textarea {
 
 .match-history-card {
     display: flex;
-}
-
-.match-game-type-pong {
-    height: 4.5vh;
-}
-
-.match-users {
-    font: 1.4rem 'Oswald';
-}
-
-.match-history-card {
-    background-color: #53917E;
+    max-height: 9vh;
     width: 100%;
     padding: 1.2vh;
     border-radius: 9px;
     margin: 1vh 0;
+}
+
+.match-game-type-pong {
+    height: 5vh;
+    margin: 0.5vh;
+}
+
+.match-game-type-pong svg {
+    fill: #FFFBFC;
+}
+
+.match-users {
+    font: 1.4rem 'Oswald';
+    line-height: 1.2; 
+}
+
+.match-history-card-pong {
+    background-color: #53917E;
+}
+
+.match-history-card-sudoku {
+    background-color: #726DA8;
 }
 
 .match-information {
@@ -492,7 +505,7 @@ button, input, optgroup, select, textarea {
 .match-status-card{
     background: #FFFBFC;
     align-self: center;
-    width: 3vw;
+    width: 4vw;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -501,11 +514,71 @@ button, input, optgroup, select, textarea {
 }
 
 .match-score {
-    font: 1rem 'Oswald';
+    font: 0.8rem 'Oswald';
     margin-left: 0.1vw;
 }
 
 .match-player-info {
     color:#FFFBFC;
     margin-left: 1vw;
+}
+
+.scroll-match-history::-webkit-scrollbar
+{
+	width: 0px;
+	/* background-color: #F5F5F5; */
+}
+
+.scroll-match-history::-webkit-scrollbar-thumb
+{
+	border-radius: 4px;
+	background-color: none;
+}
+
+.scroll-match-history {
+    /* line-height:3em; */
+    max-height: 65vh;;
+    overflow:auto;
+    
+    /* padding:5px; */
+}
+
+.stats-card {
+    background: #2E2C2F;
+    color: #FFFBFC;
+    width: 100%;
+    padding: 1vh;
+    border-radius: 9px;
+    margin-bottom: 1vh;
+}
+
+.stats {
+    font: 1.5rem 'Oswald';
+    margin-bottom: 1vh;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-stats {
+    width: 100%;
+}
+
+.container-fluid {
+    padding: 2vh 20vw;
+}
+
+#fight:hover {
+    transition: 0.3s;
+    background-color: #FFFBFC;
+    color: #2E2C2F;
+}
+
+#unfriend:hover {
+    transition: 0.3s;
+    color: #FFFBFC;
+    background-color: #2E2C2F;
+}
+
+#friend-request:hover {
+    cursor: pointer;
 }

@@ -13,19 +13,64 @@ from django.http import HttpResponse
 from sms import send_sms
 
 import base64
+from .models import UserProfile, Friend_request, GameHistory
+
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 
+import vonage
 
-def CheckToken(token):
+
+def most_common(lst):
+    return max(set(lst), key=lst.count)
+
+def gameStats(user):
+    total_games = user.games()
+
+    won_games = user.games_won.all()
+
+    games_played_count = len(total_games)
+    games_won_count = len(won_games)
+    if (len(total_games) == 0) :
+        win_ratio = 0
+        rival = None
+    else:
+        win_ratio = (len(won_games) / len(total_games))
+        opponents = []
+        for game in total_games:
+            if game.winner == user:
+                opponents.append(game.loser)
+            else:
+                opponents.append(game.winner)
+        rival = most_common(opponents)
+
+    games_lost_count = (games_played_count - games_won_count)
+
+    return_objects = [{
+            "games_played": games_played_count,
+            "games_won": games_won_count,
+            "games_lost": games_lost_count,
+            "win_ratio": win_ratio,
+            "rival": {"user": rival, "is_logged_in": CheckToken(rival)}}]
+
+    return return_objects
+
+     
+
+
+def CheckToken(user):
+    if (not user):
+        return False
+    token = user.jwt
     try:
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        UserProfile.objects.get(id=decoded['id'])
         return True    
-    except ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:
         # The token has expired
         return False
 
-    except InvalidTokenError:
+    except jwt.InvalidTokenError:
         # The token is invalid (wrong signature, wrong secret, malformed token, etc.)
         return False
 
@@ -43,6 +88,7 @@ def CreateToken(userProfile):
     return (token)
 
 def JsonItieator(json_data):
+    print ("printing json data :", json_data)
     for key, value in json_data.items():
         if (value == True):
             return key
@@ -80,14 +126,18 @@ def generate_qr_code(userProfile):
 
 def SendOTPbySMS(userProfile):
     totp = pyotp.TOTP(userProfile.otp_secret)
-    print(userProfile.sms)
-    send_sms(
-        "Verifiaction",
-        totp.now(),
-        settings.SMS_HOST_USER,
-        [userProfile.sms],
-        # fail_silently=False
-    )
+
+    client = vonage.Client(key=settings.VONAGE_API_KEY, secret=settings.VONAGE_API_SECRET)
+    response = client.sms.send_message({
+        'from': settings.VONAGE_VIRTUAL_NUMBER,
+        'to': [userProfile.sms],
+        'text': totp.now(),
+    })
+    if response["messages"][0]["status"] == "0":
+        print("Message sent successfully.")
+    else:
+        print(f"Message failed with error: {response['messages'][0]['error-text']}")
+
 
 
 def SendOTPbyApp(userProfile):
@@ -102,11 +152,16 @@ def CheckForTFA(userprofile):
         'sms': SendOTPbySMS,
         'app': SendOTPbyApp,
     }
+    print ("printing json data :", userprofile.tfa)
     methode = JsonItieator(userprofile.tfa)
-    if (methode):
-        otp_methods[methode](userprofile)
-        print(methode)
-        return_value = True
+    for key, value in userprofile.tfa.items():
+        if (value == True):
+            otp_methods[key](userprofile)
+    # print("methode :", methode)
+    # if (methode):
+        # print(methode)
+    return_value = True
+
     return return_value
 
 def GetFriendRequests(userProfile):

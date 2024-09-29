@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 
 from .urls import CheckForTFA
-from .utils import generate_qr_code, GetFriendRequests, CreateToken, CheckToken
+from .utils import generate_qr_code, GetFriendRequests, gameStats, CreateToken, CheckToken
 from .models import UserProfile, Friend_request, GameHistory
 from .forms import SendFriendForm, verificationApp, verificationEmail, verificationSMS, CreateUserForm, GetUserForm, Get2faForm, changeAvatar, changeUsername
 from .serializers import UserSerializer, FriendRequestSerializer, GamesSerializer
@@ -21,6 +21,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
+from django.middleware.csrf import get_token
 # from jwt import ExpiredSignatureError, InvalidTokenError
 
 
@@ -30,6 +31,20 @@ import jwt, pyotp, json
 # !GAMES
 
 class Games(APIView):
+    def get (request):
+        auth_header = request.headers.get('Authorization')
+        try:
+            token = auth_header.split(' ')[1]
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user_id = decoded['id']
+            UserProfile.objects.get(id=user_id)
+            return Response({'csrf_token': get_token(request)}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            # The token has expired
+            return Response({'error': 'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+
     def post(self, request):
         winner_id = request.data['winner_id']
         loser_id = request.data['loser_id']
@@ -168,6 +183,13 @@ class FriendRequest(APIView):
 
             
 
+DICT = {
+    "sms": False,
+    "email": False,
+    "app": False,
+}
+
+
 
 
 class sendOTP(APIView):
@@ -179,18 +201,21 @@ class sendOTP(APIView):
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
             print("is verification on?")
+            print(CheckForTFA(userProfile))
+
+            for item in DICT:
+                if (DICT[item]):
+                    userProfile.tfa[item] = DICT[item]
             if CheckForTFA(userProfile):
                 return Response({'success': True})
             else :
                 userProfile.tfa['email'] = False
                 userProfile.tfa['app'] = False
                 userProfile.tfa['sms'] = False
-                return Response({'error': "User hasn't activated OTP"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': "User hasn't activated OTP"}, status=status.HTTP_200_OK)
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-            
 
-# !PHONE
 
 
 # !PROFILE
@@ -206,35 +231,74 @@ class AddVerification(APIView):
         formEmail = verificationEmail(request.data)
         formApp = verificationApp(request.data)
         formOTP = Get2faForm(request.data)
-        # print (formSMS.cleaned_data)
-        if formSMS.is_valid() and formSMS.cleaned_data['phone_number']:
-            print("65: ",formSMS.cleaned_data['phone_number'])
-            userProfile.sms = formSMS.cleaned_data['phone_number']
-            userProfile.tfa['sms'] = True
-            userProfile.save()
-            return JsonResponse({'success': True})
-        elif formEmail.is_valid():
-            userProfile.tfa['email'] = True
-            userProfile.save()
-            return JsonResponse({'success': True})
-
-        elif formApp.is_valid() and formApp.cleaned_data['app']:
-            print("75: ",formApp.cleaned_data['app'])
-            userProfile.tfa['app'] = True
-            return JsonResponse({'success': True})
-
-        elif formOTP.is_valid() and (formOTP.cleaned_data['otp']):
+        print ("User profile tfa: ", userProfile.tfa)
+        print("\n\n\n")
+        if formOTP.is_valid() and (formOTP.cleaned_data['otp']):
             totp = pyotp.TOTP(userProfile.otp_secret)
             if (totp.verify(formOTP.cleaned_data['otp'])):
-                return JsonResponse({'success': True})
+                for item in DICT:
+                    if (DICT[item]):
+                        userProfile.tfa[item] = DICT[item]
+                userProfile.save()
+                return JsonResponse({'success': True, "otp": True})
             else:
                 userProfile.tfa['email'] = False
                 userProfile.tfa['app'] = False
                 userProfile.tfa['sms'] = False
                 return JsonResponse({'error': 'Wrong Code'}, status=400)
 
-        return JsonResponse({'error': 'wromg input'}, status=400)
 
+        for item in DICT:
+            DICT[item] = False
+
+        if formSMS.is_valid() and formSMS.cleaned_data['phone_number']:
+            print("65: ",formSMS.cleaned_data['phone_number'])
+            userProfile.sms = formSMS.cleaned_data['phone_number']
+            userProfile.save()
+            DICT["sms"] = True
+            for item in DICT:
+                userProfile.tfa[item] = DICT[item]
+            CheckForTFA(userProfile)
+            return JsonResponse({'success': True, "otp": False})
+        elif formEmail.is_valid():
+            print("55: EMAIL:",userProfile.user.email)
+            DICT['email'] = True
+            for item in DICT:
+                userProfile.tfa[item] = DICT[item]
+            CheckForTFA(userProfile)
+            return JsonResponse({'success': True, "otp": False})
+
+        elif formApp.is_valid() and formApp.cleaned_data['app']:
+            print("75: APP ACTIVATED")
+            DICT['app'] = True
+            for item in DICT:
+                userProfile.tfa[item] = DICT[item]
+            CheckForTFA(userProfile)
+            return JsonResponse({'success': True, "otp": False})
+
+        return JsonResponse({'error': 'wromg input'}, status=400)
+    
+    def delete(self, request):
+        token = request.data['token']
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=decoded['id'])
+        print("DATA:", request.data)
+        if (request.data['sms']):
+            print('Deleting sms')
+            userProfile.tfa['sms'] = False
+        elif (request.data['email']):
+            print('Deleting email')
+            userProfile.tfa['email'] = False
+        elif (request.data['app']):
+            print('Deleting app')
+            userProfile.tfa['app'] = False
+        else:
+            print('Deleting none')
+
+        userProfile.save()
+        print('Checking 2fa: ', CheckForTFA(userProfile))
+        return JsonResponse({'success': True})
+    
 
 
 
@@ -261,28 +325,14 @@ class Profile(APIView):
         formOTP = Get2faForm()
         formSendFriend= SendFriendForm()
         friend_requests=GetFriendRequests(userProfile)
-        # print("here\n\n\n\n", formSMS)
         qr_code_base64 = generate_qr_code(userProfile)
-        print(userProfile.is_logged_in())
-        print("stan is loved")
-        for item in  userProfile.friends.all():
-            print("\n\n\n\n")
-        #     print("friend")
-        #     print(item.user.email)
-        #     print(item.user)
-            print(userProfile.is_logged_in())
-            print(userProfile.user.is_authenticated)
-            print("status: ", item.user.is_authenticated)
-            print("has reloaded")
-            print("\n\n\n\n")
 
-
-        friends = userProfile.friends.all()
+        # friends = userProfile.friends.all()
 
         # Create a list of friends with their login status
         friends_with_status = []
-        for friend in friends:
-            is_logged_in = CheckToken(friend.jwt)  # Call the method here
+        for friend in userProfile.friends.all():
+            is_logged_in = CheckToken(friend)  # Call the method here
             friends_with_status.append({
                 'friend': friend,
                 'is_logged_in': is_logged_in
@@ -291,8 +341,6 @@ class Profile(APIView):
 
 
             # for userProfile_key, userProfile_value in friend_requests.items:
-            print("\n\n\n", userProfile.friends.all(), "\n\n\n\n")
-            print("\n\n\nhey\n\n\n\n")
             
         return render(request, "profile.html", {"friend_requests": friend_requests,
                                                 "user": userProfile,
@@ -306,41 +354,37 @@ class Profile(APIView):
                                                 'qr_code_base64': qr_code_base64,
                                                 'friends': friends_with_status,
                                                 "token": CreateToken(userProfile),
-                                                "games": userProfile.games()
+                                                "games": userProfile.games(),
+                                                "stats": gameStats(userProfile)
                                                 })
             
     
     def patch(self, request):
         formUsername = changeUsername(request.data)
         formAvatar = changeAvatar(request.data, request.FILES)
-        token = request.data['token']
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        userProfile = UserProfile.objects.get(id=decoded['id'])
-        # print("\n\n\n\n")
-        # formAvatar.is_valid()
-        # print(formUsername)
-        # print(formAvatar.cleaned_data["avatar"])
-
-        # print ("\n\n\n\nCOMPARED To ------------------------------")
-
-        # print(request.FILES["avatar"])
-        # print("\n\n\n\n")
+        try:
+            token = request.data['token']
 
 
-        # new_avatar = formAvatar.cleaned_data['avatar']
 
-        if formUsername.is_valid() and formUsername.cleaned_data['username'] and userProfile.user.username != formUsername.cleaned_data['username']:
-            new_username = formUsername.cleaned_data['username']
-            if User.objects.filter(username=new_username).exists():
-                return Response({'error': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
-            userProfile.user.username = new_username
-            userProfile.user.save()
-            # userProfile.save
-        if formAvatar.is_valid() and formAvatar.cleaned_data["avatar"]:
-            print("\n\n\n\n THIS IS NEW AVATAR ---------------------\n\n\n\n",request.FILES, "\n\n\n\n")
-            userProfile.avatar = formAvatar.cleaned_data["avatar"]
-            userProfile.save()
-        return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
+            decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+            userProfile = UserProfile.objects.get(id=decoded['id'])
+
+            if formUsername.is_valid() and formUsername.cleaned_data['username'] and userProfile.user.username != formUsername.cleaned_data['username']:
+                new_username = formUsername.cleaned_data['username']
+                if User.objects.filter(username=new_username).exists():
+                    return Response({'error': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
+                userProfile.user.username = new_username
+                userProfile.user.save()
+                # userProfile.save
+            if formAvatar.is_valid() and formAvatar.cleaned_data["avatar"]:
+                userProfile.avatar = formAvatar.cleaned_data["avatar"]
+                userProfile.save()
+            return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # !VERIFICATION
 
@@ -356,6 +400,7 @@ class VerifyOTPView(APIView):
             userProfile = UserProfile.objects.get(id=user_id)
             print("is verificatiom turned on?")
             if (CheckForTFA(userProfile)):
+                print(userProfile.tfa)
                 return render(request, "2fa.html", {"form":form})
             # print(totp.now())
             # print("Check\n\n\n\n")
@@ -455,6 +500,19 @@ class RegisterForm(APIView):
         return Response({'form': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
+def get_token(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"token": CreateToken(userProfile) }, status=status.HTTP_201_CREATED)
+    except jwt.ExpiredSignatureError:
+        return Response({"token": None}, status=status.HTTP_200_OK)
+    except UserProfile.DoesNotExist:
+        return Response({"token": None}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
 def test_token(request):
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(' ')[1]
@@ -464,8 +522,11 @@ def test_token(request):
 
 @api_view(['GET'])
 def test_OTP(request):
-    auth_header = request.headers.get('Authorization')
-    token = auth_header.split(' ')[1]
-    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-    userProfile = UserProfile.objects.get(id=payload['id'])
-    return Response({"method": any(userProfile.tfa.values())})
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"method": any(userProfile.tfa.values())})
+    except jwt.ExpiredSignatureError:
+        return Response({"method": False}, status=status.HTTP_200_OK)
