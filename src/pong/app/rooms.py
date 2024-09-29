@@ -5,7 +5,7 @@ from .pong import *
 import asyncio
 
 class	roomException(Exception):
-	def	__init__(self, message: str, errorCode: int):
+	def	__init__(self, message: str, errorCode: int) -> None:
 		self.errorCode: int	= errorCode
 		super().__init__(message)
 
@@ -57,6 +57,7 @@ class	room:
 		self.scoreL: int						= 0
 		self.scoreR: int						= 0
 		self.players: List[str]
+		self.key: List[bool]
 		self.ready: bool						= False
 		self.inGame: bool						= False
 		self.lock: threading.Lock				= threading.lock()
@@ -101,20 +102,43 @@ class	room:
 		except roomException as e:
 					print(f"Error from start: {e}")
 	
+	def	checkMovements(self) -> None:
+		if self.partyType == 4:
+			if self.keyLeft['w'] == True:
+				self.paddleL.key += self.paddleL.vel
+			if self.keyLeft['s'] == True:
+				self.paddleL.key -= self.paddleL.vel
+			if self.keyLeft[38] == True:
+				self.paddleR.key += self.paddleR.vel
+			if self.keyLeft[40] == True:
+				self.paddleR.key -= self.paddleR.vel
+		elif self.partyType == 0:
+			if self.keyLeft['w'] == True:
+				self.paddleL.key += self.paddleL.vel
+			if self.keyLeft['s'] == True:
+				self.paddleL.key -= self.paddleL.vel
+			if self.keyLeft[38] == True:
+				self.paddleR.key += self.paddleR.vel
+			if self.keyLeft[40] == True:
+				self.paddleR.key -= self.paddleR.vel
+			
+
 	def	gameLoop(self) -> None:
 		while self.inGame == True:
 			with self.lock:
-				gameUpdate(self.PaddleL, self.PaddleR, self.Ball, self.ScoreL, self.ScoreR)
+
+				self.PaddleL, self.PaddleR, self.Ball, self.ScoreL, self.ScoreR = gameUpdate(self.PaddleL, self.PaddleR, self.Ball, self.ScoreL, self.ScoreR)
 				if self.scoreL == 5 or self.scoreR == 5:
 					# self.inGame = False
 					finish = True
 					#send the finish group
 			#send to the group with the channel layer
+			asyncio.sleep(1/20)
 
 	def	updateData(self, data) -> None:
 		with self.lock:
 			self.ball.coor.x = data["ballcx"]
-			self.ball.coor. y = data["ballcy"]
+			self.ball.coor.y = data["ballcy"]
 			self.ball.size.x = data["ballsx"]
 			self.ball.size.y = data["ballsy"]
 			self.ball.dir.x = data["balldx"]
@@ -122,14 +146,14 @@ class	room:
 			self.ball.angle = data["balla"]
 			self.ball.vel = data["ballv"]
 			self.paddleL.coor.x = data["paddleLcx"]
-			self.paddleL.coor. y = data["paddleLcy"]
+			self.paddleL.coor.y = data["paddleLcy"]
 			self.paddleL.size.x = data["paddleLsx"]
 			self.paddleL.size.y = data["paddleLsy"]
 			self.paddleL.dir = data["paddleLd"]
 			self.paddleL.key = data["paddleLk"]
 			self.paddleL.vel = data["paddleLv"]
 			self.paddleR.coor.x = data["paddleRcx"]
-			self.paddleR.coor. y = data["paddleRcy"]
+			self.paddleR.coor.y = data["paddleRcy"]
 			self.paddleR.size.x = data["paddleRsx"]
 			self.paddleR.size.y = data["paddleRsy"]
 			self.paddleR.dir = data["paddleRd"]
