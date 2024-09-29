@@ -1,4 +1,3 @@
-# version: '3.9'
 
 services:
   backend_authapi:
@@ -14,40 +13,34 @@ services:
       - ./authapi:/project
     env_file:
       - .env
-  
-  backend_service1:
-    container_name: backend_service1
+
+  pong:
+    container_name: pong
     build:
-      context: ./service1/
+      context: ./pong/
       dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
     networks:
       - Transcendence
+    volumes:
+      - ./pong:/project
+    env_file:
+      - ./.env
+
+  home:
+    container_name: home
+    build:
+      context: ./home/
+      dockerfile: Dockerfile
     ports:
       - "8001:8001"
+    networks:
+      - Transcendence
     volumes:
-      - ./service1:/project
+      - ./home:/project
     env_file:
-      - .env
-  
-  # backend_service2:
-  #   container_name: backend_service2
-  #   build:
-  #     context: ./service2/
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8000:8000"
-    # depends_on:
-    #   - db
-  # db:
-  #   container_name: db
-  #   image: postgres
-  #   environment:
-  #     POSTGRES_DB: transcendence
-  #     POSTGRES_USER: bob
-  #     POSTGRES_PASSWORD: boby
-    # build:
-    #   context: ./src/pgsql/Dockerfile
-    #   dockerfile: Dockerfile
+      - ./.env
 
   nginx:
     build:
@@ -61,7 +54,11 @@ services:
       - Transcendence
     depends_on:
       - backend_authapi
-      - backend_service1
+      - pong
+      - home
+    env_file:
+      - .env
+    restart: always
 
   backend_sudoku:
     container_name: backend_sudoku

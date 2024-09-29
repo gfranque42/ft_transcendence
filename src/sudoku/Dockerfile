@@ -7,7 +7,9 @@ RUN apk add build-base postgresql bash \
 
 WORKDIR /project
 
-COPY requirements.txt /project/
+COPY ./entrypoint.sh /project/
+
+COPY ./requirements.txt /project/
 
 RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 

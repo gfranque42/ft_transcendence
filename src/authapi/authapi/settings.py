@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +27,19 @@ SECRET_KEY = 'django-insecure-rx*(a-*_sz=a=)^-5zg4v_e_yt_jumxpze#564((ar1k=-n(av
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 
-# Application definition
+VONAGE_API_KEY = os.getenv('VONAGE_API_KEY')
+VONAGE_API_SECRET = os.getenv('VONAGE_API_SECRET')
+VONAGE_VIRTUAL_NUMBER = os.getenv('VONAGE_VIRTUAL_NUMBER')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,9 +51,19 @@ INSTALLED_APPS = [
 	'django.contrib.sites',
 
 	'corsheaders',
-
+    'authapi',
+	
     'rest_framework',
     'rest_framework.authtoken',
+    # 'rest_framework_simplejwt.token_blacklist',
+
+    'bootstrap5',
+	
+    "vonage",
+	
+    'sms',
+
+
 ]
 
 MIDDLEWARE = [
@@ -56,10 +78,10 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8000', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082','https://127.0.0.1:8083','https://localhost:8083' 
+    'http://localhost:8000', 'https://localhost:8083', 'http://localhost:8082' , 'http://127.0.0.1:8000', 'https://127.0.0.1:8083', 'http://127.0.0.1:8082' 
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082', 'https://localhost:8083']
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -95,8 +117,6 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF_COOKIE_SAMESITE = 'None'
 
 ROOT_URLCONF = 'authapi.urls'
-
-import os
 
 TEMPLATES = [
     {
@@ -179,6 +199,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APPEND_SLASH = False
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # ALLOWED_HOSTS = ['*']
 

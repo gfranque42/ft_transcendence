@@ -21,5 +21,10 @@ a .navbar{
 
 
 .navbar-logo {
+    transform: translate(0%, -50%);
     height: 3vw;
+}
+
+#user {
+    transform: translate(-100%, 0%);
 }

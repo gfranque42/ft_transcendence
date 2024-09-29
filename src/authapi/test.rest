@@ -3,7 +3,7 @@ POST http://localhost:8000/auth/login
 Content-Type: application/json
 
 {
-    "username": "stan1",
+    "username": "stn",
     "password": "Pass1234!"
 }
 
@@ -12,15 +12,53 @@ POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
-    "username": "stan1",
+    "username": "stn",
+    "email": "baneg2335@eixdeal.com",
     "password1": "Pass1234!",
     "password2": "Pass1234!"
 }
 ###
 
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stna",
+    "email": "baneg35@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stan12",
+    "email": "baneg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+POST http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+
+{
+    "from_user_id": "1",
+    "to_user_id": "2"
+}
+###
+GET http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI2NjU2MTQxLCJpYXQiOjE3MjY2NTM2MjF9.ithUgum6i5n7AGXQqg3bOUzJyHaSRcGBGpBLA87h-b4
+
+{
+}
+###
+
 GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token 8e7b4872b72641439fbdced35058a25c536a38a4
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3MTc4NTkwLCJpYXQiOjE3MjcxNzYwNzB9.5VsuYOf-Bsw4W6W4lXDahEbJy3vvIiGkFyR5p9vXbNo
 
 {
 }
@@ -41,8 +79,204 @@ Content-Type: application/json
 {
 }
 
+###
+
+GET http://localhost:8000/auth/verification
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIyOTUyMDIwLCJpYXQiOjE3MjI5NDk1MDB9.ijHz6OU-NSAeU-L8Jv4AjC1zk82k6um0ewy9akZKKg8
+
+{
+}
+
+###
+
+POST http://localhost:8000/auth/verification
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIyOTUyMDIwLCJpYXQiOjE3MjI5NDk1MDB9.ijHz6OU-NSAeU-L8Jv4AjC1zk82k6um0ewy9akZKKg8",
+    "otp": 070467
+}
+
+###
+
+GET http://localhost:8000/auth/profile
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzI3MDg3NjQ0LCJpYXQiOjE3MjcwODUxMjR9.96FbtEiff3_G2-K38spHG7OBpE7BP9lfa86vwjCeQEE
+
+{
+}
+
+###
+
+PATCH http://localhost:8000/auth/profile
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIzNzE3NzI3LCJpYXQiOjE3MjM3MTUyMDd9.VSfJWE6tcoglfLjUbllrEM4fUUZpcuhUlIla8ROfuos 
+
+{  
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzIzNzMxMjg1LCJpYXQiOjE3MjM3Mjg3NjV9.AgKp7McTjXfiFE77LQnqp7EIlzmdSM8eA7EnuOuUEXo"
+}
+
+###
+
+POST http://localhost:8000/auth/verification-add
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI0ODU0NDI2LCJpYXQiOjE3MjQ4NTE5MDZ9.-PD6wDTqDwKSMiwZCl-RWX2R4LJvW9wYzkElwlWolKE
+
+{  
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI0ODU0NDI2LCJpYXQiOjE3MjQ4NTE5MDZ9.-PD6wDTqDwKSMiwZCl-RWX2R4LJvW9wYzkElwlWolKE",
+    "email": "baneg232315@eixdeal.com"
+}
+
+###
+
+GET http://localhost:8000/auth/test_OTP
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZXhwIjoxNzI1NDYzMzk5LCJpYXQiOjE3MjU0NjA4Nzl9.FV3q8M2ZlsQd83ZdcwaIZJEL_1NlpItEnIwKQ-h9mGA
+
+{
+}
 
 
 
 
-# Authorization: token xxx
+
+
+
+
+
+
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stn",
+    "email": "baneg2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stna",
+    "email": "baneg35@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stan12",
+    "email": "baneg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "stan1a2",
+    "email": "baneg2a23a35@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "staan12",
+    "email": "banaeg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "username": "sataan12",
+    "email": "baaneg2a2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+
+###
+POST http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZXhwIjoxNzI3MDg5MDIyLCJpYXQiOjE3MjcwODY1MDJ9.K6an549VnuaA03Jn1x64GvW2AV50gPbxOoQ8b_ooCZs",
+    "to_user": "dfa490fc-ad33-4d0d-bc9a-7b586ca7dff6"
+}
+
+###
+PATCH http://localhost:8000/auth/send-friend-request
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI2OTM3NDc5LCJpYXQiOjE3MjY5MzQ5NTl9.bKqg19D4G3R3IQv6OUN55BZQuiA9J3JSmmpEPWTm8Ys",
+    "from_user_id": "3"
+}
+
+###
+
+POST http://localhost:8000/auth/friends
+Content-Type: application/json
+
+{
+    "username": "stn",
+    "email": "baneg2335@eixdeal.com",
+    "password1": "Pass1234!",
+    "password2": "Pass1234!"
+}
+###
+
+
+POST http://localhost:8000/auth/games
+Content-Type: application/json
+
+{
+    "winner_id": "2",
+    "loser_id": "1",
+    "score_winner": "11",
+    "score_loser": "0",
+    "game_type": "pong"
+}
+
+###
+
+GET http://localhost:8000/auth/games
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3NjIwNDk4LCJpYXQiOjE3Mjc2MTc5Nzh9.P5nRaAm5RFZs88gH1-k3R4wuZL4MxJ2hUSU5Cxe640s
+
+
+{
+}
+
+###
+
+GET http://localhost:8000/auth/get_token
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3MTc4NTkwLCJpYXQiOjE3MjcxNzYwNzB9.5VsuYOf-Bsw4W6W4lXDahEbJy3vvIiGkFyR5p9vXbNo
+
+
+{
+}
+###
