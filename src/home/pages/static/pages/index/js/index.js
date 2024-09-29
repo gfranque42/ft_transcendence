@@ -50,9 +50,22 @@ export const navigateTo = url => {
 function JSONItirator(form) {
     const valuesArray = [];
     
+    console.log(form);
+
+    if (form.success)
+        return;
     for(const key in form) {
         for (const value in form[key]) {
-            valuesArray.push(form[key][value]);
+            // if (value)
+            console.log(form[key][value]);
+            console.log(value);
+            console.log(key);
+            if (value === 'password2') 
+            {
+                for (const item in form[key][value])
+                    valuesArray.push(form[key][value][item]);
+            } else
+                valuesArray.push(form[key][value]);
         }        
     }
     
@@ -72,7 +85,10 @@ function JSONItirator(form) {
     
     errorElements.forEach((element, index) => {
         if (valuesArray[index])
+        {
+            console.log(typeof(valuesArray[index]));
             element.textContent = valuesArray[index];
+        }
         else
         element.textContent = "";
 });
@@ -159,7 +175,6 @@ const router = async () => {
         const FullForm = await form;
         if (FullForm)
             JSONItirator(FullForm);
-        // console.log("form has been ititrated");
         if (FullForm.token)
             return FullForm.token;
         if (FullForm.success)
@@ -173,7 +188,6 @@ const router = async () => {
             const sendableCode = await verification.isVerification(token);
             if (!sendableCode.method)
                 return 2
-            // console.log(sendableCode);
             document.documentElement.innerHTML = await verification.getHtml(otptoken);
             return 1
         }
@@ -206,24 +220,30 @@ const router = async () => {
         VerificationRoute();
     }
 
+    async function awaitSuccess(verif) {
+        return await verif.success;
+    }
+
     async function FollowingProfile(TmpIsCorrect, verif) {
         const IsCorrect = await TmpIsCorrect;
         const isOTP = await verif;
+
         if (IsCorrect)
         {
-            if (isOTP.otp)
+            // console.log(isOTP);
+            if (isOTP && isOTP.otp)
                 navigateTo("/profile/")
             return true;
         }
         return false;
     }
 
-    async function profileUtils(isOkay, verif) {
+    async function profileUtils(verif, isOkay) {
         const check_otp = await verif;
-        if (check_otp.otp)
+        const check_form = await isOkay;
+
+        if (check_otp.otp || !check_form)
             return ;
-        const status = await isOkay;
-        const token = await UserToken;
 
         hidePopstate();
         const otpPopup = document.getElementById('profile-otp-code');
@@ -306,8 +326,8 @@ const router = async () => {
                     const app = document.querySelector('input[name="app"]');
 
                     const verif = view.profileUserPost(UserToken, email, phone_number, otp, app);
-                    const isOkay = FollowingProfile(checkForm(verif), verif);
-                    profileUtils(isOkay, verif);
+                    const isOkay = FollowingProfile(awaitSuccess(verif), verif);
+                    profileUtils(verif, isOkay);
                     // const otpPopup = document.getElementById('profile-otp-code');
                 }
             });

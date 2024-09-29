@@ -115,6 +115,8 @@ class Friend(APIView):
 class FriendRequest(APIView):
     def post(self, request):
         formFriend = SendFriendForm(request.data)
+        if not formFriend.is_valid():
+            return Response(formFriend.errors, status=status.HTTP_400_BAD_REQUEST)
         print(formFriend)
         from_user_id = formFriend.cleaned_data['from_user_id']
         to_user_id = formFriend.cleaned_data['to_user_id']
