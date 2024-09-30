@@ -2,8 +2,7 @@ import { setBoard, setCurrentUser, setGame, setSocket } from './board.js';
 import { startTimer, setStartTime } from './timer.js';
 import { showModal } from './modal.js';
 import { getUser } from '../getUser.js';
-
-
+import { sendGameResults } from './sendGameResults.js';
 
 let sudokuSocket = null;
 let currentUser = null;
@@ -53,10 +52,12 @@ function handleSocketMessage(e) {
 		// Show the game result modal
 		const timeUsed = data.time_used || "N/A";
 		const winningUser = data.winner || "N/A";
+		const losingUser = data.loser || "N/A";
 		//const winningTime = data.winner_time || "N/A";
-		console.log("users are: ", winningUser, currentUser);
+		console.log("users are: ", winningUser, losingUser);
 
 		showModal(timeUsed, winningUser, currentUser);  // Assuming the current player lost
+		sendGameResults(winningUser, losingUser, 1, 0);
 	}
 }
 

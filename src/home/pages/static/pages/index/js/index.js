@@ -9,8 +9,6 @@ import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
 import SudokuWaiting from "../views/waiting_sudoku.js";
 
-
-
 import { initialize } from "./sudoku/sudoku.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
@@ -64,9 +62,6 @@ function JSONItirator(form) {
     for(const key in form) {
         for (const value in form[key]) {
             // if (value)
-            console.log(form[key][value]);
-            console.log(value);
-            console.log(key);
             if (value === 'password2') 
             {
                 for (const item in form[key][value])

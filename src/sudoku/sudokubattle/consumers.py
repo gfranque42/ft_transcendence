@@ -9,6 +9,9 @@ from django.utils import timezone
 def get_player1(room):
     return room.player1
 
+def get_player2(room):
+	return room.player2
+
 class SudokuConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -44,6 +47,16 @@ class SudokuConsumer(AsyncWebsocketConsumer):
             time_used = data.get('time_used')
             username = data.get('username')
 
+            room = await sync_to_async(SudokuRoom.objects.get)(url=self.room_name)
+            player1 = await sync_to_async(get_player1)(room)
+            player2 = await sync_to_async(get_player2)(room)
+
+
+            if player1.username == username:
+                loser = player2.username
+            else:
+                loser = player1.username
+
             # Broadcast the completion message to the room group
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -51,21 +64,24 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                     'type': 'board_complete',
                     'message': data['message'],
                     'time_used': time_used,
-                    'winner': username  # Include the winner's username
+                    'winner': username,
+                    'loser': loser
                 }
             )
 
     async def board_complete(self, event):
         message = event['message']
         time_used = event.get('time_used')
-        winner = event.get('winner')  # Winner's username
+        winner = event.get('winner')
+        loser = event.get('loser')
 
         # Broadcast the board complete message to both players with the winning details
         await self.send(text_data=json.dumps({
             'type': 'board_complete',
             'message': message,
             'time_used': time_used,
-            'winner': winner  # Send the winner's username
+            'winner': winner,
+            'loser': loser
         }))
 
     async def send_start_game(self, room):

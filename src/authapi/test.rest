@@ -58,7 +58,7 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNz
 
 GET http://localhost:8000/auth/test_token
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3MTc4NTkwLCJpYXQiOjE3MjcxNzYwNzB9.5VsuYOf-Bsw4W6W4lXDahEbJy3vvIiGkFyR5p9vXbNo
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzI3NzA3NjU3LCJpYXQiOjE3Mjc3MDUxMzd9.QIxua_F77FfcjeotlW60AyJSPpRVMx94q8RsoDL4r7Y
 
 {
 }
@@ -264,7 +264,7 @@ Content-Type: application/json
 
 GET http://localhost:8000/auth/games
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3NjIwNDk4LCJpYXQiOjE3Mjc2MTc5Nzh9.P5nRaAm5RFZs88gH1-k3R4wuZL4MxJ2hUSU5Cxe640s
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzI3NzA3NjU3LCJpYXQiOjE3Mjc3MDUxMzd9.QIxua_F77FfcjeotlW60AyJSPpRVMx94q8RsoDL4r7Y
 
 
 {
