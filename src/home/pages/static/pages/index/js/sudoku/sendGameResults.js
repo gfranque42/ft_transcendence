@@ -24,10 +24,9 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 
 	const body = {};
 
-	if (data.status !== 200) {
+	if (response.status !== 200) {
 		return data;
 	}
-	body["csrfmiddlewaretoken"] = response.csrfToken;
 	body["winner_id"] = winner_id;
 	body["loser_id"] = loser_id;
 	body["score_winner"] = score_winner;
@@ -41,7 +40,7 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 		body: JSON.stringify(body),
 		headers: {
 			'Content-Type': 'application/json',
-			'X-CSRFToken': this.csrfToken
+			'X-CSRFToken': data.csrfToken
 		},
 	});
 	console.log("hi this is stan3");

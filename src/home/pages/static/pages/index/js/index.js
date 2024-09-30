@@ -27,12 +27,6 @@ function isEmptyOrWhitespace(str) {
 
 window.addEventListener('beforeunload', function (event) {
     console.log("UNLOADING");
-    // if (view && view instanceof Profile)
-    // {
-    //     console.log("IN PROFILE");
-    //     console.log(view instanceof Profile);
-    //     view.VerificationNotVerified(UserToken);
-    // }
     logout(UserToken);
 });
 
@@ -49,6 +43,11 @@ const getParams = match => {
 
 export const navigateTo = url => {
     history.pushState(null, null, url);
+    router();
+};
+
+export const navigateToInstead = url => {
+    history.replaceState(null, null, url);
     router();
 };
 
@@ -247,9 +246,14 @@ const router = async () => {
         const check_otp = await verif;
         const check_form = await isOkay;
 
-        if (check_otp.otp || !check_form)
+        if (check_otp.otp || check_form)
+        {
+            // console.log(check_otp.otp, check_form);
+            navigateTo("/profile/")
             return ;
-
+        }
+        
+        console.log(check_otp, check_form);
         hidePopstate();
         const otpPopup = document.getElementById('profile-otp-code');
         const clickOff = document.getElementById('click-off');

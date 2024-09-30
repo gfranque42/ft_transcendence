@@ -1,4 +1,7 @@
 import abstractviews from "./abstractviews.js";
+import {navigateToInstead} from "../js/index.js";
+
+
 
 export let csrfToken = null;
 
@@ -11,7 +14,12 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-
+        const token = getCookie("token")
+        
+        if (token == null) {
+            navigateToInstead("/login/");
+            return ;
+        }
 
 		console.log("getHtml lobby called");
 		const url = location.pathname;
