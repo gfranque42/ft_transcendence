@@ -2,7 +2,10 @@ from typing import List, Optional
 from threading import Thread
 import threading
 from .pong import *
+from .models import Room, Player
 import asyncio
+from channels.db import database_sync_to_async
+from asgiref.sync import async_to_sync, sync_to_async
 
 class	roomException(Exception):
 	def	__init__(self, message: str, errorCode: int) -> None:
@@ -57,7 +60,6 @@ class	room:
 		self.scoreL: int						= 0
 		self.scoreR: int						= 0
 		self.players: List[str]
-		self.key: List[bool]
 		self.ready: bool						= False
 		self.inGame: bool						= False
 		self.lock: threading.Lock				= threading.lock()
@@ -66,19 +68,49 @@ class	room:
 	def	__repr__(self):
 		return repr(self.roomName)
 
-	def	addPlayer(self, player: str) -> None:
-		if player not in self.players:
-			self.players.append(player)
-		else:
-			raise roomException("Player ", player, " is already in this room!", 1001)
-		if len(self.players) == self.nbPlayers:
-			self.ready = True
+	@database_sync_to_async
+	async def	addPlayer(self, player: str) -> None:
+		if self.partyType != 4:
+			try:
+				user = Player.objects.get(username=player)
+			except Player.DoesNotExist:
+				user = Player.objects.create(username=player)
+			try:
+				room = Room.objects.get(url=self.roomName)
+			except Room.DoesNotExist:
+				print("Room Does Not Exist: ", self.roomName, flush=True)
+				return
+			with self.lock:
+				if player not in self.players:
+					self.players.append(player)
+				else:
+					raise roomException("Player ", player, " is already in this room!", 1001)
+				if len(self.players) == self.nbPlayers:
+					self.ready = True
 
-	def	removePlayer(self, player: str) -> None:
-		if player in self.players:
-			self.players.remove(player)
-		else:
-			raise roomException("Player ", player, " isn't in this room!", 1002)
+	#prevoir le cas ou c'est un tournois et c'est un forfait
+	#juste faire un you win !
+	  		# try:
+			# 		user = Player.objects.get(username=self.username)
+			# except Player.DoesNotExist:
+			# 	user = Player.objects.create(username=self.username)
+			# 	user.stanid = self.id
+			# try:
+			# 	room = Room.objects.get(url=self.room_name)
+			# 	room.players.add(user)
+			# 	print(self.username, ": player added to ", self.room_name, flush=True)
+			# 	if (room.players.count() == room.maxPlayers):
+			# 		return 1
+	@database_sync_to_async
+	async def	removePlayer(self, player: str) -> None:
+		with self.lock:
+			if self.inGame == True:
+				await self.channel_layer.group_send(
+						self.room_group_name, {"type": "quit", "message": "quitting"})
+			if player in self.players:
+				self.players.remove(player)
+			else:
+				raise roomException("Player ", player, " isn't in this room!", 1002)
 
 	async def	countDown(self) -> None:
 		if self.ready == True and self.inGame == False:
@@ -102,62 +134,92 @@ class	room:
 		except roomException as e:
 					print(f"Error from start: {e}")
 	
-	def	checkMovements(self) -> None:
-		if self.partyType == 4:
-			if self.keyLeft['w'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if self.keyLeft['s'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if self.keyLeft[38] == True:
-				self.paddleR.key += self.paddleR.vel
-			if self.keyLeft[40] == True:
-				self.paddleR.key -= self.paddleR.vel
-		elif self.partyType == 0:
-			if self.keyLeft['w'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if self.keyLeft['s'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if self.keyLeft[38] == True:
-				self.paddleR.key += self.paddleR.vel
-			if self.keyLeft[40] == True:
-				self.paddleR.key -= self.paddleR.vel
-			
+	async def	sendUpdate(self, message) -> None:
+		await self.channel_layer.group_send(
+						self.room_group_name, {"type": "gameUpdate", "message": message,
+							"ballcx": self.ball.coor.x,
+							"ballcy": self.ball.coor.y,
+							"ballsx": self.ball.size.x,
+							"ballsy": self.ball.size.y,
+							"balldx": self.ball.dir.x,
+							"balldy": self.ball.dir.y,
+							"balla": self.ball.angle,
+							"ballv": self.ball.vel,
+							"paddleLcx": self.paddleL.coor.x,
+							"paddleLcy": self.paddleL.coor.y,
+							"paddleLsx": self.paddleL.size.x,
+							"paddleLsy": self.paddleL.size.y,
+							"paddleLd": self.paddleL.dir,
+							"paddleLk": self.paddleL.key,
+							"paddleLv": self.paddleL.vel,
+							"paddleRcx": self.paddleR.coor.x,
+							"paddleRcy": self.paddleR.coor.y,
+							"paddleRsx": self.paddleR.size.x,
+							"paddleRsy": self.paddleR.size.y,
+							"paddleRd": self.paddleR.dir,
+							"paddleRk": self.paddleR.key,
+							"paddleRv": self.paddleR.vel,
+							"player1Name": self.players[0],
+							"player2Name": self.players[1],
+							"scoreL": self.scoreL,
+							"scoreR": self.scoreR
+							})
 
-	def	gameLoop(self) -> None:
+	async def	gameLoop(self) -> None:
+		message: str = "update"
 		while self.inGame == True:
 			with self.lock:
-
 				self.PaddleL, self.PaddleR, self.Ball, self.ScoreL, self.ScoreR = gameUpdate(self.PaddleL, self.PaddleR, self.Ball, self.ScoreL, self.ScoreR)
 				if self.scoreL == 5 or self.scoreR == 5:
-					# self.inGame = False
-					finish = True
-					#send the finish group
-			#send to the group with the channel layer
-			asyncio.sleep(1/20)
+					self.inGame = False
+					message = "finish"
+				await self.sendUpdate(message)
+			await asyncio.sleep(1/20)
 
 	def	updateData(self, data) -> None:
 		with self.lock:
-			self.ball.coor.x = data["ballcx"]
-			self.ball.coor.y = data["ballcy"]
-			self.ball.size.x = data["ballsx"]
-			self.ball.size.y = data["ballsy"]
-			self.ball.dir.x = data["balldx"]
-			self.ball.dir.y = data["balldy"]
-			self.ball.angle = data["balla"]
-			self.ball.vel = data["ballv"]
-			self.paddleL.coor.x = data["paddleLcx"]
-			self.paddleL.coor.y = data["paddleLcy"]
-			self.paddleL.size.x = data["paddleLsx"]
-			self.paddleL.size.y = data["paddleLsy"]
-			self.paddleL.dir = data["paddleLd"]
-			self.paddleL.key = data["paddleLk"]
-			self.paddleL.vel = data["paddleLv"]
-			self.paddleR.coor.x = data["paddleRcx"]
-			self.paddleR.coor.y = data["paddleRcy"]
-			self.paddleR.size.x = data["paddleRsx"]
-			self.paddleR.size.y = data["paddleRsy"]
-			self.paddleR.dir = data["paddleRd"]
-			self.paddleR.key = data["paddleRk"]
-			self.paddleR.vel = data["paddleRv"]
-			self.scoreL = data["scoreL"]
-			self.scoreR = data["scoreR"]
+			if self.partyType == 4:
+				if data['w'] == True:
+					self.paddleL.key += self.paddleL.vel
+				if data['s'] == True:
+					self.paddleL.key -= self.paddleL.vel
+				if data['up'] == True:
+					self.paddleR.key += self.paddleR.vel
+				if data['down'] == True:
+					self.paddleR.key -= self.paddleR.vel
+			elif self.partyType == 0:
+				if data["username"] == self.players[0]:
+					if data['w'] == True:
+						self.paddleL.key += self.paddleL.vel
+					if data['s'] == True:
+						self.paddleL.key -= self.paddleL.vel
+					if data['up'] == True:
+						self.paddleL.key += self.paddleL.vel
+					if data['down'] == True:
+						self.paddleL.key -= self.paddleL.vel
+				else:
+					if data['w'] == True:
+						self.paddleR.key += self.paddleR.vel
+					if data['s'] == True:
+						self.paddleR.key -= self.paddleR.vel
+					if data['up'] == True:
+						self.paddleR.key += self.paddleR.vel
+					if data['down'] == True:
+						self.paddleR.key -= self.paddleR.vel
+			else:
+				if data['w'] == True:
+					self.paddleL.key += self.paddleL.vel
+				if data['s'] == True:
+					self.paddleL.key -= self.paddleL.vel
+				if data['up'] == True:
+					self.paddleL.key += self.paddleL.vel
+				if data['down'] == True:
+					self.paddleL.key -= self.paddleL.vel
+			if self.paddleL.key > 0 and self.paddleL.key > self.paddleL.vel:
+				self.paddleL.key = self.paddleL.vel
+			elif self.paddleL.key < 0 and self.paddleL.key < -self.paddleL.vel:
+				self.paddleL.key = -self.paddleL.vel
+			if self.paddleR.key > 0 and self.paddleR.key > self.paddleR.vel:
+				self.paddleR.key = self.paddleR.vel
+			elif self.paddleR.key < 0 and self.paddleR.key < -self.paddleR.vel:
+				self.paddleR.key = -self.paddleR.vel

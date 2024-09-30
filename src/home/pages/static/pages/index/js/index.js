@@ -156,7 +156,7 @@ const router = async () => {
         	+ window.location.pathname
         );
 		
-        await waitForSocketConnection(roomSocket);
+        const me = await waitForSocketConnection(roomSocket);
 
 		
         console.log('my game is ready: ', myGame.gameState);
@@ -168,7 +168,7 @@ const router = async () => {
         roomSocket.onmessage = function (e)
         {
         	const data = JSON.parse(e.data);
-			wsonmessage(data, roomSocket, canvas, ctx);
+			wsonmessage(data, roomSocket, canvas, ctx, me);
         };
 
         roomSocket.onclose = function (e)

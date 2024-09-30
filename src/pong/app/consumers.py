@@ -31,6 +31,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 	async def disconnect(self, close_code):
+		gRoomsManager[self.room_name].removePlayer(self.username)
 		# Leave room group
 		await self.channel_layer.group_send(
 						self.room_group_name, {"type": "quit", "message": "quitting"})
@@ -48,36 +49,15 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			gRoomsManager[self.room_name].updateData(text_data_json)
 
 	# Receive message from room group
-
-	async def game_update(self, event):
+	async def gameUpdate(self, event):
 		print(self.username, ': bisous de game_update', flush=True)
 		message = event["message"]
 		print(self.username, ': ', message, flush=True)
-		if (message == "in playing"):
-			self.ball.coor.x = event["ballcx"]
-			self.ball.coor. y = event["ballcy"]
-			self.ball.size.x = event["ballsx"]
-			self.ball.size.y = event["ballsy"]
-			self.ball.dir.x = event["balldx"]
-			self.ball.dir.y = event["balldy"]
-			self.ball.angle = event["balla"]
-			self.ball.vel = event["ballv"]
-			self.paddleL.coor.x = event["paddleLcx"]
-			self.paddleL.coor. y = event["paddleLcy"]
-			self.paddleL.size.x = event["paddleLsx"]
-			self.paddleL.size.y = event["paddleLsy"]
-			self.paddleL.dir = event["paddleLd"]
-			self.paddleL.key = event["paddleLk"]
-			self.paddleL.vel = event["paddleLv"]
-			self.paddleR.coor.x = event["paddleRcx"]
-			self.paddleR.coor. y = event["paddleRcy"]
-			self.paddleR.size.x = event["paddleRsx"]
-			self.paddleR.size.y = event["paddleRsy"]
-			self.paddleR.dir = event["paddleRd"]
-			self.paddleR.key = event["paddleRk"]
-			self.paddleR.vel = event["paddleRv"]
-			self.scoreL = event["scoreL"]
-			self.scoreR = event["scoreR"]
+		if (message == "update"):
+			await self.send(event)
+		elif (message == "finish"):
+			await self.send(event)
+			await self.close()
 
 	async def quit(self, event):
 		print(self.username, ': bisous de quit', flush=True)

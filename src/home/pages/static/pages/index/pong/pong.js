@@ -172,13 +172,14 @@ window.addEventListener('keyup', function(e){
 
 export async function waitForSocketConnection(roomSocket)
 {
+	let username = null;
 
 	setTimeout(
 		function () {
 			if (roomSocket.readyState === 1)
 			{
 				console.log("Connection is made")
-				testToken(roomSocket);
+				me = testToken(roomSocket);
 			}
 			else
 			{
@@ -187,6 +188,7 @@ export async function waitForSocketConnection(roomSocket)
 			}
 
 		}, 5);
+	return me;
 }
 
 export async function testToken(roomSocket)
@@ -224,30 +226,11 @@ export async function testToken(roomSocket)
 		'id': UserInformation.ID,
 		'username': UserInformation.Username
 	}));
-	return (UserInformation.Username);
+	return {username:UserInformation.Username, id:UserInformation.ID};
 }
 
-async function getUsername()
-{
-	const cookie = getCookie('token');
 
-	const options = {
-		method: 'GET', // HTTP method
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Token ${cookie}`
-		}
-
-	};
-	let	bob;
-	let	UserInformation;
-	bob = await fetch('https://localhost:8083/auth/test_token', options);
-	UserInformation = await bob.json();
-	console.log("from getUsername: ", UserInformation.Username);
-	return (UserInformation.Username);
-}
-
-export async function wsonmessage(data, roomSocket, canvas, ctx)
+export async function wsonmessage(data, roomSocket, canvas, ctx, me)
 {
 	const	KEY_UP = 38;
 	const	KEY_DOWN = 40;
@@ -275,13 +258,17 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		const move = "none";
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
-			'move': move,
+			'username': me.username,
+			'w': keyPressed['w'],
+			's': keyPressed['s'],
+			'up': keyPressed[38],
+			'down': keyPressed[40],
 		}));
 	}
-	else if (data.type === "game update")
+	else if (data.type === "gameUpdate")
 	{
 		console.log("data.message: ", data.message);
-		if (data.message === "in playing")
+		if (data.message === "update")
 		{
 			console.log(data);
 			gameUpdate(data, myGame);
@@ -290,27 +277,18 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			document.getElementById('player1Score').innerHTML = data.scoreL;
 			document.getElementById('player2Score').innerHTML = data.scoreR;
 		
-			let move = "none";
-			if (keyPressed[38] == true)
-				move = "up";
-			if (keyPressed[40] == true)
-			{
-				if (move === "none")
-					move = "down";
-				else
-					move = "none";
-			}
-			console.log('keypressed: ', move);
 			roomSocket.send(JSON.stringify({
 				'type': "ping",
-				'move': move,
+				'username': me.username,
+				'w': keyPressed['w'],
+				's': keyPressed['s'],
+				'up': keyPressed[38],
+				'down': keyPressed[40],
 			}));
 		}
-		else if (data.message === "game is finished")
+		else if (data.message === "finish")
 		{
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			let username;
-			username = await getUsername();
 			document.getElementById('player1Score').textContent = data.scoreL;
 			document.getElementById('player2Score').textContent = data.scoreR;
 			console.log(username);
@@ -318,12 +296,12 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			console.log(data.scoreR);
 			console.log(data.player1Name);
 			console.log(data.player2Name);
-			if (data.scoreL === 5 && data.player1Name === username)
+			if (data.scoreL === 5 && data.player1Name === me.username)
 			{
 				const	result = document.getElementById("win");
 				result.style.display = "flex";
 			}
-			else if (data.scoreR === 5 && data.player2Name === username)
+			else if (data.scoreR === 5 && data.player2Name === me.username)
 			{
 				const	result = document.getElementById("win");
 				result.style.display = "flex";
