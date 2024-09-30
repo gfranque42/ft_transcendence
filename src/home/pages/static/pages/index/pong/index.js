@@ -14,10 +14,16 @@ function PvA()
 {
 	let pva = document.querySelector('.PvA');
 	let pvp = document.querySelector('.PvP');
+	let localp = document.querySelector('.LocalP');
+	let tournament = document.querySelector('.Tournament');
 	pva.style.backgroundColor = '#FFFBFC';
 	pva.style.color = '#53917E';
 	pvp.style.backgroundColor = '';
 	pvp.style.color = '';
+	localp.style.backgroundColor = '';
+	localp.style.color = '';
+	tournament.style.backgroundColor = '';
+	tournament.style.color = '';
 	let easy = document.querySelector('.Easy');
 	let medium = document.querySelector('.Medium');
 	let hard = document.querySelector('.Hard');
@@ -34,8 +40,40 @@ function PvP()
 {
 	let pvp = document.querySelector('.PvP');
 	let pva = document.querySelector('.PvA');
+	let localp = document.querySelector('.LocalP');
+	let tournament = document.querySelector('.Tournament');
 	pvp.style.backgroundColor = '#FFFBFC';
 	pvp.style.color = '#53917E';
+	pva.style.backgroundColor = '';
+	pva.style.color = '';
+	localp.style.backgroundColor = '';
+	localp.style.color = '';
+	tournament.style.backgroundColor = '';
+	tournament.style.color = '';
+	let easy = document.querySelector('.Easy');
+	let medium = document.querySelector('.Medium');
+	let hard = document.querySelector('.Hard');
+	easy.style.display = '';
+	medium.style.display = '';
+	hard.style.display = '';
+	easy.style.fontSize = '';
+	medium.style.fontSize = '';
+	hard.style.fontSize = '';
+	gameMode = 0;
+}
+
+function LocalP()
+{
+	let pvp = document.querySelector('.PvP');
+	let pva = document.querySelector('.PvA');
+	let localp = document.querySelector('.LocalP');
+	let tournament = document.querySelector('.Tournament');
+	localp.style.backgroundColor = '#FFFBFC';
+	localp.style.color = '#53917E';
+	tournament.style.backgroundColor = '';
+	tournament.style.color = '';
+	pvp.style.backgroundColor = '';
+	pvp.style.color = '';
 	pva.style.backgroundColor = '';
 	pva.style.color = '';
 	let easy = document.querySelector('.Easy');
@@ -47,7 +85,33 @@ function PvP()
 	easy.style.fontSize = '';
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
-	gameMode = 0;
+	gameMode = 4;
+}
+
+function Tournament()
+{
+	let pvp = document.querySelector('.PvP');
+	let pva = document.querySelector('.PvA');
+	let localp = document.querySelector('.LocalP');
+	let tournament = document.querySelector('.Tournament');
+	tournament.style.backgroundColor = '#FFFBFC';
+	tournament.style.color = '#53917E';
+	pvp.style.backgroundColor = '';
+	pvp.style.color = '';
+	pva.style.backgroundColor = '';
+	pva.style.color = '';
+	localp.style.backgroundColor = '';
+	localp.style.color = '';
+	let easy = document.querySelector('.Easy');
+	let medium = document.querySelector('.Medium');
+	let hard = document.querySelector('.Hard');
+	easy.style.display = '';
+	medium.style.display = '';
+	hard.style.display = '';
+	easy.style.fontSize = '';
+	medium.style.fontSize = '';
+	hard.style.fontSize = '';
+	gameMode = 5;
 }
 
 function Easy()
@@ -244,6 +308,14 @@ export function eventPong(view)
 		else if (event.target.matches('.PvA'))
 		{
 			PvA();
+		}
+		else if (event.target.matches('.LocalP'))
+		{
+			LocalP();
+		}
+		else if (event.target.matches('.Tournament'))
+		{
+			Tournament();
 		}
 		else if (event.target.matches('.Easy'))
 		{

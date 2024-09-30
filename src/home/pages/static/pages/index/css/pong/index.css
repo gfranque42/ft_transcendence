@@ -41,16 +41,27 @@ body {
 
 .PvP {
 	left: 20vw;
-	top: 35vh;
+	top: 25vh;
 }
 
 .PvA {
 	right: 20vw;
-	top: 35vh;
+	top: 25vh;
+}
+
+.LocalP {
+	right: 20vw;
+	bottom: 35vh;
+}
+
+.Tournament
+{
+	left: 20vw;
+	bottom: 35vh;
 }
 
 .Start {
-	bottom: 25vh;
+	bottom: 13vh;
 	left: 40vw;
 }
 
@@ -71,15 +82,15 @@ body {
 
 .Easy {
 	right: 33.5vw;
-	top: 49vh;
+	top: 40vh;
 }
 
 .Medium {
 	right: 27.5vw;
-	top: 49vh;
+	top: 40vh;
 }
 
 .Hard {
 	right: 21.5vw;
-	top: 49vh;
+	top: 40vh;
 }
