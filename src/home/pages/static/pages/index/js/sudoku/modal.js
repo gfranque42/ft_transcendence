@@ -3,13 +3,14 @@ export function showModal(timeUsed, winningUser, currentUser) {
 	const modal = document.getElementById("game-result-modal");
 	const resultTitle = document.getElementById("result-title");
 	const resultMessage = document.getElementById("result-message");
+	const winningUsername = winningUser.Username;
 
 	console.log("users are: ", winningUser, currentUser);
 	if (winningUser === currentUser) {
 		resultTitle.textContent = "You Won!";
 		resultMessage.textContent = `Time used: ${timeUsed}`;
 	} else {
-		resultTitle.textContent = "You Lost!";
+		resultTitle.textContent = `You Lost!\n${winningUsername} is the winner!`;
 		resultMessage.textContent = `Winner's time: ${timeUsed}`;
 	}
 

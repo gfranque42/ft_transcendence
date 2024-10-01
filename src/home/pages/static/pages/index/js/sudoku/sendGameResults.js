@@ -3,8 +3,6 @@ import {setCookie, getCookie, eraseCookie} from "../cookie.js";
 export async function sendGameResults(winner_id, loser_id, score_winner, score_loser) {
 	const token = getCookie("token")
 
-	console.log("hi this is stan");
-
 	const options = {
 		method: 'GET',
 		headers: {
@@ -13,14 +11,11 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 		}
 	};
 	
-	console.log("hi this is stan2");
 	var response = await fetch('https://localhost:8083/auth/games', options);
 	console.log(response);
 
 	var data = await response.json();
 	console.log(data);
-	console.log("hi this is stan3");
-
 
 	const body = {};
 
@@ -32,7 +27,6 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 	body["score_winner"] = score_winner;
 	body["score_loser"] = score_loser;
 	body["game_type"] = 'sudoku';
-	console.log("hi this is stan3");
 
 
 	var response = await fetch('https://localhost:8083/auth/games', {
@@ -43,12 +37,9 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 			'X-CSRFToken': data.csrfToken
 		},
 	});
-	console.log("hi this is stan3");
-
 
 	data = await response.json();
 	console.log(data);
-	console.log("hi this is stan3");
 
 	return data;
 }
