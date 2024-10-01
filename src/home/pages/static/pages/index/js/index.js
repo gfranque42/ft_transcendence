@@ -25,6 +25,20 @@ function isEmptyOrWhitespace(str) {
 }
 
 
+async function checkValidity() {
+    if (await UserToken)
+        return ;
+    const token = getCookie("token")
+        
+    if (token != null)
+        UserToken = getRenewedToken(token)
+    if (token == null) {
+        eraseCookie("token");
+    }
+}
+
+checkValidity();
+
 window.addEventListener('beforeunload', function (event) {
     console.log("UNLOADING");
     logout(UserToken);
@@ -261,14 +275,6 @@ const router = async () => {
         otpPopup.style.display = 'block';
         clickOff.style.filter = 'blur(5px)';
         // }
-    }
-
-
-    if (!UserToken) {
-        const token = getCookie("token")
-            
-        if (token != null)
-            UserToken = getRenewedToken(token)
     }
     if (match.route.path == "/") {
         if (isLoaded)

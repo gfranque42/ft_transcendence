@@ -68,10 +68,8 @@ export async function initialize() {
 	const roomName = document.getElementById('room-name');
 	const userInfo = await getUser();
 
-	if (!roomName) {
-		console.error("Room name is not available in the HTML!");
+	if (!roomName)
 		return;
-	}
 
 	currentUser = userInfo.Username;
 	console.log('Current user:', currentUser);
