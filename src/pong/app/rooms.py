@@ -1,5 +1,5 @@
 from typing import List, Optional
-from threading import Thread
+from threading import Thread, Lock
 import threading
 from .pong import *
 from .models import Room, Player
@@ -12,34 +12,19 @@ class	roomException(Exception):
 		self.errorCode: int	= errorCode
 		super().__init__(message)
 
+class	tournament:
+	def __init__(self) -> None:
+		self.rooms = {}
+		self.waiting: bool	= False
+		self.inGame: bool	= False
+
+	def	reset(self) -> None:
+		self.waiting = False
+		self.inGame = False
+
 class	roomsManager:
 	def	__init__(self):
 		self.rooms = {}
-	
-	def	__setitem__(self, key, value):
-		self.rooms[key] = value
-
-	def	__getitem__(self, key):
-		return self.rooms[key]
-
-	def	__contains__(self, key):
-		return key in self.rooms
-
-	def	__len__(self):
-		return len(self.rooms)
-
-	def	erase(self, key):
-		if key in self.rooms:
-			del self.rooms[key]
-
-	def clear(self):
-		self.rooms.clear()
-
-	def keys(self):
-		return self.data.keys()
-	
-	def	__repr__(self):
-		return repr(self.data)
 
 #party types:
 # 1 - 2 - 3 ai ? 
@@ -62,14 +47,14 @@ class	room:
 		self.players: List[str]
 		self.ready: bool						= False
 		self.inGame: bool						= False
-		self.lock: threading.Lock				= threading.lock()
+		self.lock: threading.Lock				= Lock()
 		self.thread: Optional[threading.Thread]	= None
 
 	def	__repr__(self):
 		return repr(self.roomName)
 
 	@database_sync_to_async
-	async def	addPlayer(self, player: str) -> None:
+	def	addPlayer(self, player: str) -> None:
 		if self.partyType != 4:
 			try:
 				user = Player.objects.get(username=player)
@@ -83,57 +68,67 @@ class	room:
 			with self.lock:
 				if player not in self.players:
 					self.players.append(player)
+					room.players.add(user)
+				else:
+					raise roomException("Player ", player, " is already in this room!", 1001)
+				if len(self.players) == self.nbPlayers:
+					self.ready = True
+		else:
+			with self.lock:
+				if player not in self.players:
+					self.players.append(player)
 				else:
 					raise roomException("Player ", player, " is already in this room!", 1001)
 				if len(self.players) == self.nbPlayers:
 					self.ready = True
 
-	#prevoir le cas ou c'est un tournois et c'est un forfait
-	#juste faire un you win !
-	  		# try:
-			# 		user = Player.objects.get(username=self.username)
-			# except Player.DoesNotExist:
-			# 	user = Player.objects.create(username=self.username)
-			# 	user.stanid = self.id
-			# try:
-			# 	room = Room.objects.get(url=self.room_name)
-			# 	room.players.add(user)
-			# 	print(self.username, ": player added to ", self.room_name, flush=True)
-			# 	if (room.players.count() == room.maxPlayers):
-			# 		return 1
 	@database_sync_to_async
-	async def	removePlayer(self, player: str) -> None:
-		with self.lock:
-			if self.inGame == True:
-				await self.channel_layer.group_send(
-						self.room_group_name, {"type": "quit", "message": "quitting"})
-			if player in self.players:
-				self.players.remove(player)
-			else:
-				raise roomException("Player ", player, " isn't in this room!", 1002)
+	def	removePlayer(self, player: str) -> None:
+		if self.partyType != 4:
+			try:
+				room = Room.objects.get(url=self.roomName)
+			except Room.DoesNotExist:
+				print("Room Does Not Exist: ", self.roomName, flush=True)
+				return
+			with self.lock:
+				if self.inGame == True:
+					async_to_sync(self.channel_layer.group_send)(
+							self.room_group_name, {"type": "quit", "message": "quitting"})
+				if player in self.players:
+					self.players.remove(player)
+					room.players.delete(username=player)
+				else:
+					raise roomException("Player ", player, " isn't in this room!", 1002)
 
 	async def	countDown(self) -> None:
 		if self.ready == True and self.inGame == False:
 			x: int = 3
 			while x > 0:
 				#send to the group with the channel layer
+				await self.channel_layer.group_send(
+						self.room_group_name, {"type": "gameUpdate",
+							"message": "countdown",
+							"number": x,})
 				asyncio.sleep(1)
 				x -= 1
 			#send the end of the count down
+			await self.channel_layer.group_send(
+						self.room_group_name, {"type": "gameUpdate",
+							"message": "fin du compte",})
 		else:
-			raise roomException("Room ", self.roomName, " haven't te good amount of players or is already in game", 1003)
-	
+			raise roomException("Room ", self.roomName, " haven't the good amount of players or is already in game", 1003)
+
 	async def	start(self) -> None:
 		try:
 			await self.countDown()
 			self.inGame = True
-			self.thread = threading.Thread(target=self.gameLoop)
+			self.thread = Thread(target=self.gameLoop)
 			self.thread.start()
 			if self.thread:
 				self.thread.join()
 		except roomException as e:
 					print(f"Error from start: {e}")
-	
+
 	async def	sendUpdate(self, message) -> None:
 		await self.channel_layer.group_send(
 						self.room_group_name, {"type": "gameUpdate", "message": message,

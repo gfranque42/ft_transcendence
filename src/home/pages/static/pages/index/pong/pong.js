@@ -180,6 +180,7 @@ export async function waitForSocketConnection(roomSocket)
 			{
 				console.log("Connection is made")
 				me = testToken(roomSocket);
+				return me;
 			}
 			else
 			{
@@ -188,7 +189,6 @@ export async function waitForSocketConnection(roomSocket)
 			}
 
 		}, 5);
-	return me;
 }
 
 export async function testToken(roomSocket)

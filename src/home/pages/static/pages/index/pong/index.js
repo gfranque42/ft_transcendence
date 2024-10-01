@@ -219,6 +219,8 @@ export async	function Start(csrftoken, url)
 	let maxPlayers = 1;
 	if (gameMode == 0)
 		maxPlayers = 2;
+	if (gameMode == 4)
+		maxPlayers = 0;
 	let roomExist = 0;
 	let roomUrl = generateRandomUrl();
 	try
@@ -233,7 +235,7 @@ export async	function Start(csrftoken, url)
 			}
 			};
 		const str = await checkRoom(options);
-		if (maxPlayers == 2 && str != "None")
+		if (gameMode == 0 && str != "None")
 		{
 			roomExist = 1;
 			roomUrl = str;

@@ -4,8 +4,9 @@ from app.models import Player, Room
 from .serializers import PlayerSerializer, RoomSerializer
 import os
 from django.shortcuts import render
-from django.http import JsonResponse
-from app.consumers import gRoomsManager
+from django.http import JsonResponse, HttpResponse
+from django.template import loader
+from app.consumers import gRoomsManager, gTournament
 from app.rooms import room
 
 @api_view(['GET'])
@@ -61,7 +62,7 @@ def	postRoom(request):
 	if serializer.is_valid():
 		serializer.save()
 		#create a new party
-		gRoomsManager[request.data["url"]] = room(request.data["url"],
+		gRoomsManager.rooms[request.data["url"]] = room(request.data["url"],
 											request.data["maxPlayers"], request.data["difficulty"])
 		return (Response(serializer.data))
 	print(serializer.is_valid())
@@ -87,7 +88,15 @@ def	deleteRoom(request, pk):
 
 @api_view(['GET'])
 def	getIndex(request):
-	return (render(request, "index.html"))
+	template = loader.get_template('index.html')
+	status: str = "bob"
+	if gTournament.waiting == False and gTournament.inGame == False:
+		status = "No tournament for now"
+	context = {
+		'status': status,
+	}
+	return HttpResponse(template.render(context, request))
+	# return (render(request, "index.html"))
 
 @api_view(['GET'])
 def	getLobby(request, pk):
