@@ -1,4 +1,6 @@
 import abstractviews from "./abstractviews.js";
+import {navigateToInstead} from "../js/index.js";
+
 
 import {setCookie, getCookie, eraseCookie} from "../js/cookie.js";
 
@@ -14,6 +16,13 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
+        const token = getCookie("token")
+        
+        if (token == null) {
+            navigateToInstead("/register/");
+            return ;
+        }
+
         const response = await fetch('https://localhost:8083/sudokubattle/');
         const tempContentHtml = await response.text();
 

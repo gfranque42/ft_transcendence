@@ -1,5 +1,4 @@
 import { isValidSudoku, isBoardComplete } from './valid.js';
-import { showModal } from './modal.js';
 
 var numSelected = null;
 var tileSelected = null;

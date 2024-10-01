@@ -1,6 +1,6 @@
 import abstractviews from "./abstractviews.js";
 import {getCookie} from "../js/cookie.js";
-import {navigateTo} from "../js/index.js";
+import {navigateToInstead} from "../js/index.js";
 
 
 // var DICT = {
@@ -25,7 +25,7 @@ export default class extends abstractviews {
         const token = getCookie("token")
         
         if (token == null) {
-            navigateTo("/login/");
+            navigateToInstead("/login/");
             return ;
         }
         
@@ -80,14 +80,13 @@ export default class extends abstractviews {
         }
 
         const body = {};
-
         // Always include the CSRF token and token
         body["csrfmiddlewaretoken"] = this.csrfToken;
         body["token"] = await token;
-
-
+        
+        
         // console.log("!", DICT, "!");
-
+        
         // Conditionally add properties if they have values
         if (sms !== null && !isEmptyOrWhitespace(sms.value))
             body["phone_number"] = sms.value;
@@ -107,6 +106,7 @@ export default class extends abstractviews {
             },
         });
         const data = await response.json();
+        console.log(data);
         // console.log(DICT);
 
         // if (data.otp)

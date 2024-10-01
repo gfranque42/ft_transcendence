@@ -9,8 +9,6 @@ import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
 import SudokuWaiting from "../views/waiting_sudoku.js";
 
-
-
 import { initialize } from "./sudoku/sudoku.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
@@ -29,12 +27,6 @@ function isEmptyOrWhitespace(str) {
 
 window.addEventListener('beforeunload', function (event) {
     console.log("UNLOADING");
-    // if (view && view instanceof Profile)
-    // {
-    //     console.log("IN PROFILE");
-    //     console.log(view instanceof Profile);
-    //     view.VerificationNotVerified(UserToken);
-    // }
     logout(UserToken);
 });
 
@@ -54,6 +46,11 @@ export const navigateTo = url => {
     router();
 };
 
+export const navigateToInstead = url => {
+    history.replaceState(null, null, url);
+    router();
+};
+
 function JSONItirator(form) {
     const valuesArray = [];
     
@@ -64,9 +61,6 @@ function JSONItirator(form) {
     for(const key in form) {
         for (const value in form[key]) {
             // if (value)
-            console.log(form[key][value]);
-            console.log(value);
-            console.log(key);
             if (value === 'password2') 
             {
                 for (const item in form[key][value])
@@ -252,9 +246,14 @@ const router = async () => {
         const check_otp = await verif;
         const check_form = await isOkay;
 
-        if (check_otp.otp || !check_form)
+        if (check_otp.otp || check_form)
+        {
+            // console.log(check_otp.otp, check_form);
+            navigateTo("/profile/")
             return ;
-
+        }
+        
+        console.log(check_otp, check_form);
         hidePopstate();
         const otpPopup = document.getElementById('profile-otp-code');
         const clickOff = document.getElementById('click-off');

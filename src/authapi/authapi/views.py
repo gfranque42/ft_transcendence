@@ -243,6 +243,7 @@ class AddVerification(APIView):
         print ("User profile tfa: ", userProfile.tfa)
         print("\n\n\n")
         if formOTP.is_valid() and (formOTP.cleaned_data['otp']):
+            print("User profile otp: ", formOTP.cleaned_data['otp'])
             totp = pyotp.TOTP(userProfile.otp_secret)
             if (totp.verify(formOTP.cleaned_data['otp'])):
                 for item in DICT:
@@ -256,6 +257,7 @@ class AddVerification(APIView):
                 userProfile.tfa['sms'] = False
                 return JsonResponse({'error': 'Wrong Code'}, status=400)
 
+        print("OTPForm invalid: ", formOTP.cleaned_data)
 
         for item in DICT:
             DICT[item] = False
