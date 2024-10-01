@@ -54,11 +54,13 @@ function handleSocketMessage(e) {
 		const winningUser = data.winner || "N/A";
 		const losingUser = data.loser || "N/A";
 		//const winningTime = data.winner_time || "N/A";
+
+		const winningId = winningUser.Id;
+		const losingId = losingUser.Id;
 		console.log(data);
-		console.log("users are: ", winningUser, losingUser);
 
 		showModal(timeUsed, winningUser, currentUser);  // Assuming the current player lost
-		sendGameResults(winningUser, losingUser, 1, 0);
+		sendGameResults(winningId, losingId, 1, 0);
 	}
 }
 

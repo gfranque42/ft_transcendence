@@ -1,7 +1,6 @@
 import abstractviews from "./abstractviews.js";
 import {navigateToInstead} from "../js/index.js";
-
-
+import {getCookie} from "../js/cookie.js";
 
 export let csrfToken = null;
 
