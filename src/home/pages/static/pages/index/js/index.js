@@ -462,7 +462,14 @@ document.addEventListener("DOMContentLoaded", () => {
         {
             eraseCookie("token");
             UserToken = logout(UserToken);
-            document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+            if (window.location.pathname === '/')
+                {
+                    document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+                }
+                else
+                {
+                    navigateTo('/');
+                }
         } else if (event.target.matches('#profile')) {
             navigateTo('/profile/');
         }
