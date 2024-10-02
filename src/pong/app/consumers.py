@@ -17,15 +17,19 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
 		self.room_group_name = "pong_%s" % self.room_name
 
+		print(self.room_name,": connection en cours",flush=True)
+
 		if gRoomsManager.rooms[self.room_name].ready == True:
 			#maybe send an error message to display ?
 			self.close()
 			return
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-		if gRoomsManager.rooms[self.room_name].partyType == 4:
-			gRoomsManager.rooms[self.room_name].addPlayer("Player1")
-			gRoomsManager.rooms[self.room_name].addPlayer("Player2")
+		print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
+		if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
+			print(self.room_name,": coucou @@@@@@@",flush=True)
+			await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
+			await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
 		if gRoomsManager.rooms[self.room_name].channelLayer == None:
 			gRoomsManager.rooms[self.room_name].channelLayer = self.channel_layer
 			gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
@@ -34,7 +38,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({"type": "connected"}))
 
 	async def disconnect(self, close_code):
-		gRoomsManager.rooms[self.room_name].removePlayer(self.username)
+		if int(gRoomsManager.rooms[self.room_name].partyType) != 4:
+			await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
 		# Leave room group
 		await self.channel_layer.group_send(
 						self.room_group_name, {"type": "quit", "message": "quitting"})
@@ -44,13 +49,13 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
 		type_data = text_data_json["type"]
-		print('coucou de receive, type: ', text_data_json["type"], flush=True)
+		print('coucou de receive, type: ',text_data_json["type"], flush=True)
 		if type_data == "username":
 			self.username = text_data_json["username"]
 			if gRoomsManager.rooms[self.room_name].partyType != 4:
-				gRoomsManager.rooms[self.room_name].addPlayer(self.username)
+				await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
 			else:
-				gRoomsManager.rooms[self.room_name].start()
+				await gRoomsManager.rooms[self.room_name].start()
 		elif type_data == "ping":
 			gRoomsManager.rooms[self.room_name].updateData(text_data_json)
 
