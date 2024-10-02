@@ -155,10 +155,8 @@ const router = async () => {
         	+ '/ws'
         	+ window.location.pathname
         );
-		
-        const me = await waitForSocketConnection(roomSocket);
+		await waitForSocketConnection(roomSocket);
 
-		
         console.log('my game is ready: ', myGame.gameState);
 
 		const canvas = document.getElementById('canvas');
@@ -168,26 +166,26 @@ const router = async () => {
         roomSocket.onmessage = function (e)
         {
         	const data = JSON.parse(e.data);
-			wsonmessage(data, roomSocket, canvas, ctx, me);
+			wsonmessage(data, roomSocket, canvas, ctx);
         };
 
         roomSocket.onclose = function (e)
         {
         	console.error('Chat socket closed unexpectedly');
         };
-		let starttime = Date.now();
-        while (myGame.gameState != "end")
-        {	
-			let elapstime = Date.now() - starttime;
-			console.log("time: ",elapstime);
-			if (elapstime > 1000 / 60)
-			{
-				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
-				starttime += 1000 / 60;
-				console.log(".");
-			}
-			await new Promise(r => setTimeout(r, 2));
-        }
+		// let starttime = Date.now();
+        // while (myGame.gameState != "end")
+        // {	
+		// 	let elapstime = Date.now() - starttime;
+		// 	console.log("time: ",elapstime);
+		// 	if (elapstime > 1000 / 60)
+		// 	{
+		// 		myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
+		// 		starttime += 1000 / 60;
+		// 		console.log(".");
+		// 	}
+		// 	await new Promise(r => setTimeout(r, 2));
+        // }
 
     }
     if (!UserToken)

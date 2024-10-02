@@ -52,12 +52,15 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		print('coucou de receive, type: ',text_data_json["type"], flush=True)
 		if type_data == "username":
 			self.username = text_data_json["username"]
+			self.id = text_data_json["id"]
 			if gRoomsManager.rooms[self.room_name].partyType != 4:
 				await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
 			else:
 				await gRoomsManager.rooms[self.room_name].start()
 		elif type_data == "ping":
-			gRoomsManager.rooms[self.room_name].updateData(text_data_json)
+			print('ping recu !:',text_data,flush=True)
+			print('ping recu !:',text_data_json,flush=True)
+			gRoomsManager.rooms[self.room_name].updateData(text_data_json, self.username)
 
 	# Receive message from room group
 	async def gameUpdate(self, event):

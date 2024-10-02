@@ -161,6 +161,11 @@ export function getCookie(name)
 
 const	keyPressed = [];
 
+keyPressed['w'] = false;
+keyPressed['s'] = false;
+keyPressed[38] = false;
+keyPressed[40] = false;
+
 window.addEventListener('keydown', function(e){
 	keyPressed[e.keyCode] = true;
 	console.log("Key pressed: ", keyPressed[e.keyCode]);
@@ -172,14 +177,12 @@ window.addEventListener('keyup', function(e){
 
 export async function waitForSocketConnection(roomSocket)
 {
-	let username = null;
-
 	setTimeout(
-		function () {
+		async function () {
 			if (roomSocket.readyState === 1)
 			{
 				console.log("Connection is made")
-				me = testToken(roomSocket);
+				const me = await testToken(roomSocket);
 				return me;
 			}
 			else
@@ -220,7 +223,7 @@ export async function testToken(roomSocket)
 
 	console.log(UserInformation);
 	console.log(UserInformation.Username);
-	console.log(UserInformation.id);
+	console.log(UserInformation.ID);
 	roomSocket.send(JSON.stringify({
 		'type': "username",
 		'id': UserInformation.ID,
@@ -229,8 +232,7 @@ export async function testToken(roomSocket)
 	return {username:UserInformation.Username, id:UserInformation.ID};
 }
 
-
-export async function wsonmessage(data, roomSocket, canvas, ctx, me)
+export async function wsonmessage(data, roomSocket, canvas, ctx)
 {
 	const	KEY_UP = 38;
 	const	KEY_DOWN = 40;
@@ -255,10 +257,9 @@ export async function wsonmessage(data, roomSocket, canvas, ctx, me)
 		console.log(data);
 		let comptearebour = document.getElementById('comptearebour');
 		comptearebour.style.display = '';
-		const move = "none";
+		console.log("mon json en preparation!!",keyPressed['w']);
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
-			'username': me.username,
 			'w': keyPressed['w'],
 			's': keyPressed['s'],
 			'up': keyPressed[38],
@@ -279,7 +280,6 @@ export async function wsonmessage(data, roomSocket, canvas, ctx, me)
 		
 			roomSocket.send(JSON.stringify({
 				'type': "ping",
-				'username': me.username,
 				'w': keyPressed['w'],
 				's': keyPressed['s'],
 				'up': keyPressed[38],
@@ -296,17 +296,17 @@ export async function wsonmessage(data, roomSocket, canvas, ctx, me)
 			console.log(data.scoreR);
 			console.log(data.player1Name);
 			console.log(data.player2Name);
-			if (data.scoreL === 5 && data.player1Name === me.username)
-			{
-				const	result = document.getElementById("win");
-				result.style.display = "flex";
-			}
-			else if (data.scoreR === 5 && data.player2Name === me.username)
-			{
-				const	result = document.getElementById("win");
-				result.style.display = "flex";
-			}
-			else
+			// if (data.scoreL === 5 && data.player1Name === me.username)
+			// {
+			// 	const	result = document.getElementById("win");
+			// 	result.style.display = "flex";
+			// }
+			// else if (data.scoreR === 5 && data.player2Name === me.username)
+			// {
+			// 	const	result = document.getElementById("win");
+			// 	result.style.display = "flex";
+			// }
+			// else
 			{
 				const	result = document.getElementById("loose");
 				result.style.display = "flex";

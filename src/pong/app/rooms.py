@@ -180,9 +180,10 @@ class	room():
 				await self.sendUpdate(message)
 			await asyncio.sleep(1/20)
 
-	def	updateData(self, data) -> None:
+	def	updateData(self, data, username: str) -> None:
 		with self.lock:
 			print(self.roomName,": data receive for updateData",flush=True)
+			print(self.roomName,": data: ",data,flush=True)
 			if self.partyType == 4:
 				if data['w'] == True:
 					self.paddleL.key += self.paddleL.vel
@@ -193,7 +194,7 @@ class	room():
 				if data['down'] == True:
 					self.paddleR.key -= self.paddleR.vel
 			elif self.partyType == 0:
-				if data["username"] == self.players[0]:
+				if username == self.players[0]:
 					if data['w'] == True:
 						self.paddleL.key += self.paddleL.vel
 					if data['s'] == True:

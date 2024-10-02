@@ -110,7 +110,11 @@ async function testToken()
 
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const url = window.location.href;
+	const finalurl = url.replace(window.location.pathname, '');
+	const fetchurl = finalurl + '/auth/test_token/';
+
+	const response = await fetch(fetchurl, options);
 	const UserInformation = await response.json();
 
 	console.log(UserInformation);

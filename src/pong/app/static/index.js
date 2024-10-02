@@ -143,7 +143,9 @@ export async	function Start(csrfToken)
 	{
 		getCookie('token');
 		console.log('dns: ', dns);
-		const fetchurl = 'https://localhost:8083/api_pong/postroom/';
+		const url = window.location.href;
+        const finalurl = url.replace(window.location.pathname, '');
+		const fetchurl = finalurl + '/api_pong/postroom/';
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		console.log('fetchurl: ', fetchurl);
 		const response = await fetch(fetchurl, {
