@@ -128,8 +128,6 @@ class	room():
 	async def	start(self) -> None:
 		try:
 			print(self.roomName,": start on our way !",flush=True)
-			self.countDown()
-			print(self.roomName,": countdown done !",flush=True)
 			self.inGame = True
 			print(self.roomName,": in game = ",self.inGame,flush=True)
 			self.thread = Thread(target=self.gameLoop, args=())
@@ -175,6 +173,8 @@ class	room():
 
 	def	gameLoop(self) -> None:
 		print(self.roomName,": gameLoop started !",flush=True)
+		self.countDown()
+		print(self.roomName,": countdown done !",flush=True)
 		message: str = "update"
 		while self.inGame == True:
 			# with self.lock:
