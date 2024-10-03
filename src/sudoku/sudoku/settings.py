@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'django.contrib.sites',
+	'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -79,11 +81,11 @@ WSGI_APPLICATION = 'sudoku.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'username',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('MYDATABASE'),
+        'USER': os.getenv('DATABASEUSER'),
+        'PASSWORD': os.getenv('DATABASEPWD'),
+        'HOST': os.getenv('DATABASEHOST'),
+        'PORT': os.getenv('DATABASEPORT'),
     }
 }
 
@@ -119,11 +121,58 @@ USE_L10N = True
 
 USE_TZ = True
 
+# CORS
+CORS_ALLOWED_ORIGINS = [
+	'https://localhost:8083',
+	'http://localhost:8005',
+    'http://' + os.getenv('DNS') + ':8005',
+    'https://' + os.getenv('DNS') + ':8083',
+]
+
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:8000', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082','https://127.0.0.1:8083','https://localhost:8083' 
+# ]
+
+# CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost', 'https://127.0.0.1']
+
+# CORS_ALLOW_METHODS = [
+#     'DELETE',
+#     'GET',
+#     'OPTIONS',
+#     'PATCH',
+#     'POST',
+#     'PUT',
+# ]
+
+# CORS_ALLOW_HEADERS = [
+#     'accept',
+#     'accept-encoding',
+#     'authorization',
+#     'content-type',
+#     'dnt',
+#     'origin',
+#     'user-agent',
+#     'x-csrftoken',
+#     'x-requested-with',
+#     'token',
+#     'Authorization',
+# ]
+
+# CORS_ALLOW_CREDENTIALS = True
+
+# CORS_EXPOSE_HEADERS = [
+#     'Refresh-Token', 'Content-Type', 'Authorization', 'X-CSRFToken'
+# ]
+# CORS_ALLOW_CREDENTIALS = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'sudokubattle/static/'
+
+# Define the directory where static files will be collected
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -141,3 +190,9 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
+
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']

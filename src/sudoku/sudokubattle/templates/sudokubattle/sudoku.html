@@ -7,35 +7,45 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no">
 	<title>Sudoku</title>
+	<link href="{% static 'css/sudoku.css' %}" rel="stylesheet">
+	<!-- <link href="{% static 'css/navbar.css' %}" rel="stylesheet"> -->
+	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
+	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/pages.css'%}">
 
-	<link rel="stylesheet" href="{% static 'css/sudoku.css' %}">
-	<script>
-		let board = JSON.parse('{{ board|escapejs }}');
-		let startTime = new Date('{{ start_time }}');
-	</script>
-	<script type="module">
-		import { setGame } from '../../static/js/board.js';
-		import { startTimer } from '../../static/js/timer.js';
-		import { initializeWebSocket } from '../../static/js/sudoku.js';
 
-		document.addEventListener("DOMContentLoaded", function() {
-			const roomName = "{{ room_name }}";
-			const sudokuSocket = initializeWebSocket(roomName);
-			//setGame(sudokuSocket);
-			startTimer();
-		});
-	</script>
+	<input type="hidden" id="board_value" value="{{ board|escapejs }}">
+	<input type="hidden" id="start-time" value="{{ start_time }}">
+	<script type="module" src="{% static 'js/sudoku.js' %}" defer></script>
 </head>
 
 <body>
+	{% csrf_token %}
+    <div class="navbar">
+		<a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+		<a href="/" class="navbar-content" id="home" data-link>HOME</a>
+		<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
+	  </div>
 	<h1>Sudoku</h1>
 	<div id="timer">00:00:00</div>
-	<input type="hidden" id="room-name" value="{{ room_name }}">
+	<input type="hidden" id="room-name" value="{{ room_url }}">
 	<br>
 
 	<!-- 9x9 board -->
 	<div id="board"></div>
 	<br>
 	<div id="digits"></div>
+	<!-- Modal HTML -->
+	<div id="game-result-modal" class="modal">
+		<div class="modal-content">
+			<span id="close-modal" class="close">&times;</span>
+			<h2 id="result-title"></h2>
+			<p id="result-message"></p>
+			<button id="play-again">Play Again</button>
+		</div>
+	</div>
 </body>
+<footer>
+	<div class="background-text">Sudoku</div>
+</footer>
 </html>

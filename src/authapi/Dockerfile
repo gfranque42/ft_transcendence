@@ -11,4 +11,6 @@ COPY requirements.txt /project/
 
 RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
+COPY ./authapi/static/pages/Avatar.jpg /default_avatar.jpg
+
 ENTRYPOINT ["sh", "entrypoint.sh"]

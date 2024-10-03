@@ -1,11 +1,11 @@
-.index-body-register {
+/* .index-body-register {
     background-color: #FFFBFC;
     color: #131112;
     overflow: hidden;
     font-family: Oswald;
     margin: 0;
     padding: 0;
-}
+} */
 
 .title-register-half {
     background-color: #F08080;
@@ -47,7 +47,7 @@
 .form-register {
     display: flex;
     padding: 10vw;
-    padding-top: 21vh;
+    padding-top: 16vh;
     align-content: flex-start;
     flex-direction: column;
 }

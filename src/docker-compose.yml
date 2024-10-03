@@ -65,6 +65,21 @@ services:
       - .env
     restart: always
 
+  backend_sudoku:
+    container_name: backend_sudoku
+    build:
+      context: ./sudoku/
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    networks:
+      - Transcendence
+    volumes:
+      - ./sudoku:/project
+    env_file:
+      - .env
+
 networks:
   Transcendence:
     name: Transcendence
+
