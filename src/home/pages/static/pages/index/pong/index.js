@@ -150,9 +150,9 @@ function Hard()
 function generateRandomUrl()
 {
 	let str = '';
-    let i = 0;
+	let i = 0;
 	
-    while (i < 10)
+	while (i < 10)
 	{
 		const n = Math.floor(Math.random() * 127);
 		

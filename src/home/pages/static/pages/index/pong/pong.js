@@ -188,7 +188,7 @@ export async function waitForSocketConnection(roomSocket)
 			else
 			{
 				console.log("wait for connection...")
-				waitForSocketConnection(roomSocket);
+				await waitForSocketConnection(roomSocket);
 			}
 
 		}, 5);
@@ -244,7 +244,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 	}
 	else if (data.type === "ready for playing")
 	{
-		console.log('game loading');
+		console.log('game loading', data);
 		gameDisplay(data.player1Name, data.player2Name);
 	}
 	else if (data.type === "compte a rebour")

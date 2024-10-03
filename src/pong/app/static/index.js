@@ -85,9 +85,9 @@ function Hard()
 function generateRandomUrl()
 {
 	let str = '';
-    let i = 0;
+	let i = 0;
 	
-    while (i < 10)
+	while (i < 10)
 	{
 		const n = Math.floor(Math.random() * 127);
 		
@@ -144,7 +144,7 @@ export async	function Start(csrfToken)
 		getCookie('token');
 		console.log('dns: ', dns);
 		const url = window.location.href;
-        const finalurl = url.replace(window.location.pathname, '');
+		const finalurl = url.replace(window.location.pathname, '');
 		const fetchurl = finalurl + '/api_pong/postroom/';
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		console.log('fetchurl: ', fetchurl);

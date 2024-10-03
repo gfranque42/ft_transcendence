@@ -19,23 +19,27 @@ class	PongConsumer(AsyncWebsocketConsumer):
 
 		print(self.room_name,": connection en cours",flush=True)
 
-		if gRoomsManager.rooms[self.room_name].ready == True:
-			#maybe send an error message to display ?
+		try:
+			if gRoomsManager.rooms[self.room_name].ready == True:
+				#maybe send an error message to display ?
+				self.close()
+				return
+			# Join room group
+			await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+			print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
+			if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
+				print(self.room_name,": coucou @@@@@@@",flush=True)
+				await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
+				await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
+			if gRoomsManager.rooms[self.room_name].channelLayer == None:
+				gRoomsManager.rooms[self.room_name].channelLayer = self.channel_layer
+				gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
+				gRoomsManager.rooms[self.room_name].channelName = self.channel_name
+			await self.accept()
+			await self.send(text_data=json.dumps({"type": "connected"}))
+		except Exception as e:
+			print(self.room_name,": error: ",e,flush=True)
 			self.close()
-			return
-		# Join room group
-		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-		print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
-		if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
-			print(self.room_name,": coucou @@@@@@@",flush=True)
-			await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
-			await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
-		if gRoomsManager.rooms[self.room_name].channelLayer == None:
-			gRoomsManager.rooms[self.room_name].channelLayer = self.channel_layer
-			gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
-			gRoomsManager.rooms[self.room_name].channelName = self.channel_name
-		await self.accept()
-		await self.send(text_data=json.dumps({"type": "connected"}))
 
 	async def disconnect(self, close_code):
 		if int(gRoomsManager.rooms[self.room_name].partyType) != 4:
@@ -56,6 +60,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			if gRoomsManager.rooms[self.room_name].partyType != 4:
 				await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
 			else:
+				await self.channel_layer.group_send(
+					self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
 				await gRoomsManager.rooms[self.room_name].start()
 		elif type_data == "ping":
 			print('ping recu !:',text_data,flush=True)
@@ -80,6 +86,10 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			await self.send(text_data=json.dumps({"type": "fin du compte",
 										 "message": "fin du compte",
 			}))
+		elif (message == "ready for playing"):
+			await self.send(text_data=json.dumps({"type": "ready for playing", "message": "ready for playing",
+										"player1Name": gRoomsManager.rooms[self.room_name].players[0],
+										"player2Name": gRoomsManager.rooms[self.room_name].players[1],}))
 
 	async def quit(self, event):
 		print(self.username, ': bisous de quit', flush=True)
