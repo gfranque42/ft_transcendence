@@ -5,21 +5,28 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Pong</title>
-	<link href="{% static 'index.css' %}" rel="stylesheet">
+	{% comment %} <link href="{% static 'index.css' %}" rel="stylesheet"> {% endcomment %}
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'pages/pages.css'%}"> {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/pages.css'%}">
+
+
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'pong.svg' %}" rel="shortcut icon" type="image/svg"/>
 </head>
 <body>
+	{% csrf_token %}
 	<h1 id="Title">Pong Game</h1>
-	<button class="PvP Button" onclick="PvP()">Player vs Player</button>
-	<button class="PvA Button" onclick="PvA()">Player vs AI</button>
-	<button class="Start Button" onclick="Start()">Start Game</button>
-	<button class="Easy Difficulty" onclick="Easy()">Easy</button>
-	<button class="Medium Difficulty" onclick="Medium()">Medium</button>
-	<button class="Hard Difficulty" onclick="Hard()">Hard</button>
-	<script>
-		const dns = "{{ dns|escapejs }}";
-	</script>
-	<script src="{% static 'index.js' %}" defer></script>
+	<button class="PvP Button">Player vs Player</button>
+	<button class="PvA Button">Player vs AI</button>
+	
+	<button class="LocalP Button">Local Play</button>
+	<button class="Tournament Button">Tournament</button>
+	<button class="Start Button">Start Game</button>
+
+	<button class="Easy Difficulty">Easy</button>
+	<button class="Medium Difficulty">Medium</button>
+	<button class="Hard Difficulty">Hard</button>
+
+	<h1 id="Status">{{ status }}</h1>
 </body>
 </html>

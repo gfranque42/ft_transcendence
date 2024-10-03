@@ -2,6 +2,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from app.models import Player, Room
 from .serializers import PlayerSerializer, RoomSerializer
+import os
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+from django.template import loader
+from app.consumers import gRoomsManager, gTournament
+from app.rooms import room
 
 @api_view(['GET'])
 def	getPlayer(request):
@@ -55,6 +61,9 @@ def	postRoom(request):
 	serializer = RoomSerializer(data=request.data)
 	if serializer.is_valid():
 		serializer.save()
+		#create a new party
+		gRoomsManager.rooms[request.data["url"]] = room(request.data["url"],
+											request.data["maxPlayers"], request.data["difficulty"])
 		return (Response(serializer.data))
 	print(serializer.is_valid())
 	print(serializer.errors)
@@ -76,3 +85,24 @@ def	deleteRoom(request, pk):
 	room = Room.objects.get(url=pk)
 	room.delete()
 	return (Response('Room succesfully delete !'))
+
+@api_view(['GET'])
+def	getIndex(request):
+	template = loader.get_template('index.html')
+	status: str = "bob"
+	if gTournament.waiting == False and gTournament.inGame == False:
+		status = "No tournament for now"
+	context = {
+		'status': status,
+	}
+	return HttpResponse(template.render(context, request))
+	# return (render(request, "index.html"))
+
+@api_view(['GET'])
+def	getLobby(request, pk):
+	# room_name = request.headers.get["room_name"]
+	return (render(request, "pong.html", {"room_name": pk}))
+
+def	test(request):
+	data = {'status': 'ok'}
+	return JsonResponse(data)

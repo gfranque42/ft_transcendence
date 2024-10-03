@@ -85,9 +85,9 @@ function Hard()
 function generateRandomUrl()
 {
 	let str = '';
-    let i = 0;
+	let i = 0;
 	
-    while (i < 10)
+	while (i < 10)
 	{
 		const n = Math.floor(Math.random() * 127);
 		
@@ -130,7 +130,7 @@ function getCookie(name)
 	return cookieValue;
 }
 
-async	function Start()
+export async	function Start(csrfToken)
 {
 	if (gameMode == -1)
 		return ;
@@ -143,13 +143,16 @@ async	function Start()
 	{
 		getCookie('token');
 		console.log('dns: ', dns);
-		const fetchurl = 'https://' + 'localhost' + ':8083/api_pong/postroom/';
+		const url = window.location.href;
+		const finalurl = url.replace(window.location.pathname, '');
+		const fetchurl = finalurl + '/api_pong/postroom/';
+		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		console.log('fetchurl: ', fetchurl);
 		const response = await fetch(fetchurl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				// 'X-CSRFToken': getCookie('csrftoken'),
+				'X-CSRFToken': csrfToken,
 			},
 			body: JSON.stringify(roomData),
 		});
@@ -170,4 +173,5 @@ async	function Start()
 	}
 	console.log("Start !");
 	window.location.pathname = '/pong/' + roomUrl + '/';
+	return roomUrl;
 }
