@@ -26,7 +26,6 @@ export default class extends abstractviews {
         const parser = new DOMParser();
         const doc = parser.parseFromString(tempContentHtml, 'text/html');
         this.csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
-
         return tempContentHtml;
     }
 

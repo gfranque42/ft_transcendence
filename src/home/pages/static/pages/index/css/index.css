@@ -171,7 +171,7 @@ a:hover {
 	width: 200px;
 	height: 200px;
   background-color:#62BBC1;
-  display: flex  /* -webkit-box-shadow: 0px 0px 8px #F20570; */;
+  display: flex  /* -webkit-box-shadow: 0px 0px 8px #131112; */;
   align-items: center;
   justify-content: center;
   z-index: 9999; 
@@ -189,7 +189,7 @@ a:hover {
   position: absolute;
   font-family: Oswald;
   font-weight: 400;
-  color: #F20570;
+  color: #131112;
   width: 55px;
   height: 10px;
   margin: auto;
@@ -202,7 +202,7 @@ a:hover {
 .paddle {
   position: absolute;
   display: inline-block;  
-  background-color: #F20570;
+  background-color: #131112;
   margin: auto;
   top:auto; bottom:0;
   left: 0;
@@ -221,7 +221,7 @@ a:hover {
 
 .ball {
   position: absolute;
-  background-color:  #F20570;
+  background-color:  #131112;
   filter: brightness(150%);
   width: 10px;
   height: 10px;

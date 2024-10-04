@@ -28,6 +28,7 @@ export default class extends abstractviews {
             navigateToInstead("/login/");
             return ;
         }
+        console.log("token Profile: " + token);
         
         const options = {
             method: 'GET',
@@ -40,6 +41,11 @@ export default class extends abstractviews {
         const response = await fetch('https://localhost:8083/auth/profile', options);
         const tempContentHtml = await response.text();
         
+
+        if (response.status != 200) {
+            navigateToInstead("/");
+            return ;
+        }
         // Extract CSRF token from HTML form
         const parser = new DOMParser();
         const doc = parser.parseFromString(tempContentHtml, 'text/html');

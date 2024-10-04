@@ -324,6 +324,10 @@ class Profile(APIView):
             userProfile = UserProfile.objects.get(id=user_id)
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
         
         initial_data = {'username': userProfile.user.username}
@@ -525,11 +529,18 @@ def get_token(request):
 
 @api_view(['GET'])
 def test_token(request):
-    auth_header = request.headers.get('Authorization')
-    token = auth_header.split(' ')[1]
-    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-    userProfile = UserProfile.objects.get(id=payload['id'])
-    return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
+    except jwt.ExpiredSignatureError:
+        return Response({"method": False}, status=status.HTTP_200_OK)
+    except UserProfile.DoesNotExist:
+        return Response({"token": None}, status=status.HTTP_200_OK)
+
+
 
 @api_view(['GET'])
 def test_OTP(request):

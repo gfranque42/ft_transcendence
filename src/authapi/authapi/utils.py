@@ -1,22 +1,15 @@
 from .serializers import  FriendRequestSerializer
 from .models import  Friend_request
-from .forms import AnswerFriendForm
 
 from django.conf import settings
 import json, datetime, pyotp, qrcode, base64, jwt
 
-from jwt import ExpiredSignatureError, InvalidTokenError
 
 from django.core.mail import send_mail
 from io import BytesIO
-from django.http import HttpResponse
-from sms import send_sms
 
 import base64
-from .models import UserProfile, Friend_request, GameHistory
-
-from django.contrib.sessions.models import Session
-from django.utils import timezone
+from .models import UserProfile, Friend_request
 
 import vonage
 
@@ -79,7 +72,7 @@ def CreateToken(userProfile):
     user = userProfile.user
     payload = {
         'id': user.id,
-        'exp': datetime.datetime.now() + datetime.timedelta(minutes=42),
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=1),
         'iat': datetime.datetime.utcnow(),
     }
     token = jwt.encode(payload, 'secret', algorithm='HS256')

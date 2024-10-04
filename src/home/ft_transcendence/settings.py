@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4ck-deqpp#qu5%=dd*#b&kbh(gmec$=-+xbjzsaj&(!!5x!(hq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 
@@ -167,7 +167,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'pages/static'),
+]
+
+# STATIC_ROOT = BASE_DIR / 'pages/static'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -176,5 +183,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ALLOWED_HOSTS = ['localhost']
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
-
-

@@ -1,6 +1,7 @@
 
 // Import the Home view class
 import Home from "../views/home.js";
+import NotFound from "../views/404.js";
 import Login from "../views/login.js";
 import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
@@ -27,6 +28,26 @@ var isLoaded = false;
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
 }
+
+
+async function checkValidity() {
+    if (await UserToken)
+        return ;
+    const token = getCookie("token")
+        
+    if (token != null){
+        console.log("renewing token");
+        UserToken = getRenewedToken(token)
+    }
+    if (await UserToken == null) {
+        console.log("annuling token");
+
+        eraseCookie("token");
+    }
+    // console.log("token: " + await UserToken);
+}
+
+checkValidity();
 
 
 window.addEventListener('beforeunload', function (event) {
@@ -127,6 +148,8 @@ function VerificationEvent(verification, token) {
         event.preventDefault();
         if (event.target.id == 'form-otp') {
             // console.log("VerificationForm: ", event.target);
+            const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            verification.csrfToken = csrf.value;
             const otp = document.querySelector('input[name="otp"]');
             const status = verification.verifactionUser(otp, token);
             return checkOTP(status, token);
@@ -148,11 +171,11 @@ function hidePopstate() {
     if (clickOff) clickOff.style.filter = 'none';
 }
 
-
 const router = async () => {
   
     ("Router function called");
     const routes = [
+        { path: '/404/', view: NotFound },
         { path: "/", view: Home },
         { path: "/login/", view: Login },
         { path: "/profile/", view: Profile },
@@ -164,8 +187,7 @@ const router = async () => {
 		    { path: '/pong/[A-Za-z0-9]{10}/', view: PongLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
-    
-    
+        
     const potentialMatches = routes.map(route => {
         return {
             route: route,
@@ -174,7 +196,7 @@ const router = async () => {
     });
 
     let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
-
+    console.log(match);
     if (!match) {
         match = {
             route: routes[0],
@@ -216,7 +238,7 @@ const router = async () => {
     }
 
     async function VerificationRoute(tempToken) {
-        const verification = new Verification();
+        var verification = new Verification();
         const token = await tempToken;
         if (token === null)
             return ;
@@ -244,9 +266,14 @@ const router = async () => {
 
         if (IsCorrect)
         {
+            console.log(isOTP);
+            console.log(IsCorrect);
             // console.log(isOTP);
-            if (isOTP && isOTP.otp)
+            if (isOTP)
+            {
+                console.log("navigating to profile");
                 navigateTo("/profile/")
+            }
             return true;
         }
         return false;
@@ -271,14 +298,6 @@ const router = async () => {
         otpPopup.style.display = 'block';
         clickOff.style.filter = 'blur(5px)';
         // }
-    }
-
-
-    if (!UserToken) {
-        const token = getCookie("token")
-            
-        if (token != null)
-            UserToken = getRenewedToken(token)
     }
     if (match.route.path == "/") {
         if (isLoaded)
@@ -327,16 +346,16 @@ const router = async () => {
                 const avatar = document.querySelector('input[name="avatar"]');
                 const to_user = document.querySelector('input[name="to_user"]');
                 if ('btn-profile-update' == event.submitter.id) {
-                    FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
+                    FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)), true);
                 } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
                     if (event.submitter.id == 'accept')
-                        FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value))
+                        FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value), true);
                     else
-                        FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value))
+                        FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value), true);
                 } else if (event.submitter.id == 'friend-form') {
                     friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
                 } else if (event.submitter.id == 'unfriend') {
-                    FollowingProfile(view.deleteFriend(UserToken, event.submitter));
+                    FollowingProfile(view.deleteFriend(UserToken, event.submitter), true);
                     navigateTo("/profile/")
                 } else {
                     const email = document.querySelector('input[name="email"]');
@@ -484,6 +503,8 @@ window.addEventListener("popstate", router);
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
     //Loader
+    // checkValidity();
+
     console.log("DOM loading")
 
     const handleHomePageLoad = () => {
@@ -497,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (loader)
                 document.querySelector('.loader').style.display = 'block';
             console.log("Display swicthed")
-        },40);
+        },200);
         
         
         setTimeout(function() {
@@ -509,10 +530,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (app)
                 document.querySelector('#app').style.display = 'block';
             isLoaded = true;
-        },1000);
+        },1200);
     };
     
     handleHomePageLoad();
+
 //fin Loader
 
     document.addEventListener('click', function(event) {
@@ -569,5 +591,6 @@ document.addEventListener("DOMContentLoaded", () => {
             verification.LastCheckAddVerification(UserToken);
         }
     });
+
     router();
 });
