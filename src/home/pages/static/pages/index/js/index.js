@@ -419,10 +419,6 @@ const router = async () => {
 			console.error('Chat socket closed unexpectedly');
 		};
 
-		while (myGame.gameState === "waiting")
-		{
-			1;
-		}
 		let starttime = Date.now();
 		while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
 		{	
