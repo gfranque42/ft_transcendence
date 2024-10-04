@@ -7,6 +7,8 @@ from .models import Room, Player
 from .pong import *
 import asyncio
 from .rooms import *
+from channels.layers import get_channel_layer
+
 
 gRoomsManager: roomsManager = roomsManager()
 
@@ -16,6 +18,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
 		self.room_group_name = "pong_%s" % self.room_name
+		self.username = None
 
 		print(self.room_name,": connection en cours",flush=True)
 
@@ -32,7 +35,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
 				await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
 			if gRoomsManager.rooms[self.room_name].channelLayer == None:
-				gRoomsManager.rooms[self.room_name].channelLayer = self.channel_layer
+				gRoomsManager.rooms[self.room_name].channelLayer = get_channel_layer()
 				gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
 				gRoomsManager.rooms[self.room_name].channelName = self.channel_name
 			await self.accept()
@@ -42,9 +45,12 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.close()
 
 	async def disconnect(self, close_code):
-		if int(gRoomsManager.rooms[self.room_name].partyType) != 4:
+		if int(gRoomsManager.rooms[self.room_name].partyType) != 4 and gRoomsManager.rooms[self.room_name].inGame == False:
 			await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
 		# Leave room group
+		gRoomsManager.rooms[self.room_name].inGame = False
+		if gRoomsManager.rooms[self.room_name].thread and self.username and gRoomsManager.rooms[self.room_name].players[0] == self.username:
+			gRoomsManager.rooms[self.room_name].thread.join()
 		await self.channel_layer.group_send(
 						self.room_group_name, {"type": "quit", "message": "quitting"})
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -63,6 +69,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				await self.channel_layer.group_send(
 					self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
 				await gRoomsManager.rooms[self.room_name].start()
+				print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
 		elif type_data == "ping":
 			print('ping recu !:',text_data,flush=True)
 			print('ping recu !:',text_data_json,flush=True)
@@ -70,9 +77,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 
 	# Receive message from room group
 	async def gameUpdate(self, event):
-		print(self.username, ': bisous de game_update', flush=True)
+		print(self.username,': bisous de game_update',flush=True)
 		message = event["message"]
-		print(self.username, ': ', message, flush=True)
+		print(self.username,': ',message,flush=True)
 		if (message == "update"):
 			await self.send(text_data=json.dumps(event))
 		elif (message == "finish"):

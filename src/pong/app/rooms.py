@@ -75,7 +75,7 @@ class	room():
 					self.players.append(player)
 					room.players.add(user)
 				else:
-					raise roomException("Player ", player, " is already in this room!", 1001)
+					raise roomException("Player " + player + " is already in this room!", 1001)
 				if len(self.players) == self.nbPlayers:
 					self.ready = True
 		else:
@@ -83,7 +83,7 @@ class	room():
 				if player not in self.players:
 					self.players.append(player)
 				else:
-					raise roomException("Player ", player, " is already in this room!", 1001)
+					raise roomException("Player " + player + " is already in this room!", 1001)
 				if len(self.players) == 2:
 					self.ready = True
 
@@ -104,87 +104,67 @@ class	room():
 					self.players.remove(player)
 					room.players.delete(username=player)
 				else:
-					raise roomException("Player ", player, " isn't in this room!", 1002)
+					raise roomException("Player " + player + " isn't in this room!", 1002)
 
-	def	countDown(self) -> None:
+	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
 		if self.ready == True and self.inGame == False:
 			x: int = 3
 			while x > 0:
 				#send to the group with the channel layer
-				async_to_sync(self.channelLayer.group_send(
+				await self.channelLayer.group_send(
 						self.roomGroupName, {"type": "gameUpdate",
 							"message": "countdown",
-							"number": x,}))
-				time.sleep(1)
+							"number": x,})
+				await asyncio.sleep(1)
+				# async_to_sync(asyncio.sleep(1))
 				x -= 1
 			#send the end of the count down
-			async_to_sync(self.channelLayer.group_send(
+			await self.channelLayer.group_send(
 						self.roomGroupName, {"type": "gameUpdate",
-							"message": "fin du compte",}))
+							"message": "fin du compte",})
 		else:
-			raise roomException("Room ", self.roomName, " haven't the good amount of players or is already in game", 1003)
+			raise roomException("Room " + self.roomName + " haven't the good amount of players or is already in game", 1003)
 
 	async def	start(self) -> None:
 		try:
 			print(self.roomName,": start on our way !",flush=True)
-			self.inGame = True
-			print(self.roomName,": in game = ",self.inGame,flush=True)
 			self.thread = Thread(target=self.gameLoop, args=())
 			print(self.roomName,": thread created",flush=True)
 			self.thread.start()
 			if self.thread:
 				print(self.roomName,": thread launched !",flush=True)
-				self.thread.join()
+				# self.thread.join()
 		except roomException as e:
 					print(f"Error from start: {e}")
 
-	async def	sendUpdate(self, message) -> None:
-		print(self.roomName,": sendUpdate with message \"",message,"\"",flush=True)
-		await self.channelLayer.group_send(
-						self.roomGroupName, {"type": "gameUpdate", "message": message,
-							"ballcx": self.ball.coor.x,
-							"ballcy": self.ball.coor.y,
-							"ballsx": self.ball.size.x,
-							"ballsy": self.ball.size.y,
-							"balldx": self.ball.dir.x,
-							"balldy": self.ball.dir.y,
-							"balla": self.ball.angle,
-							"ballv": self.ball.vel,
-							"paddleLcx": self.paddleL.coor.x,
-							"paddleLcy": self.paddleL.coor.y,
-							"paddleLsx": self.paddleL.size.x,
-							"paddleLsy": self.paddleL.size.y,
-							"paddleLd": self.paddleL.dir,
-							"paddleLk": self.paddleL.key,
-							"paddleLv": self.paddleL.vel,
-							"paddleRcx": self.paddleR.coor.x,
-							"paddleRcy": self.paddleR.coor.y,
-							"paddleRsx": self.paddleR.size.x,
-							"paddleRsy": self.paddleR.size.y,
-							"paddleRd": self.paddleR.dir,
-							"paddleRk": self.paddleR.key,
-							"paddleRv": self.paddleR.vel,
-							"player1Name": self.players[0],
-							"player2Name": self.players[1],
-							"scoreL": self.scoreL,
-							"scoreR": self.scoreR
-							})
-
 	def	gameLoop(self) -> None:
 		print(self.roomName,": gameLoop started !",flush=True)
-		self.countDown()
-		print(self.roomName,": countdown done !",flush=True)
+		try:
+			async_to_sync(self.countDown)()
+			print(self.roomName,": countdown done !",flush=True)
+			self.inGame = True
+			print(self.roomName,": in game = ",self.inGame,flush=True)
+		except Exception as e:
+			print(self.roomName,": error: ",e,flush=True)
+			async_to_sync(self.channelLayer.group_send)(
+						self.roomGroupName, {"type": "quit", "message": "quit"})
+			exit()
 		message: str = "update"
 		while self.inGame == True:
 			# with self.lock:
 			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
+			print(self.roomName,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
 			if self.scoreL == 5 or self.scoreR == 5:
 				self.inGame = False
 				message = "finish"
 				print(self.roomName,": the game is finished",flush=True)
-			async_to_sync(self.sendUpdate(message))
-			async_to_sync(asyncio.sleep(1/20))
+			self.sendUpdate(message)
+			async_to_sync(asyncio.sleep)(1/20)
+			# time.sleep(1/20)
+		if self.scoreL != 5 and self.scoreR != 5:
+			async_to_sync(self.channelLayer.group_send)(
+						self.roomGroupName, {"type": "quit", "message": "quit"})
 
 	def	updateData(self, data, username: str) -> None:
 		# with self.lock:
@@ -235,3 +215,35 @@ class	room():
 		elif self.paddleR.key < 0 and self.paddleR.key < -self.paddleR.vel:
 			self.paddleR.key = -self.paddleR.vel
 		print(self.roomName,": fin de updateData!",flush=True)
+
+	def	sendUpdate(self, message) -> None:
+		print(self.roomName,": sendUpdate with message \"",message,"\"",flush=True)
+		async_to_sync(self.channelLayer.group_send)(
+						self.roomGroupName, {"type": "gameUpdate", "message": message,
+							"ballcx": self.ball.coor.x,
+							"ballcy": self.ball.coor.y,
+							"ballsx": self.ball.size.x,
+							"ballsy": self.ball.size.y,
+							"balldx": self.ball.dir.x,
+							"balldy": self.ball.dir.y,
+							"balla": self.ball.angle,
+							"ballv": self.ball.vel,
+							"paddleLcx": self.paddleL.coor.x,
+							"paddleLcy": self.paddleL.coor.y,
+							"paddleLsx": self.paddleL.size.x,
+							"paddleLsy": self.paddleL.size.y,
+							"paddleLd": self.paddleL.dir,
+							"paddleLk": self.paddleL.key,
+							"paddleLv": self.paddleL.vel,
+							"paddleRcx": self.paddleR.coor.x,
+							"paddleRcy": self.paddleR.coor.y,
+							"paddleRsx": self.paddleR.size.x,
+							"paddleRsy": self.paddleR.size.y,
+							"paddleRd": self.paddleR.dir,
+							"paddleRk": self.paddleR.key,
+							"paddleRv": self.paddleR.vel,
+							"player1Name": self.players[0],
+							"player2Name": self.players[1],
+							"scoreL": self.scoreL,
+							"scoreR": self.scoreR
+							})

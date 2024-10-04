@@ -83,6 +83,7 @@ export class game
 		this.player1 = player1;
 		this.player2 = player2;
 		this.gameState = "waiting";
+		this.startTime = Date.now();
 	};
 
 	update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleLdy, paddleRcx, paddleRcy, paddleRsx, paddleRsy, paddleRdy, ballcx, ballcy, ballsx, ballsy, balldx, balldy, frameTime)
@@ -265,6 +266,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			'up': keyPressed[38],
 			'down': keyPressed[40],
 		}));
+		myGame.gameState = "playing";
 	}
 	else if (data.type === "gameUpdate")
 	{
@@ -285,6 +287,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 				'up': keyPressed[38],
 				'down': keyPressed[40],
 			}));
+			myGame.gameState = "playing";
 		}
 		else if (data.message === "finish")
 		{
