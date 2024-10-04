@@ -210,13 +210,7 @@ export async function testToken(roomSocket)
 	const response = await fetch('https://localhost:8083/auth/test_token', options);
 	if (!response.ok)
 	{
-		const link = document.createElement('a');
-		link.href = '/login/';
-		link.setAttribute('data-link', '');
-		document.body.appendChild(link);
-		console.log(link);
-		link.click();
-		document.body.removeChild(link);
+		navigateToInstead("/login/");
 	}
 
 	const UserInformation = await response.json();
