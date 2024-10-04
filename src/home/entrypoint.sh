@@ -29,7 +29,7 @@ echo "makemigrations done"
 
 python manage.py migrate
 
-python manage.py collectstatic --noinput
+# python manage.py collectstatic --noinput
 
 echo "migrate done"
 
