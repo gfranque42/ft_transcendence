@@ -1,0 +1,40 @@
+.navbar {
+    width: 94vw;
+    padding-left: 3vw;
+    padding-right: 3vw;
+    padding-top: 1vh;
+    display: flex;
+    justify-content: space-between;
+}
+
+a .navbar{
+    color: #131112;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
+.navbar-content {
+    font-family: Oswald;
+    font-size: 2.5vw;
+}
+
+
+.navbar-logo {
+    transform: translate(0%, -25%);
+    height: 3vw;
+}
+
+.navbar-home {
+    top: 2%;
+    left: 50vw;
+    transform: translate(-50%, 0);
+    position: fixed;
+}
+
+.navbar-user {
+    top: 2%;
+    left: 95vw;
+    transform: translate(-100%, 0);
+    position: fixed;
+}

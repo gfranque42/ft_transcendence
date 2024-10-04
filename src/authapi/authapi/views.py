@@ -324,6 +324,10 @@ class Profile(APIView):
             userProfile = UserProfile.objects.get(id=user_id)
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
         
         initial_data = {'username': userProfile.user.username}
