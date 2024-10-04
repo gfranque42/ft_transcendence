@@ -5,6 +5,10 @@ import NotFound from "../views/404.js";
 import Login from "../views/login.js";
 import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
+import Pong from "../views/pong.js";
+import PongLobby from "../views/pong_lobby.js";
+import {vec2, paddle, ball, game, waitForSocketConnection, wsonmessage} from  "../pong/pong.js";
+import {eventPong, checkConnection} from "../pong/index.js";
 import Profile from "../views/profile.js";
 import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
@@ -51,15 +55,18 @@ window.addEventListener('beforeunload', function (event) {
     logout(UserToken);
 });
 
+export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
+
+// Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
-    const values = match.result.slice(1);
-    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+	const values = match.result.slice(1);
+	const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
 
-    return Object.fromEntries(keys.map((key, i) => {
-        return [key, values[i]];
-    }));
+	return Object.fromEntries(keys.map((key, i) => {
+		return [key, values[i]];
+	}));
 };
 
 export const navigateTo = url => {
@@ -165,6 +172,7 @@ function hidePopstate() {
 }
 
 const router = async () => {
+  
     ("Router function called");
     const routes = [
         { path: '/404/', view: NotFound },
@@ -174,7 +182,9 @@ const router = async () => {
         { path: "/register/", view: Register },
         { path: "/sudoku/", view: Sudoku },
         { path: "/sudoku/waiting-room", view: SudokuWaiting },
-		{ path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby },
+		    { path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby },
+		    { path: "/pong/", view: Pong },
+		    { path: '/pong/[A-Za-z0-9]{10}/', view: PongLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
         
@@ -385,6 +395,62 @@ const router = async () => {
 		});
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
 		initialize();
+	} else if (match.route.path == "/pong/") {
+		await checkConnection();
+		eventPong(view);
+
+	} else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
+		await checkConnection();
+		var socketProtocol = 'ws://';
+		console.log(window.location.protocol);
+		if (window.location.protocol === 'https:')
+		{
+			console.log('protocol https');
+			socketProtocol = 'wss://';
+		}
+
+		const roomSocket = new WebSocket(
+			socketProtocol
+			+ window.location.host
+			+ '/ws'
+			+ window.location.pathname
+		);
+		await waitForSocketConnection(roomSocket);
+
+		console.log('my game is ready: ', myGame.gameState);
+
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth * 0.8;
+		canvas.height = window.innerHeight * 0.7;
+		roomSocket.onmessage = function (e)
+		{
+			const data = JSON.parse(e.data);
+			if (data.type === "fin du compte")
+			{
+				myGame.gameState = "playing";
+			}
+			wsonmessage(data, roomSocket, canvas, ctx);
+		};
+
+		roomSocket.onclose = function (e)
+		{
+			console.error('Chat socket closed unexpectedly');
+		};
+
+		let starttime = Date.now();
+		while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
+		{	
+			let elapstime = Date.now() - starttime;
+			console.log("time: ",elapstime);
+			if (elapstime > 1000 / 60)
+			{
+				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
+				starttime += 1000 / 60;
+				console.log(".");
+			}
+			await new Promise(r => setTimeout(r, 2));
+		}
 	}
 
     displayUser();
@@ -484,7 +550,14 @@ document.addEventListener("DOMContentLoaded", () => {
         {
             eraseCookie("token");
             UserToken = logout(UserToken);
-            document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+            if (window.location.pathname === '/')
+                {
+                    document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+                }
+                else
+                {
+                    navigateTo('/');
+                }
         } else if (event.target.matches('#profile')) {
             navigateTo('/profile/');
         }

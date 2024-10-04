@@ -1,9 +1,5 @@
 import abstractviews from "./abstractviews.js";
-import {navigateToInstead} from "../js/index.js";
-
-
-import {setCookie, getCookie, eraseCookie} from "../js/cookie.js";
-
+import {Start} from "../pong/index.js";
 
 export let csrfToken = null;
 
@@ -11,19 +7,12 @@ export default class extends abstractviews {
     constructor() 
     {
         super();
-        this.setTitle("Sudoku");
+        this.setTitle("Pong");
     }
 
     async getHtml() 
     {
-        const token = getCookie("token")
-        
-        if (token == null) {
-            navigateToInstead("/login/");
-            return ;
-        }
-
-        const response = await fetch('https://localhost:8083/sudokubattle/');
+        const response = await fetch('https://localhost:8083/api_pong/getindex/');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
@@ -32,6 +21,10 @@ export default class extends abstractviews {
         csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
 
         return tempContentHtml;
+    }
+
+    async PongLobbyCreation() {
+        return (Start(csrfToken));
     }
 
     setTitle(title) {
