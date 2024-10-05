@@ -182,9 +182,9 @@ const router = async () => {
         { path: "/register/", view: Register },
         { path: "/sudoku/", view: Sudoku },
         { path: "/sudoku/waiting-room", view: SudokuWaiting },
-		    { path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby },
-		    { path: "/pong/", view: Pong },
-		    { path: '/pong/[A-Za-z0-9]{10}/', view: PongLobby }
+        { path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby },
+        { path: "/pong/", view: Pong },
+        { path: '/pong/[A-Za-z0-9]{10}/', view: PongLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
         
@@ -243,10 +243,12 @@ const router = async () => {
         if (token === null)
             return ;
         const navStatus = await navigateToOTP(verification, token);
-        UserToken = token
+        console.log(navStatus);
+        // UserToken = token
         if (navStatus == 1) {
             if (VerificationEvent(verification, token));
             return ;
+            
         }
         else if (navStatus == 2) {
             navigateAfterPost(token);
