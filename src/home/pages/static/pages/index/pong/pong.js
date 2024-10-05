@@ -242,6 +242,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 	if (data.type === "connected")
 	{
 		console.log('player connected!');
+		myGame.gameState = "waiting";
 	}
 	else if (data.type === "ready for playing")
 	{
@@ -299,17 +300,17 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			console.log(data.scoreR);
 			console.log(data.player1Name);
 			console.log(data.player2Name);
-			// if (data.scoreL === 5 && data.player1Name === me.username)
-			// {
-			// 	const	result = document.getElementById("win");
-			// 	result.style.display = "flex";
-			// }
-			// else if (data.scoreR === 5 && data.player2Name === me.username)
-			// {
-			// 	const	result = document.getElementById("win");
-			// 	result.style.display = "flex";
-			// }
-			// else
+			if (data.scoreL === 5 && data.player1Name === me.username)
+			{
+				const	result = document.getElementById("win");
+				result.style.display = "flex";
+			}
+			else if (data.scoreR === 5 && data.player2Name === me.username)
+			{
+				const	result = document.getElementById("win");
+				result.style.display = "flex";
+			}
+			else
 			{
 				const	result = document.getElementById("loose");
 				result.style.display = "flex";
