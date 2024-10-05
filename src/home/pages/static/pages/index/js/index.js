@@ -424,41 +424,19 @@ const router = async () => {
 			link.click();
 			document.body.removeChild(link);
 		};
-
-		// function gameLoop() {
-		// 	const elapstime = Date.now() - myGame.startTime;
-
-		// 	if (myGame.gameState !== "waiting") {
-		// 		myGame.draw(canvas,ctx, elapstime / 1000);
-		// 	}
-		// 	if (myGame.gameState !== "end") {
-		// 		requestAnimationFrame(gameLoop);
-		// 	}
-		// }
-		function runAtFPS() {
-			const frameDuration = 1000 / 60; // Calculate how long each frame should last in milliseconds
-			let lastFrameTime = Date.now();   // Timestamp of the last frame
-		
-			function frame() {
-				const currentTime = Date.now();
-				const deltaTime = (currentTime - lastFrameTime) / 1000;  // Delta time in seconds
-		
-				// Call the drawing function with delta time
-				myGame.draw(canvas, ctx, deltaTime);
-		
-				// Update the timestamp for the last frame
-				lastFrameTime = currentTime;
-		
-				// Schedule the next frame
-				setTimeout(frame, frameDuration - (Date.now() - currentTime));
-			}
-
-			// Start the loop
-			if (myGame.gameState !== "end")
+		let starttime = Date.now();
+        while (myGame.gameState != "end")
+        {	
+			let elapstime = Date.now() - starttime;
+			console.log("time: ",elapstime);
+			if (elapstime > 1000 / 60)
 			{
-				frame();
+				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
+				starttime += 1000 / 60;
+				console.log(".");
 			}
-		}
+			await new Promise(r => setTimeout(r, 2));
+        }
 		
 	}
 
