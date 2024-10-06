@@ -400,8 +400,6 @@ const router = async () => {
 
 				canvas.width = window.innerWidth * 0.8;
 				canvas.height = window.innerHeight * 0.7;
-				// gameLoop();
-				runAtFPS();
 			});
 		}
 		roomSocket.onmessage = function (e) {

@@ -81,6 +81,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		message = event["message"]
 		print(self.username,': ',message,flush=True)
 		if (message == "update"):
+			print(self.username,': valeur de paddledir:', event["paddleLd"],flush=True)
 			await self.send(text_data=json.dumps(event))
 		elif (message == "finish"):
 			await self.send(text_data=json.dumps(event))

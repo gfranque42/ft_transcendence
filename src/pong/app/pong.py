@@ -60,6 +60,7 @@ class	Paddle:
 	def update(self):
 		self.coor.y += self.dir
 		self.dir = self.key
+		self.key = 0
 
 def	CheckPaddleCollisionWithEdge(Paddle):
 	if (Paddle.coor.y + Paddle.dir <= 0):

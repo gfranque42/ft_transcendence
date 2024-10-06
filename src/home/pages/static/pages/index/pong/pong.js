@@ -28,6 +28,7 @@ export class paddle
 		this.pos.update(paddlecx, paddlecy);
 		this.size.update(paddlesx, paddlesy);
 		this.dir = paddledy;
+		console.log("paddle coor:\nx:",this.pos.x,"\ny:",this.pos.y,"\nsx:",this.size.x,"\nsy:",this.size.y);
 	};
 
 	draw(canvas, ctx, color, frameTime)
@@ -35,7 +36,9 @@ export class paddle
 		var width = canvas.width;
 		var height = canvas.height;
 		ctx.fillStyle = color;
-		const posy = this.pos.y + this.dir * (frameTime / (1 / 20));
+		const frame = frameTime / (1/20);
+		const posy = this.pos.y + this.dir * frame;
+		console.log('draw posy:',posy,"\nframe:",frame,"\ndir:",this.dir,"\npos.y:",this.pos.y);
 		ctx.fillRect(this.pos.x / 100 * width, posy / 100 * height, this.size.x / 100 * width, this.size.y / 100 * height);
 	};
 }
@@ -131,7 +134,7 @@ function compteARebour(number)
 
 function gameUpdate(data, game)
 {
-	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleLdy, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.paddleRdy, data.ballcx, data.ballcy, data.ballsx, data.ballsy, data.balldx, data.balldy, Date.now());
+	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleLd, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.paddleRd, data.ballcx, data.ballcy, data.ballsx, data.ballsy, data.balldx, data.balldy, Date.now());
 	console.log('game updated');
 }
 

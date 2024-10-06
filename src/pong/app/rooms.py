@@ -153,13 +153,14 @@ class	room():
 		message: str = "update"
 		while self.inGame == True:
 			# with self.lock:
-			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
+			# self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
 			print(self.roomName,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
 			if self.scoreL == 5 or self.scoreR == 5:
 				self.inGame = False
 				message = "finish"
 				print(self.roomName,": the game is finished",flush=True)
 			self.sendUpdate(message)
+			print(self.roomName,": bobbbbbb paddleLdir=",self.paddleL.dir,"\npaddleLkey=",self.paddleL.dir,"\npaddleRdir=",self.paddleR.dir,"\npaddleRkey=",self.paddleR.vel,flush=True)
 			async_to_sync(asyncio.sleep)(1/20)
 			# time.sleep(1/20)
 		if self.scoreL != 5 and self.scoreR != 5:
@@ -215,6 +216,7 @@ class	room():
 		elif self.paddleR.key < 0 and self.paddleR.key < -self.paddleR.vel:
 			self.paddleR.key = -self.paddleR.vel
 		print(self.roomName,": fin de updateData!",flush=True)
+		print(self.roomName,": paddleLdir=",self.paddleL.dir,"\npaddleLkey=",self.paddleL.dir,"\npaddleRdir=",self.paddleR.dir,"\npaddleRkey=",self.paddleR.vel,flush=True)
 
 	def	sendUpdate(self, message) -> None:
 		print(self.roomName,": sendUpdate with message \"",message,"\"",flush=True)
