@@ -50,6 +50,7 @@ class	room():
 		self.players: List[str]					= []
 		self.ready: bool						= False
 		self.inGame: bool						= False
+		self.finish: bool						= False
 		self.lock: threading.Lock				= Lock()
 		self.thread: Optional[threading.Thread]	= None
 		print(self.roomName,": Je suis initialisé !",flush=True)
@@ -75,7 +76,8 @@ class	room():
 					self.players.append(player)
 					room.players.add(user)
 				else:
-					raise roomException("Player " + player + " is already in this room!", 1001)
+					raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
+				print(self.roomName,": Number of players: ",len(self.players), ",number of players requested: ",self.nbPlayers,flush=True)
 				if len(self.players) == self.nbPlayers:
 					self.ready = True
 		else:
@@ -83,7 +85,7 @@ class	room():
 				if player not in self.players:
 					self.players.append(player)
 				else:
-					raise roomException("Player " + player + " is already in this room!", 1001)
+					raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
 				if len(self.players) == 2:
 					self.ready = True
 
@@ -104,7 +106,7 @@ class	room():
 					self.players.remove(player)
 					room.players.delete(username=player)
 				else:
-					raise roomException("Player " + player + " isn't in this room!", 1002)
+					raise roomException(self.roomName+": Player " + player + " isn't in this room!", 1002)
 
 	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
@@ -157,6 +159,7 @@ class	room():
 			print(self.roomName,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
 			if self.scoreL == 5 or self.scoreR == 5:
 				self.inGame = False
+				self.finish = True
 				message = "finish"
 				print(self.roomName,": the game is finished",flush=True)
 			self.sendUpdate(message)

@@ -195,14 +195,14 @@ function getCookie(name)
 	return cookieValue;
 }
 
-async function checkRoom(options)
+async function checkRoom(options, gameMode)
 {
 	const response = await fetch('https://localhost:8083/api_pong/getroom', options);
 	const rooms = await response.json();
 	for (let i = 0; i < rooms.length; i++)
 	{
 		console.log("room search: ", rooms[i].url);
-		if (rooms[i].maxPlayers > rooms[i].players.length)
+		if (gameMode == rooms[i].difficulty && rooms[i].maxPlayers > rooms[i].players.length)
 		{
 			console.log('room found: ', rooms[i].url);
 			return rooms[i].url;
@@ -234,7 +234,7 @@ export async	function Start(csrftoken, url)
 				'Authorization': `Token ${cookie}`
 			}
 			};
-		const str = await checkRoom(options);
+		const str = await checkRoom(options, gameMode);
 		if (gameMode == 0 && str != "None")
 		{
 			roomExist = 1;
