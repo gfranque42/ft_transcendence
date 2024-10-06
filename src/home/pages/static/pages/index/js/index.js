@@ -536,6 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     
     handleHomePageLoad();
+    router();
 
 //fin Loader
 
@@ -594,5 +595,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    router();
 });

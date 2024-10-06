@@ -33,6 +33,7 @@ export default class extends abstractviews {
         const options = {
             method: 'GET',
             headers: {
+                'http_x_fetch_request': true,
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${token}`
             }

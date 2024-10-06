@@ -316,7 +316,12 @@ class AddVerification(APIView):
 class Profile(APIView):
 
     def get(self, request):
+        print("Profile Get", flush=True)
+
         auth_header = request.headers.get('Authorization')
+        if not auth_header :
+            return Response({'error': 'Unauthorized access'}, status=status.HTTP_401_UNAUTHORIZED)
+        print("Profile Gett", flush=True)
         try: 
             token = auth_header.split(' ')[1]
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
@@ -329,7 +334,7 @@ class Profile(APIView):
         except jwt.InvalidTokenError:
             return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        
+        print("authentication", flush=True)        
         initial_data = {'username': userProfile.user.username}
 
         formAvatar = changeAvatar()

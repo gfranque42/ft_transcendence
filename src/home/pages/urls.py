@@ -11,7 +11,9 @@ urlpatterns = [
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'pages/static'),}),
 
     path('', TemplateView.as_view(template_name='pages/index.html'), name='base-home'),
+    path('register/', TemplateView.as_view(template_name='pages/index.html'), name='register'),
+    path('login/', TemplateView.as_view(template_name='pages/index.html'), name='login'),
 
     # Catch-all for any other path to show 404
 ]
-handler404 = TemplateView.as_view(template_name='404.html')
+# handler404 = TemplateView.as_view(template_name='404.html')
