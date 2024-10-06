@@ -24,7 +24,9 @@ def check_or_create_sudoku_room(request):
 
 	username = data.get('user')
 	user_id = data.get('id')
+	print(f"Received user_id: {user_id}, username: {username}", flush=True)
 
+	print(f"Received myUser: {myUser.objects.get_or_create(username=username,user_id=user_id)}", flush=True)
 	current_user, created = myUser.objects.get_or_create(
 		username=username,
 		user_id=user_id
@@ -32,6 +34,7 @@ def check_or_create_sudoku_room(request):
 	available_room = SudokuRoom.objects.filter(
 		difficulty=difficulty,
 		is_full=False,
+		is_completed=False,
 	).exclude(player1=current_user).first()
 
 	if available_room:

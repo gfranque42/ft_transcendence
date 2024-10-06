@@ -6,6 +6,7 @@ import { sendGameResults } from './sendGameResults.js';
 
 let sudokuSocket = null;
 let currentUser = null;
+let gameended = false;
 
 export function initializeWebSocket(roomName) {
 
@@ -22,7 +23,17 @@ export function initializeWebSocket(roomName) {
 	);
 
 	socket.onclose = function(e) {
-		console.error('Sudoku socket closed unexpectedly');
+		console.log('entered the close function');
+		if (gameended === false) {
+			alert('Sudoku socket closed unexpectedly');
+			const link = document.createElement('a');
+			link.href = '/sudoku/';
+			link.setAttribute('data-link', '');
+			document.body.appendChild(link);
+			console.log(link);
+			link.click();
+			document.body.removeChild(link);
+		}
 	};
 
 	return socket;
@@ -30,6 +41,7 @@ export function initializeWebSocket(roomName) {
 
 function handleSocketMessage(e) {
 	const data = JSON.parse(e.data);
+	console.log('Received message:', data);
 	if (data.type === 'game_start') {
 		console.log('Game is starting! Setting the board...');
 
@@ -50,6 +62,7 @@ function handleSocketMessage(e) {
 
 	if (data.type === 'board_complete') {
 		// Show the game result modal
+		gameended = true;
 		const timeUsed = data.time_used || "N/A";
 		const winningUser = data.winner || "N/A";
 		const losingUser = data.loser || "N/A";

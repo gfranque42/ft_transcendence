@@ -18,6 +18,7 @@ import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
 var isLoaded = false;
+var inSudoku = false;
 // var view = null;
 
 function isEmptyOrWhitespace(str) {
@@ -263,7 +264,6 @@ const router = async () => {
         // }
     }
 
-
     if (!UserToken) {
         const token = getCookie("token")
             
@@ -344,6 +344,8 @@ const router = async () => {
 	} else if (match.route.path == "/sudoku/") {
         console.log("post awaited");
 
+		inSudoku = true;
+
 		const actionHandlers = {
 			PvP: PvP,
 			Solo: Solo,
@@ -365,6 +367,8 @@ const router = async () => {
 			}
 		});
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
+		if (!inSudoku)
+			navigateTo("/sudoku/");
 		initialize();
 	}
 

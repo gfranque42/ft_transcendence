@@ -12,6 +12,9 @@ def get_player1(room):
 def get_player2(room):
 	return room.player2
 
+# make a global variable username
+myusername = ""
+
 class SudokuConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -27,15 +30,42 @@ class SudokuConsumer(AsyncWebsocketConsumer):
 
         room = await sync_to_async(SudokuRoom.objects.get)(url=self.room_name)
 
-        if room.is_full:
+        if room.is_full and not room.is_completed:
+            user = await sync_to_async(get_player2)(room)
+            myusername = user.username
             await self.send_start_game(room)
+        else:
+            user = await sync_to_async(get_player1)(room)
+            myusername = user.username
 
     async def disconnect(self, close_code):
         # Leave room group
+
+        room = await sync_to_async(SudokuRoom.objects.get)(url=self.room_name)
+        player1 = await sync_to_async(get_player1)(room)
+        player2 = await sync_to_async(get_player2)(room)
+        player1username = player1.username
+        player2username = player2.username
+
+        print(f"Disconnected from {self.room_name}")
+        await self.send(text_data=json.dumps({
+            'type': 'redirect',
+            'message': 'You have been disconnected from the game. Redirecting to the lobby...',
+        }))
+
+        room.is_completed = True
+        await sync_to_async(room.save)()
+
+        if myusername == player1username:
+            await self.declare_winner_and_loser(player2username, player1username)
+        else:
+            await self.declare_winner_and_loser(player1username, player2username)
+
+
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
-            # maybe leave the SudokuRoom too
         )
 
     async def receive(self, text_data):
@@ -50,7 +80,6 @@ class SudokuConsumer(AsyncWebsocketConsumer):
             room = await sync_to_async(SudokuRoom.objects.get)(url=self.room_name)
             player1 = await sync_to_async(get_player1)(room)
             player2 = await sync_to_async(get_player2)(room)
-
 
             if player1.username == username:
                 loser = player2.username
@@ -68,6 +97,19 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                     'loser': loser
                 }
             )
+
+    async def declare_winner_and_loser(self, winner_username, loser_username):
+        # Notify the remaining player that they have won the game
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'board_complete',
+                'message': f'{winner_username} wins by disconnection!',
+                'time_used': 'N/A',
+                'winner': winner_username,
+                'loser': loser_username
+            }
+        )
 
     async def board_complete(self, event):
         message = event['message']
@@ -88,8 +130,10 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         board = room.board
 
         user = await sync_to_async(get_player1)(room)
-        
-        start_time = timezone.now().isoformat()
+
+        start_time = timezone.now()
+        await sync_to_async(setattr)(room, 'start_time', start_time)
+        await sync_to_async(room.save)()
 
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -97,7 +141,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                 'type': 'game_start',
                 'message': 'Both players are connected. The game is starting!',
                 'board': board,
-                'time': start_time,
+                'time': start_time.isoformat(),
                 'username': user.username
             }
         )
