@@ -1,3 +1,4 @@
+
 all: up
 
 up:
@@ -21,6 +22,7 @@ ps:
 	docker-compose -f ./src/docker-compose.yml ps
 
 clean: stop
+	rm ./src/authapi/media/images/*
 
 fclean: clean down
 	docker system prune -af
