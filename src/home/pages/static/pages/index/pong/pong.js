@@ -165,14 +165,14 @@ export function getCookie(name)
 
 const	keyPressed = [];
 
-keyPressed['w'] = false;
-keyPressed['s'] = false;
+keyPressed[87] = false;
+keyPressed[83] = false;
 keyPressed[38] = false;
 keyPressed[40] = false;
 
 window.addEventListener('keydown', function(e){
 	keyPressed[e.keyCode] = true;
-	console.log("Key pressed: ", keyPressed[e.keyCode]);
+	console.log("Key pressed: ",e.keyCode, keyPressed[e.keyCode]);
 })
 
 window.addEventListener('keyup', function(e){
@@ -265,8 +265,8 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		console.log("mon json en preparation!!",keyPressed['w']);
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
-			'w': keyPressed['w'],
-			's': keyPressed['s'],
+			'w': keyPressed[87],
+			's': keyPressed[83],
 			'up': keyPressed[38],
 			'down': keyPressed[40],
 		}));
@@ -274,8 +274,8 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 	}
 	else if (data.type === "gameUpdate")
 	{
-		console.log("data.message: ", data.message);
-		if (data.message === "update")
+		console.log("data.message: !"+data.message+"!");
+		if (data.message == "update")
 		{
 			console.log(data);
 			gameUpdate(data, myGame);
@@ -286,39 +286,55 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		
 			roomSocket.send(JSON.stringify({
 				'type': "ping",
-				'w': keyPressed['w'],
-				's': keyPressed['s'],
+				'w': keyPressed[87],
+				's': keyPressed[83],
 				'up': keyPressed[38],
 				'down': keyPressed[40],
 			}));
 			myGame.gameState = "playing";
 		}
-		else if (data.message === "finish")
+		else if (data.message == "finish")
 		{
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			document.getElementById('player1Score').textContent = data.scoreL;
 			document.getElementById('player2Score').textContent = data.scoreR;
-			console.log(username);
 			console.log(data.scoreL);
 			console.log(data.scoreR);
 			console.log(data.player1Name);
 			console.log(data.player2Name);
-			if (data.scoreL === 5 && data.player1Name === me.username)
+			if (data.partyType == 0 && data.scoreL === 5 && data.player1Name === data.username)
 			{
-				const	result = document.getElementById("win");
+				const	result = document.getElementById("result");
+				result.textContent = "You win !";
 				result.style.display = "flex";
 			}
-			else if (data.scoreR === 5 && data.player2Name === me.username)
+			else if (data.partyType == 0 && data.scoreR === 5 && data.player2Name === data.username)
 			{
-				const	result = document.getElementById("win");
+				const	result = document.getElementById("result");
+				result.textContent = "You win !";
+				result.style.display = "flex";
+			}
+			else if (data.partyType == 0)
+			{
+				const	result = document.getElementById("result");
+				result.textContent = "You loose !";
 				result.style.display = "flex";
 			}
 			else
 			{
-				const	result = document.getElementById("loose");
+				const	result = document.getElementById("result");
+				if (data.scoreL == 5)
+				{
+					result.textContent = data.player1Name + " win !";
+				}
+				else
+				{
+					result.textContent = data.player2Name + " win !";
+				}
 				result.style.display = "flex";
 			}
 			myGame.gameState = "end";
+			console.log('myGame.gameState:'+myGame.gameState);
 			const pourStan = {
 				"player one" : data.player1id,
 				"player two": data.player2id,

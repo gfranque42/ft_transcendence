@@ -414,13 +414,14 @@ const router = async () => {
 
 		roomSocket.onclose = function (e) {
 			console.error('Chat socket closed unexpectedly');
-			const link = document.createElement('a');
-			link.href = '/pong/';
-			link.setAttribute('data-link', '');
-			document.body.appendChild(link);
-			console.log(link);
-			link.click();
-			document.body.removeChild(link);
+			// myGame.gameState = "end";
+			// const link = document.createElement('a');
+			// link.href = '/pong/';
+			// link.setAttribute('data-link', '');
+			// document.body.appendChild(link);
+			// console.log(link);
+			// link.click();
+			// document.body.removeChild(link);
 		};
 		let starttime = Date.now();
         while (myGame.gameState != "end")

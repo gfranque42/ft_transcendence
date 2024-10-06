@@ -153,7 +153,7 @@ class	room():
 		message: str = "update"
 		while self.inGame == True:
 			# with self.lock:
-			# self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
+			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
 			print(self.roomName,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
 			if self.scoreL == 5 or self.scoreR == 5:
 				self.inGame = False
@@ -172,41 +172,41 @@ class	room():
 		print(self.roomName,": data receive for updateData",flush=True)
 		if self.partyType == 4:
 			if data['w'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if data['s'] == True:
 				self.paddleL.key -= self.paddleL.vel
+			if data['s'] == True:
+				self.paddleL.key += self.paddleL.vel
 			if data['up'] == True:
-				self.paddleR.key += self.paddleR.vel
-			if data['down'] == True:
 				self.paddleR.key -= self.paddleR.vel
+			if data['down'] == True:
+				self.paddleR.key += self.paddleR.vel
 		elif self.partyType == 0:
 			if username == self.players[0]:
 				if data['w'] == True:
-					self.paddleL.key += self.paddleL.vel
+					self.paddleL.key -= self.paddleL.vel
 				if data['s'] == True:
-					self.paddleL.key -= self.paddleL.vel
-				if data['up'] == True:
 					self.paddleL.key += self.paddleL.vel
-				if data['down'] == True:
+				if data['up'] == True:
 					self.paddleL.key -= self.paddleL.vel
+				if data['down'] == True:
+					self.paddleL.key += self.paddleL.vel
 			else:
 				if data['w'] == True:
-					self.paddleR.key += self.paddleR.vel
+					self.paddleR.key -= self.paddleR.vel
 				if data['s'] == True:
-					self.paddleR.key -= self.paddleR.vel
-				if data['up'] == True:
 					self.paddleR.key += self.paddleR.vel
-				if data['down'] == True:
+				if data['up'] == True:
 					self.paddleR.key -= self.paddleR.vel
+				if data['down'] == True:
+					self.paddleR.key += self.paddleR.vel
 		else:
 			if data['w'] == True:
-				self.paddleL.key += self.paddleL.vel
+				self.paddleL.key -= self.paddleL.vel
 			if data['s'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if data['up'] == True:
 				self.paddleL.key += self.paddleL.vel
-			if data['down'] == True:
+			if data['up'] == True:
 				self.paddleL.key -= self.paddleL.vel
+			if data['down'] == True:
+				self.paddleL.key += self.paddleL.vel
 		if self.paddleL.key > 0 and self.paddleL.key > self.paddleL.vel:
 			self.paddleL.key = self.paddleL.vel
 		elif self.paddleL.key < 0 and self.paddleL.key < -self.paddleL.vel:
@@ -247,5 +247,8 @@ class	room():
 							"player1Name": self.players[0],
 							"player2Name": self.players[1],
 							"scoreL": self.scoreL,
-							"scoreR": self.scoreR
+							"scoreR": self.scoreR,
+							"username": "bob",
+							"id": 0,
+							"partyType": self.partyType
 							})

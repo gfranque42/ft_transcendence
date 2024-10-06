@@ -79,12 +79,16 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def gameUpdate(self, event):
 		print(self.username,': bisous de game_update',flush=True)
 		message = event["message"]
+		event["username"] = self.username
+		event["id"] = self.id
 		print(self.username,': ',message,flush=True)
 		if (message == "update"):
 			print(self.username,': valeur de paddledir:', event["paddleLd"],flush=True)
 			await self.send(text_data=json.dumps(event))
 		elif (message == "finish"):
+			print(self.username,': the game is finished !\nBye bye !',flush=True)
 			await self.send(text_data=json.dumps(event))
+			await asyncio.sleep(1)
 			await self.close()
 		elif (message == "countdown"):
 			await self.send(text_data=json.dumps({"type": "compte a rebour",
