@@ -8,7 +8,11 @@
     <script type="module" src="{% static 'pages/index/views/abstractviews.js' %}"></script>
     <script type="module" src="{% static 'pages/index/views/home.js' %}"></script>
     <script type="module" src="{% static 'pages/index/js/index.js' %}"></script>
+    <script type="module" src="{% static 'pages/index/pong/index.js' %}"></script>
+    <script type="module" src="{% static 'pages/index/pong/pong.js' %}"></script>
     <script src="{% static 'pages/index/js/hover.js' %}" defer></script>
+    <script src="{% static 'pages/index/js/hover.js' %}" defer></script>
+
     {% comment %} <script src="{% static 'pages/index/js/hover.js' %}"></script> {% endcomment %}
     
     <div class="navbar">
@@ -22,7 +26,7 @@
             <div class="index-game-titles-container" >
                 {% comment %} <a href="{% url 'base-home' %}" class="index-game-title index-pong" data-link><img src="{% static 'pages/PONG.svg' %}" alt="PONG"></a> {% endcomment %}
                 {% comment %} <a href="{% url 'base-home' %}" class="index-game-title index-sudoku" data-link><img src="{% static 'pages/SUDOKU.svg' %}" alt="SODUKU"></a> {% endcomment %}
-                <a href="{% url 'base-home' %}" class="index-game-title index-pong" data-link>PONG</a>
+                <a href="/pong/" class="index-game-title index-pong" data-link>PONG</a>
                 <a href="/sudoku/" class="index-game-title index-sudoku" data-link>SUDOKU</a>
             </div>
             <div class="index-game-title">

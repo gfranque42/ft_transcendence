@@ -6,109 +6,116 @@ class	Vec2:
 		self.y = y
 
 class	Ball:
-	def	__init__(self, coor, size, direction, velocity):
+	def	__init__(self, coor, size, angle, velocity):
 		self.coor = coor
 		self.size = size
-		self.dir = direction
+		self.dir = Vec2(0, 0)
+		self.angle = angle
 		self.vel = velocity
+		self.start = coor
+		self.startangle = angle
+		self.startvel = velocity
 	def	update(self):
 		self.coor.x += self.dir.x
 		self.coor.y += self.dir.y
-	def	velUpdate(self):
-		self.vel.x += self.vel.y
-	def	getXMin(self):
-		return (self.coor.x)
-	def	getXMax(self):
-		return (self.coor.x + self.size.x)
-	def	getYMin(self):
-		return (self.coor.y)
-	def	getYMax(self):
-		return (self.coor.y + self.size.y)
-	def	getXDir(self):
-		return (self.dir.x)
-	def	getYDir(self):
-		return (self.dir.y)
-	def	getVel(self):
-		return (self.vel.x)
-	def	setXMin(self, x):
-		self.coor.x = x
-	def	setYMin(self, y):
-		self.coor.y = y
-	def	setXSize(self, x):
-		self.size.x = x
-	def	setYSize(self, y):
-		self.size.y = y
-	def	setXDir(self, x):
-		self.dir.x = x
-	def	setYDir(self, y):
-		self.dir.y = y
-	def	getMiddleHeight(self):
-		return (self.coor.y + self.size.y / 2)
+	def update_dir(self):
+		self.dir.x = math.cos(math.radians(self.angle)) * self.vel
+		self.dir.y = math.sin(math.radians(self.angle)) * self.vel
+	def	reset(self):
+		self.coor.x = 100 / 2 - self.size.x / 2
+		self.coor.y = 100 / 2 - self.size.y / 2
+		self.vel = self.startvel
+		self.startangle = self.startangle + 180
+		self.angle = self.startangle
+		self.dir.x = 0
+		self.dir.y = 0
 
 class	Paddle:
-	def	__init__(self, coor, size, ai):
+	def	__init__(self, coor, size, vel, ai):
 		self.coor = coor
 		self.size = size
+		self.dir = 0
+		self.key = 0
+		self.vel = vel
 		self.ai = ai
-	def	getCenter(self):
-		return (Vec2(self.coor.x + self.size.x / 2,
-		  			self.coor.y + self.size.y / 2))
-	def	getXMin(self):
-		return (self.coor.x)
-	def	getXMax(self):
-		return (self.coor.x + self.size.x)
-	def	getYMin(self):
-		return (self.coor.y)
-	def	getYMax(self):
-		return (self.coor.y + self.size.y)
-	def	getAi(self):
-		return (self.ai)
-	def	setXMin(self, x):
-		self.coor.x = x
-	def	setYMin(self, y):
-		self.coor.y = y
-	def	setXSize(self, x):
-		self.size.x = x
-	def	setYSize(self, y):
-		self.size.y = y
-	def	setAi(self, ai):
-		self.ai = ai
-	def	getMiddleHeight(self):
-		return (self.coor.y + self.size.y / 2)
-	def	getHitZone(self, ball):
-		a = (ball.getMiddleHeight() - self.getYMin()) / self.size.y	* 100
-		if (a < 0 or a > 100):
-			return (0)
-		return (a % 50)
+	def	update_ai(self, Ball):
+		if (self.ai == 1 and Ball.dir.x > 0 and Ball.coor.x > 50):
+			self.dir = 0
+			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
+				self.dir = self.vel
+			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
+				self.dir = -self.vel
+		elif (self.ai == 2 and Ball.dir.x > 0):
+			self.dir = 0
+			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
+				self.dir = self.vel
+			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
+				self.dir = -self.vel
+		elif (self.ai == 3):
+			self.dir = 0
+			if (self.size.y / 2 + self.coor.y < Ball.size.y / 2 + Ball.coor.y):
+				self.dir = self.vel
+			elif (self.size.y / 2 + self.coor.y > Ball.size.y / 2 + Ball.coor.y):
+				self.dir = -self.vel
+	def update(self):
+		self.coor.y += self.dir
+		self.dir = self.key
 
-def	angleCalculation(c):
-	a = -1.0
-	b = 0.0
-	d = 50.0
-	e = 90.0
-	r = (e * (c - a) + b * (a  - d)) / (d - a)
-	return (r)
+def	CheckPaddleCollisionWithEdge(Paddle):
+	if (Paddle.coor.y + Paddle.dir <= 0):
+		Paddle.dir = -Paddle.coor.y
+	elif (Paddle.coor.y + Paddle.size.y + Paddle.dir >= 100):
+		Paddle.dir = 100 - Paddle.size.y - Paddle.coor.y
 
-def	checkCollisionBallWithPaddle(ball, paddle):
-	if ((ball.getXMin() <= paddle.getXMax()) or (ball.getXMax() >= paddle.getXMin())):
-		if ((ball.getYMax() >= paddle.getYMin()) and (ball.getYMin() <= paddle.getYMax())):
-			x = paddle.getHitZone(ball)
-			if (ball.getMiddleHeight() == paddle.getMiddleHeight()):
-				angle = 90.0
+def	CheckBallCollisionWithEdge(Ball):
+	if (Ball.coor.y + Ball.dir.y <= 2):
+		newDir = (Ball.coor.y - 2) / -Ball.dir.y
+		Ball.dir.x *= newDir
+		Ball.dir.y *= newDir
+		Ball.angle = 360 - Ball.angle
+	elif (Ball.coor.y + Ball.size.y + Ball.dir.y >= 98):
+		newDir = (98 - Ball.coor.y - Ball.size.y) / Ball.dir.y
+		Ball.dir.x *= newDir
+		Ball.dir.y *= newDir
+		Ball.angle = 360 - Ball.angle
+
+def	CheckBallCollisionWithPaddle(Ball, Paddle, Score):
+	if (Ball.coor.x < 100 / 2 and Paddle.coor.x < 100 / 2):
+		if (Ball.coor.x + Ball.dir.x < Paddle.coor.x + Paddle.size.x):
+			if (Ball.coor.y + Ball.size.y + Ball.dir.y >= Paddle.coor.y + Paddle.dir and Ball.coor.y + Ball.dir.y <= Paddle.coor.y + Paddle.dir + Paddle.size.y):
+				hitZone = (Ball.coor.y + Ball.dir.y + Ball.size.y / 2 - Paddle.coor.y + Paddle.dir) / Paddle.size.y
+				Ball.angle = 90 + (hitZone - 0.5) * 120
+				newDir = (Paddle.coor.x + Paddle.size.x - Ball.coor.x) / Ball.dir.x
+				Ball.dir.x *= newDir
+				Ball.dir.y *= newDir
+				Ball.vel += 0.1
 			else:
-				angle = angleCalculation(x)
-			ball.velUpdate()
-			ball.setXDir(math.sin(math.radians(angle)) * ball.getVel())
-			ball.setYDir(math.cos(math.radians(angle)) * ball.getVel())
-			if (ball.getMiddleHeight() < paddle.getMiddleHeight()):
-				ball.setYDir(ball.getYDir() * -1)
+				Ball.reset()
+				Score += 1
+	if (Ball.coor.x > 100 / 2 and Paddle.coor.x > 100 / 2):
+		if (Ball.coor.x + Ball.size.x + Ball.dir.x > Paddle.coor.x):
+			if (Ball.coor.y + Ball.size.y + Ball.dir.y >= Paddle.coor.y + Paddle.dir and Ball.coor.y + Ball.dir.y <= Paddle.coor.y + Paddle.dir + Paddle.size.y):
+				hitZone = (Ball.coor.y + Ball.dir.y + Ball.size.y / 2 - Paddle.coor.y + Paddle.dir) / Paddle.size.y
+				Ball.angle = 90 + (hitZone - 0.5) * 120
+				newDir = (Paddle.coor.x - Ball.coor.x - Ball.size.x) / Ball.dir.x
+				Ball.dir.x *= newDir
+				Ball.dir.y *= newDir
+				Ball.vel += 0.1
+			else:
+				Ball.reset()
+				Score += 1
+	return Score
 
-def checkCollisionOfPaddleWithEdge(paddle):
-	if (paddle.coor.y < 0):
-		paddle.coor.y = 0
-	if (paddle.coor.y + paddle.size.y):
-		paddle.coor.y = 100 - paddle.size.y
-
-def	checkCollisionBallWithEdge(ball):
-	if (ball.coor.y - ball.radius <= 0 or ball.coor.y + ball.radius >= 100):
-		ball.vel.y *= -1
+def	gameUpdate(PaddleL, PaddleR, Ball, ScoreL, ScoreR):
+	PaddleL.update()
+	PaddleR.update()
+	Ball.update()
+	PaddleL.update_ai(Ball)
+	PaddleR.update_ai(Ball)
+	Ball.update_dir()
+	CheckPaddleCollisionWithEdge(PaddleL)
+	CheckPaddleCollisionWithEdge(PaddleR)
+	CheckBallCollisionWithEdge(Ball)
+	ScoreR = CheckBallCollisionWithPaddle(Ball, PaddleL, ScoreR)
+	ScoreL = CheckBallCollisionWithPaddle(Ball, PaddleR, ScoreL)
+	return PaddleL, PaddleR, Ball, ScoreL, ScoreR

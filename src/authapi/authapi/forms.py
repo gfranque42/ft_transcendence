@@ -29,14 +29,14 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['email', 'username', 'password1', 'password2']
         widgets = {
-            "username": forms.TextInput(attrs={'class': 'form-control form-username', 'placeholder': 'Username'}),
+            "username": forms.TextInput(attrs={'class': 'form-control form-username', 'placeholder': 'Username', 'autocomplete': 'username'}),
             "email": forms.EmailInput(attrs={'class': 'form-control form-email', 'placeholder': 'Email'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
-        self.fields['password1'].widget = forms.PasswordInput(attrs={'class': 'form-control form-password-1', 'placeholder': 'Password'})
-        self.fields['password2'].widget = forms.PasswordInput(attrs={'class': 'form-control form-password-2', 'placeholder': 'Password confirmation'})
+        self.fields['password1'].widget = forms.PasswordInput(attrs={'class': 'form-control form-password-1', 'placeholder': 'Password', 'autocomplete': 'new-password'})
+        self.fields['password2'].widget = forms.PasswordInput(attrs={'class': 'form-control form-password-2', 'placeholder': 'Password confirmation', 'autocomplete': 'new-password'})
         # self.fields.pop('usable_password')
         # print(self.fields) 
 
@@ -56,8 +56,8 @@ class CreateUserForm(UserCreationForm):
 
 
 class GetUserForm(forms.Form):
-    username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username', 'autocomplete': 'username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password', 'autocomplete': 'current-password'}))
 
     def clean(self):
         cleaned_data = super().clean()

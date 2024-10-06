@@ -3,4 +3,6 @@
 @import "index/css/navbar.css";
 @import "index/css/auth/register.css";
 @import "index/css/auth/login.css";
+@import "index/css/pong/index.css";
+@import "index/css/pong/pong.css";
 @import "index/css/auth/profile.css";
