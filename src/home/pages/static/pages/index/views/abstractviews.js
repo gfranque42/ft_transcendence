@@ -9,6 +9,7 @@ export default class {
         let response = await fetch('https://localhost:8083/auth/send-otp', {
             method: 'GET',
             headers: {
+    			'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken,
                 'Authorization': `Token ${token}`

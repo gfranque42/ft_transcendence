@@ -342,6 +342,7 @@ export async function checkConnection()
 		method: 'GET', // HTTP method
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			'Authorization': `Token ${cookie}`
 		}
 

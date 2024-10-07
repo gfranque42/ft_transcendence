@@ -12,6 +12,7 @@ export async function getUser()
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			'Authorization': `Token ${token}`
 		}
 	};

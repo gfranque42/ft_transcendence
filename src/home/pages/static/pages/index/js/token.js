@@ -5,6 +5,7 @@ export async function getRenewedToken(token) {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			'Authorization': `Token ${token}`
 		}
 	};

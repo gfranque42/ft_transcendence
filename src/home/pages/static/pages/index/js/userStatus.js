@@ -8,6 +8,7 @@ async function updateUserStatus(UserToken) {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			"Authorization": "Token " + token
 		},
 	});

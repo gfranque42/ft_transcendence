@@ -202,6 +202,7 @@ export async function testToken(roomSocket)
 		method: 'GET', // HTTP method
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			'Authorization': `Token ${cookie}`
 		}
 

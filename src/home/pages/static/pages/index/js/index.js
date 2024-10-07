@@ -473,11 +473,11 @@ async function displayUser()
         method: 'GET', // HTTP method
         headers: {
             'Content-Type': 'application/json',
+			'Requested-by': 'Home',
             'Authorization': `Token ${tempToken}`
         }
         
     };
-
     const response = await fetch('https://localhost:8083/auth/test_token', options);
     if (!response.ok)
     {
@@ -495,7 +495,7 @@ async function displayUser()
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
         ${profileButton}
-    </div>`;
+        </div>`;
     }
 }
 

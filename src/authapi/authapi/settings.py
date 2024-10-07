@@ -77,7 +77,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'https://localhost:8083', 'https://127.0.0.1:8083' 
+    'https://localhost:8083', 'https://127.0.0.1:8083', 'https://localhost:8083', 'http://127.0.0.1:8000' 
 ]
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082', 'https://localhost:8083']

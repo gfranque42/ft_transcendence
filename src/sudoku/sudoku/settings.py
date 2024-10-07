@@ -130,7 +130,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:8000', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082','https://127.0.0.1:8083','https://localhost:8083' 
+#     'https://localhost:8083', 'http://localhost:8082', 'http://127.0.0.1:8000', 'http://127.0.0.1:8082','https://127.0.0.1:8083','https://localhost:8083' 
 # ]
 
 # CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost', 'https://127.0.0.1']

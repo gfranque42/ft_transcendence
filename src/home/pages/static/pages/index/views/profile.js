@@ -33,7 +33,7 @@ export default class extends abstractviews {
         const options = {
             method: 'GET',
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${token}`
             }
@@ -72,6 +72,7 @@ export default class extends abstractviews {
             method: 'PATCH',
             body: formdata,
             headers: {
+                'Requested-by': 'Home',
                 // 'Content-Type': "application/x-www-form-urlencoded",
                 'X-CSRFToken': this.csrfToken,
             },
@@ -108,6 +109,7 @@ export default class extends abstractviews {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken
             },
@@ -176,6 +178,7 @@ export default class extends abstractviews {
                 method: 'PATCH',
                 body: JSON.stringify(body),
                 headers: {
+                    'Requested-by': 'Home',
                     'Content-Type': 'application/json',
                     'X-CSRFToken': this.csrfToken
                 },
@@ -185,6 +188,7 @@ export default class extends abstractviews {
                 method: 'DELETE',
                 body: JSON.stringify(body),
                 headers: {
+                    'Requested-by': 'Home',
                     'Content-Type': 'application/json',
                     'X-CSRFToken': this.csrfToken
                 },
@@ -211,6 +215,7 @@ export default class extends abstractviews {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken
             },
@@ -236,6 +241,7 @@ export default class extends abstractviews {
             method: 'DELETE',
             body: JSON.stringify(body),
             headers: {
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken,
                 "Authorization": "Token " + token

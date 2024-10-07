@@ -7,6 +7,7 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			'Authorization': `Token ${token}`
 		}
 	};
@@ -34,6 +35,7 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 		body: JSON.stringify(body),
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
 			'X-CSRFToken': data.csrfToken
 		},
 	});

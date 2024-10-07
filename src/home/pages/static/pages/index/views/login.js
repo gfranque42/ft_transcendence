@@ -9,7 +9,15 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-        const response = await fetch('https://localhost:8083/auth/login');
+        const options = {
+            method: 'GET',
+            headers: {
+                'Requested-by': 'Home',
+                'Content-Type': 'application/json'
+            }
+        };
+        
+        const response = await fetch('https://localhost:8083/auth/login', options);
         const tempContentHtml = await response.text();
 
         const parser = new DOMParser();
@@ -34,6 +42,7 @@ export default class extends abstractviews {
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken,
+                'Requested-by': 'Home',
             },
         });
 

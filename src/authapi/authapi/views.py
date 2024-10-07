@@ -5,6 +5,8 @@ from rest_framework import status
 
 from django.db import IntegrityError
 
+import base64
+
 from django.shortcuts import render
 
 from django.http import JsonResponse    
@@ -357,9 +359,6 @@ class Profile(APIView):
                 'friend': friend,
                 'is_logged_in': is_logged_in
             })
-
-
-
             # for userProfile_key, userProfile_value in friend_requests.items:
             
         return render(request, "profile.html", {"friend_requests": friend_requests,

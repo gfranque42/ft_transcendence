@@ -79,8 +79,8 @@ export default class extends abstractviews {
         const options = {
             method: 'GET',
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/json',
+                'Requested-by': 'Home',
+                'Content-Type': 'application/json'
             }
         };
         
@@ -109,8 +109,9 @@ export default class extends abstractviews {
                 "password2": password2.value
             }),
             headers: {
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
-                'X-CSRFToken': this.csrfToken,
+                'X-CSRFToken': this.csrfToken
             },
         });
         

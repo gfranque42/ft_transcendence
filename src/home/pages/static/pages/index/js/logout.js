@@ -9,6 +9,7 @@ export async function logout(userToken) {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
+			'Requested-by': 'Home',
             'Authorization': `Token ${await token}`
 		},
 	});

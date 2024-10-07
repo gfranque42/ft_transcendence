@@ -13,7 +13,8 @@ export default class extends abstractviews {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Token ${UserToken}`
+                'Authorization': `Token ${UserToken}`,
+                'Requested-by': 'Home',
             }
             
         };
@@ -41,6 +42,7 @@ export default class extends abstractviews {
                 "token": token
             }),
             headers: {
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken,
             },
@@ -56,6 +58,7 @@ export default class extends abstractviews {
         let response = await fetch('https://localhost:8083/auth/test_OTP', {
             method: 'GET',
             headers: {
+                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${token}`
             },
