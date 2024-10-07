@@ -14,12 +14,17 @@ export function setStartTime(startTimeStr) {
 }
 
 export function startTimer() {
-    // Start the timer from the correct start time
     if (timerInterval) {
         clearInterval(timerInterval);
     }
-
     timerInterval = setInterval(updateTimer, 1000);
+}
+
+export function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
 }
 
 export function updateTimer() {

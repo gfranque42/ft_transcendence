@@ -1,10 +1,9 @@
 import { setBoard, setCurrentUser, setGame, setSocket } from './board.js';
-import { startTimer, setStartTime } from './timer.js';
+import { startTimer, setStartTime, stopTimer } from './timer.js';
 import { showModal } from './modal.js';
 import { getUser } from '../getUser.js';
 import { sendGameResults } from './sendGameResults.js';
 
-let sudokuSocket = null;
 let currentUser = null;
 let gameended = false;
 
@@ -25,7 +24,6 @@ export function initializeWebSocket(roomName) {
 	socket.onclose = function(e) {
 		console.log('entered the close function');
 		if (gameended === false) {
-			alert('Sudoku socket closed unexpectedly');
 			const link = document.createElement('a');
 			link.href = '/sudoku/';
 			link.setAttribute('data-link', '');
@@ -50,12 +48,10 @@ function handleSocketMessage(e) {
 		const startTime = data.time;
 
 		console.log("data: ", data);
-		console.log("users are before set: ", currentUser);
 
 		setStartTime(startTime);
 		startTimer();
 		setBoard(board);
-		setSocket(sudokuSocket);
 		setCurrentUser(currentUser);
 		setGame();
 	}
@@ -65,19 +61,21 @@ function handleSocketMessage(e) {
 		gameended = true;
 		const timeUsed = data.time_used || "N/A";
 		const winningUser = data.winner || "N/A";
-		const losingUser = data.loser || "N/A";
 		//const winningTime = data.winner_time || "N/A";
 
-		const winningId = winningUser.Id;
-		const losingId = losingUser.Id;
+		const winningId = data.winner_id;
+		const losingId = data.loser_id;
 		console.log(data);
 
-		showModal(timeUsed, winningUser, currentUser);  // Assuming the current player lost
-		sendGameResults(winningId, losingId, 1, 0);
+		showModal(timeUsed, winningUser, currentUser);
+		console.log(winningId, losingId);
+		if (currentUser === winningUser)
+			sendGameResults(winningId, losingId, 1, 0);
+		stopTimer();
 	}
 }
 
-export async function initialize() {
+export async function initialize(sudokuSocket) {
 	const roomName = document.getElementById('room-name');
 	const userInfo = await getUser();
 
@@ -91,6 +89,7 @@ export async function initialize() {
 	// Initialize WebSocket and assign to sudokuSocket
 	sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {
+		setSocket(sudokuSocket);
 		sudokuSocket.onmessage = handleSocketMessage;
 	}
 }

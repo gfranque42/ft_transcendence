@@ -19,6 +19,7 @@ import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 let UserToken = null;
 var isLoaded = false;
 var inSudoku = false;
+let sudokuSocket = null;
 // var view = null;
 
 function isEmptyOrWhitespace(str) {
@@ -369,10 +370,10 @@ const router = async () => {
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
 		if (!inSudoku)
 			navigateTo("/sudoku/");
-		initialize();
+		initialize(sudokuSocket);
 	}
 
-    displayUser();
+	displayUser();
 };
     
 async function getToken() {
