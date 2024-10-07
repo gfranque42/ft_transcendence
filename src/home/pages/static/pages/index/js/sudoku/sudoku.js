@@ -6,6 +6,8 @@ import { sendGameResults } from './sendGameResults.js';
 
 let currentUser = null;
 let gameended = false;
+let sudokuSocket = null;
+let adversary = null;
 
 export function initializeWebSocket(roomName) {
 
@@ -46,12 +48,14 @@ function handleSocketMessage(e) {
 		// Get the board from the message and pass it to setBoard function
 		const board = data.board;
 		const startTime = data.time;
+		adversary = data.adversary;
 
 		console.log("data: ", data);
 
 		setStartTime(startTime);
 		startTimer();
 		setBoard(board);
+		setSocket(sudokuSocket);
 		setCurrentUser(currentUser);
 		setGame();
 	}
@@ -75,8 +79,24 @@ function handleSocketMessage(e) {
 	}
 }
 
-export async function initialize(sudokuSocket) {
+export async function initialize() {
+
 	const roomName = document.getElementById('room-name');
+
+	window.addEventListener('popstate', function (event) {
+		if (window.location.pathname !== `/sudoku/${roomName.value}/`) {
+			// User navigated away from the game, so notify the server and close the socket
+			if (sudokuSocket) {
+				sudokuSocket.send(JSON.stringify({
+					'type': 'user_left',
+					'username': currentUser,
+					'adversary': adversary
+				}));
+				sudokuSocket.close();  // Optionally close the WebSocket connection
+			}
+		}
+	});
+
 	const userInfo = await getUser();
 
 	if (!roomName) {
@@ -89,7 +109,6 @@ export async function initialize(sudokuSocket) {
 	// Initialize WebSocket and assign to sudokuSocket
 	sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {
-		setSocket(sudokuSocket);
 		sudokuSocket.onmessage = handleSocketMessage;
 	}
 }

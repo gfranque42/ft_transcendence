@@ -370,7 +370,7 @@ const router = async () => {
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
 		if (!inSudoku)
 			navigateTo("/sudoku/");
-		initialize(sudokuSocket);
+		initialize();
 	}
 
 	displayUser();

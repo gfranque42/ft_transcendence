@@ -61,12 +61,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ft_transcendence.urls'
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000', 'https://localhost:8083', 'http://127.0.0.1:8000', 'https://127.0.0.1:8083' 
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083', 'https://made-f0ar5s2:8083']
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -175,6 +176,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ALLOWED_HOSTS = ['localhost']
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'made-f0ar5s2']
 
 
