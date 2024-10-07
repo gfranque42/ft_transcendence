@@ -23,15 +23,14 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		print(self.room_name,": connection en cours",flush=True)
 
 		try:
-			if gRoomsManager.rooms[self.room_name].ready == True:
-				#maybe send an error message to display ?
-				self.close()
-				return
+			# if gRoomsManager.rooms[self.room_name].ready == True:
+			# 	#maybe send an error message to display ?
+			# 	self.close()
+			# 	return
 			# Join room group
 			await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 			print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
 			if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
-				print(self.room_name,": coucou @@@@@@@",flush=True)
 				await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
 				await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
 			if gRoomsManager.rooms[self.room_name].channelLayer == None:
@@ -45,17 +44,16 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.close()
 
 	async def disconnect(self, close_code):
-		if int(gRoomsManager.rooms[self.room_name].partyType) != 4 and gRoomsManager.rooms[self.room_name].inGame == False:
+		if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].inGame == False:
 			try:
 				await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
 			except Exception as e:
 				print(self.room_name,": error: ",e,flush=True)
 		# Leave room group
-		gRoomsManager.rooms[self.room_name].inGame = False
-		if gRoomsManager.rooms[self.room_name].thread and self.username and gRoomsManager.rooms[self.room_name].players[0] == self.username:
+		if gRoomsManager.rooms[self.room_name].thread and self.username and gRoomsManager.rooms[self.room_name].players[0] == self.username and gRoomsManager.rooms[self.room_name].finish == True:
 			gRoomsManager.rooms[self.room_name].thread.join()
-		await self.channel_layer.group_send(
-						self.room_group_name, {"type": "quit", "message": "quitting"})
+			await self.channel_layer.group_send(
+							self.room_group_name, {"type": "quit", "message": "quitting"})
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	# Receive message from WebSocket

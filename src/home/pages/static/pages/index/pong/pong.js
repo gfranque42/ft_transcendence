@@ -172,7 +172,7 @@ keyPressed[40] = false;
 
 window.addEventListener('keydown', function(e){
 	keyPressed[e.keyCode] = true;
-	console.log("Key pressed: ",e.keyCode, keyPressed[e.keyCode]);
+	// console.log("Key pressed: ",e.keyCode, keyPressed[e.keyCode]);
 })
 
 window.addEventListener('keyup', function(e){
@@ -332,6 +332,8 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					result.textContent = data.player2Name + " win !";
 				}
 				result.style.display = "flex";
+				let back = document.getElementById('backtopong');
+				back.style.display = 'block';
 			}
 			myGame.gameState = "end";
 			console.log('myGame.gameState:'+myGame.gameState);

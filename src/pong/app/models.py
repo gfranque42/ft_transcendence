@@ -14,7 +14,7 @@ class	Player(models.Model):
 class	Room(models.Model):
 	url = models.CharField(max_length=255)
 	difficulty = models.IntegerField(default=-1)
-	players = models.ManyToManyField(Player, blank=True)
+	# players = models.ManyToManyField(Player, blank=True)
 	# stats = models.ForeignKey(Game, blank=True, null=True, on_delete=models.CASCADE)
 	maxPlayers = models.IntegerField(default=1) 
 

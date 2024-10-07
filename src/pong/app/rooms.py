@@ -76,7 +76,8 @@ class	room():
 					self.players.append(player)
 					room.players.add(user)
 				else:
-					raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
+					print(self.roomName,": ",player," reconnect !")
+					# raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
 				print(self.roomName,": Number of players: ",len(self.players), ",number of players requested: ",self.nbPlayers,flush=True)
 				if len(self.players) == self.nbPlayers:
 					self.ready = True
@@ -98,13 +99,18 @@ class	room():
 			except Room.DoesNotExist:
 				print("Room Does Not Exist: ", self.roomName, flush=True)
 				return
+			try:
+				playerToRemove = Player.objects.get(username=player)
+			except Player.DoesNotExist:
+				print("Player Does Not Exist: ", player,flush=True)
+				return
 			with self.lock:
-				if self.inGame == True:
-					async_to_sync(self.channelLayer.group_send)(
-							self.roomGroupName, {"type": "quit", "message": "quitting"})
+				# if self.inGame == True:
+				# 	async_to_sync(self.channelLayer.group_send)(
+				# 			self.roomGroupName, {"type": "quit", "message": "quitting"})
 				if player in self.players:
 					self.players.remove(player)
-					room.players.delete(username=player)
+					room.players.remove(playerToRemove)
 				else:
 					raise roomException(self.roomName+": Player " + player + " isn't in this room!", 1002)
 

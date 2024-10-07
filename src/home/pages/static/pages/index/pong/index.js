@@ -199,14 +199,31 @@ async function checkRoom(options, gameMode)
 {
 	const response = await fetch('https://localhost:8083/api_pong/getroom', options);
 	const rooms = await response.json();
+	let result = -1;
+	let room;
 	for (let i = 0; i < rooms.length; i++)
 	{
 		console.log("room search: ", rooms[i].url);
 		if (gameMode == rooms[i].difficulty && rooms[i].maxPlayers > rooms[i].players.length)
 		{
 			console.log('room found: ', rooms[i].url);
-			return rooms[i].url;
+			if (result == -1)
+			{
+				result = rooms[i].players.length;
+				room = rooms[i].url;
+			}
+			else
+			{
+				if (rooms[i].players.length > result)
+				{
+					return rooms[i].url;
+				}
+			}
 		}
+	}
+	if (result != -1)
+	{
+		return room;
 	}
 	return "None";
 }
