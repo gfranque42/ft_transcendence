@@ -3,7 +3,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .models import SudokuRoom
+from .models import SudokuRoom, myUser
 from django.utils import timezone
 
 def get_player1(room):
@@ -81,7 +81,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
             player1 = await sync_to_async(get_player1)(room)
             player2 = await sync_to_async(get_player2)(room)
 
-            if player1.username == username:
+            if player1.username == username and player2:
                 loser = player2.username
             else:
                 loser = player1.username
