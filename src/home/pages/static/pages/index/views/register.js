@@ -76,7 +76,15 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-        const response = await fetch('https://localhost:8083/auth/register');
+        const options = {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            }
+        };
+        
+        const response = await fetch('https://localhost:8083/auth/register', options);
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
