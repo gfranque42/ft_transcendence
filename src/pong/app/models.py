@@ -40,6 +40,8 @@ class	Room(models.Model):
 		playersList = self.getPlayers()
 		if player in playersList:
 			playersList.remove(player)
+			self.players = playersList
+			self.save()
 
 	def playersCount(self):
 		self.playerCount = len(self.getPlayers())

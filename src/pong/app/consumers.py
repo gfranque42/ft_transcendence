@@ -43,7 +43,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.close()
 
 	async def disconnect(self, close_code):
-		if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].inGame == False:
+		if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].ready == False:
 			try:
 				await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
 			except Exception as e:
@@ -54,7 +54,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			await self.channel_layer.group_send(
 							self.room_group_name, {"type": "quit", "message": "quitting"})
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-
+	
 	# Receive message from WebSocket
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)

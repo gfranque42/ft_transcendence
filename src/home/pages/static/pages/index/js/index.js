@@ -412,15 +412,7 @@ const router = async () => {
 		};
 
 		roomSocket.onclose = function (e) {
-			console.log('Chat socket closed unexpectedly');
-			// myGame.gameState = "end";
-			// const link = document.createElement('a');
-			// link.href = '/pong/';
-			// link.setAttribute('data-link', '');
-			// document.body.appendChild(link);
-			// console.log(link);
-			// link.click();
-			// document.body.removeChild(link);
+			console.log('Chat socket closed');
 		};
 		let starttime = Date.now();
         while (myGame.gameState != "end")
@@ -435,7 +427,6 @@ const router = async () => {
 			}
 			await new Promise(r => setTimeout(r, 2));
         }
-		
 	}
 
 	displayUser();
