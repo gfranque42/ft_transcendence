@@ -347,13 +347,13 @@ const router = async () => {
 		inSudoku = true;
 
 		const actionHandlers = {
-			PvP: PvP,
-			Solo: Solo,
-			Start: Start,
-			Easy: Easy,
-			Medium: Medium,
-			Hard: Hard,
-			Start: Start,
+			PvP,
+			Solo,
+			Start,
+			Easy,
+			Medium,
+			Hard,
+			Start,
 		};
 
 		changeUsername(view);

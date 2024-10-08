@@ -180,7 +180,7 @@ export async function Start()
 		console.error('Error: ', error);
 		return ;
 	}
-	console.log("Start !");
+	console.log("Start!");
 
 	// Send a post request to go to the waiting room with the gamemode
 }

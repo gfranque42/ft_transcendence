@@ -97,6 +97,20 @@ function handleSocketMessage(e) {
 export async function initialize() {
 
 	const roomName = document.getElementById('room-name');
+	
+	const userInfo = await getUser();
+
+	if (!roomName) {
+		console.error("Room name is not available in the HTML!");
+		return;
+	}
+
+	currentUser = userInfo.Username;
+	
+	sudokuSocket = initializeWebSocket(roomName);
+	if (sudokuSocket) {
+		sudokuSocket.onmessage = handleSocketMessage;
+	}
 
 	window.addEventListener('popstate', function (event) {
 		if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/`) {
@@ -123,20 +137,6 @@ export async function initialize() {
 			navigateTo('/sudoku/');
 		}
 	});
-
-	const userInfo = await getUser();
-
-	if (!roomName) {
-		console.error("Room name is not available in the HTML!");
-		return;
-	}
-
-	currentUser = userInfo.Username;
-	// Initialize WebSocket and assign to sudokuSocket
-	sudokuSocket = initializeWebSocket(roomName);
-	if (sudokuSocket) {
-		sudokuSocket.onmessage = handleSocketMessage;
-	}
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
