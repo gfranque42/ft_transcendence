@@ -332,19 +332,19 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					result.textContent = data.player2Name + " win !";
 				}
 				result.style.display = "flex";
-				let back = document.getElementById('backtopong');
-				back.style.display = 'block';
 			}
+			let back = document.getElementById('backtopong');
+			back.style.display = 'block';
 			myGame.gameState = "end";
 			console.log('myGame.gameState:'+myGame.gameState);
-			const pourStan = {
-				"player one" : data.player1id,
-				"player two": data.player2id,
-				"score one": scoreL,
-				"score two": scoreR,
-				"winner": 1,// ou 2 player id du winner
-				"game": "pong"
-			};
+			// const pourStan = {
+			// 	"player one" : data.player1id,
+			// 	"player two": data.player2id,
+			// 	"score one": scoreL,
+			// 	"score two": scoreR,
+			// 	"winner": 1,// ou 2 player id du winner
+			// 	"game": "pong"
+			// };
 			// const link = document.createElement('a');
 			// link.href = '/pong/';
 			// link.setAttribute('data-link', '');

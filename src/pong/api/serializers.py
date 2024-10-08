@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from app.models import Player, Room
+from app.models import Room
 
-class	PlayerSerializer(serializers.ModelSerializer):
-	class	Meta:
-		model = Player
-		fields = '__all__'
+# class	PlayerSerializer(serializers.ModelSerializer):
+# 	class	Meta:
+# 		model = Player
+# 		fields = '__all__'
 
 class	RoomSerializer(serializers.ModelSerializer):
 	class   Meta:

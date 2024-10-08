@@ -2,7 +2,7 @@ from typing import List, Optional
 from threading import Thread, Lock
 import threading
 from .pong import *
-from .models import Room, Player
+from .models import Room
 import asyncio
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
@@ -63,10 +63,6 @@ class	room():
 		print(self.roomName,": I have to append ",player,flush=True)
 		if self.partyType != 4:
 			try:
-				user = Player.objects.get(username=player)
-			except Player.DoesNotExist:
-				user = Player.objects.create(username=player)
-			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
 				print("Room Does Not Exist: ", self.roomName, flush=True)
@@ -74,7 +70,8 @@ class	room():
 			with self.lock:
 				if player not in self.players:
 					self.players.append(player)
-					room.players.add(user)
+					room.addPlayer(player)
+					room.playersCount()
 				else:
 					print(self.roomName,": ",player," reconnect !")
 					# raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
@@ -99,18 +96,11 @@ class	room():
 			except Room.DoesNotExist:
 				print("Room Does Not Exist: ", self.roomName, flush=True)
 				return
-			try:
-				playerToRemove = Player.objects.get(username=player)
-			except Player.DoesNotExist:
-				print("Player Does Not Exist: ", player,flush=True)
-				return
 			with self.lock:
-				# if self.inGame == True:
-				# 	async_to_sync(self.channelLayer.group_send)(
-				# 			self.roomGroupName, {"type": "quit", "message": "quitting"})
 				if player in self.players:
 					self.players.remove(player)
-					room.players.remove(playerToRemove)
+					room.removePlayer(player)
+					room.playersCount()
 				else:
 					raise roomException(self.roomName+": Player " + player + " isn't in this room!", 1002)
 

@@ -197,33 +197,30 @@ function getCookie(name)
 
 async function checkRoom(options, gameMode)
 {
+	if (gameMode != 0)
+		return "None";
 	const response = await fetch('https://localhost:8083/api_pong/getroom', options);
 	const rooms = await response.json();
-	let result = -1;
+	console.log('rooms:',rooms);
 	let room;
 	for (let i = 0; i < rooms.length; i++)
 	{
-		console.log("room search: ", rooms[i].url);
-		if (gameMode == rooms[i].difficulty && rooms[i].maxPlayers > rooms[i].players.length)
+		console.log("i = ",i," rooms[i].maxPlayers - players.length = ",(rooms[i].maxPlayers - rooms[i].playerCount));
+		console.log("i = ",i," rooms[i].maxPlayers = ",(rooms[i].maxPlayers));
+		console.log("i = ",i," players.length = ",rooms[i].playerCount);
+		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 1)
 		{
-			console.log('room found: ', rooms[i].url);
-			if (result == -1)
-			{
-				result = rooms[i].players.length;
-				room = rooms[i].url;
-			}
-			else
-			{
-				if (rooms[i].players.length > result)
-				{
-					return rooms[i].url;
-				}
-			}
+			console.log(rooms[i]);
+			return (rooms[i].url);
 		}
 	}
-	if (result != -1)
+	for (let i = 0; i < rooms.length; i++)
 	{
-		return room;
+		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 2)
+		{
+			console.log(rooms[i]);
+			return (rooms[i].url);
+		}
 	}
 	return "None";
 }
@@ -302,7 +299,6 @@ export async	function Start(csrftoken, url)
 		return ;
 	}
 	console.log("Start !");
-	
 	const link = document.createElement('a');
 	link.href = '/pong/' + roomUrl + '/';
 	link.setAttribute('data-link', '');

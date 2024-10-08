@@ -411,9 +411,8 @@ const router = async () => {
 			wsonmessage(data, roomSocket, canvas, ctx);
 		};
 
-
 		roomSocket.onclose = function (e) {
-			console.error('Chat socket closed unexpectedly');
+			console.log('Chat socket closed unexpectedly');
 			// myGame.gameState = "end";
 			// const link = document.createElement('a');
 			// link.href = '/pong/';
