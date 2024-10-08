@@ -14,6 +14,7 @@ def get_player2(room):
 
 # make a global variable username
 myusername = ""
+room_closed = False
 
 class SudokuConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -42,24 +43,6 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         # Leave room group
 
         room = await sync_to_async(SudokuRoom.objects.get)(url=self.room_name)
-        player1 = await sync_to_async(get_player1)(room)
-        player2 = await sync_to_async(get_player2)(room)
-        player1username = player1.username
-        player2username = player2.username
-
-        print(f"Disconnected from {self.room_name}")
-        await self.send(text_data=json.dumps({
-            'type': 'redirect',
-            'message': 'You have been disconnected from the game. Redirecting to the lobby...',
-        }))
-
-        room.is_completed = True
-        await sync_to_async(room.save)()
-
-        if myusername == player1username:
-            await self.declare_winner_and_loser(player2username, player1username)
-        else:
-            await self.declare_winner_and_loser(player1username, player2username)
 
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -76,6 +59,8 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         player2 = await sync_to_async(get_player2)(room)
 
         if message_type == 'board_complete':
+            room.is_completed = True
+            room_closed = true
             time_used = data.get('time_used')
             username = data.get('username')
 
@@ -89,8 +74,6 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                 loserId = player1.id
                 winnerId = player2.id
 
-
-            # Broadcast the completion message to the room group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -104,6 +87,8 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                 }
             )
         if message_type == 'user_left':
+            room.is_completed = True
+            room_closed = true
             loserUsername = data.get('user')
             winnerUsername = data.get('adversary')
 
@@ -119,10 +104,10 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                     self.room_group_name,
                     {
                         'type': 'board_complete',
-                        'message': data['message'],
+                        'message': 'Your opponent has left the game. You win by disconnection!',
                         'time_used': 'N/A',
-                        'winner': winnerUser,
-                        'loser': loserUser,
+                        'winner': winnerUsername,
+                        'loser': loserUsername,
                         'loser_id': loserId,
                         'winner_id': winnerId
                     }
@@ -132,22 +117,9 @@ class SudokuConsumer(AsyncWebsocketConsumer):
                     self.room_group_name,
                     {
                         'type': 'close_room',
-                        'user': losingUser
+                        'user': loserUsername
                     }
                 )
-
-    async def declare_winner_and_loser(self, winner_username, loser_username):
-        # Notify the remaining player that they have won the game
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'board_complete',
-                'message': f'{winner_username} wins by disconnection!',
-                'time_used': 'N/A',
-                'winner': winner_username,
-                'loser': loser_username
-            }
-        )
 
     async def board_complete(self, event):
         message = event['message']
@@ -169,7 +141,6 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         }))
 
     async def close_room(self, event):
-        message = event['message']
         user = event.get('user')
 
         # Broadcast the board complete message to both players with the winner details

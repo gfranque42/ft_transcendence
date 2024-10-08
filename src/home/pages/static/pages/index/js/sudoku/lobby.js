@@ -1,4 +1,5 @@
 import { getUser } from '../getUser.js';
+import { navigateTo  } from '../index.js';
 
 
 /*
@@ -140,17 +141,13 @@ export async function Start()
 		id: userInfo.ID,
 	};
 
-	console.log('roomData: ', userInfo);
-	console.log('roomData: ', roomData);
 	try
 	{
 		const tempContentHtml = document.body.innerHTML;
-		console.log('tempContentHtml: ', tempContentHtml);
 		// Extract CSRF token from HTML form
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(tempContentHtml, 'text/html');
 		const csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
-		console.log('csrfToken: ', csrfToken);
 
 		// console.log('dns: ', dns);
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
@@ -170,14 +167,8 @@ export async function Start()
 			console.log('Room created: ', responseData);
 
 			const roomUrl = responseData.roomUrl;
-			const link = document.createElement('a');
-			link.href = '/sudoku/' + roomUrl + '/';
-			link.setAttribute('data-link', '');
-			document.body.appendChild(link);
-			console.log(link);
-			link.click();
-			document.body.removeChild(link);
-
+			console.log('navigating to roomUrl: ', roomUrl);
+			navigateTo(`/sudoku/${roomUrl}/`);
 		}
 		else
 		{

@@ -3,6 +3,8 @@ import { startTimer, setStartTime, stopTimer } from './timer.js';
 import { showModal } from './modal.js';
 import { getUser } from '../getUser.js';
 import { sendGameResults } from './sendGameResults.js';
+import { navigateTo } from '../index.js';
+import sudoku from '../../views/sudoku.js';
 
 let currentUser = null;
 let gameended = false;
@@ -16,6 +18,12 @@ export function initializeWebSocket(roomName) {
 		return;
 	}
 
+	if (sudokuSocket !== null) {
+		console.log("WebSocket is already initialized!");
+		sudokuSocket.close();
+		sudokuSocket = null;
+	}
+
 	const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
 	// Initialize the WebSocket with the correct protocol
@@ -25,15 +33,10 @@ export function initializeWebSocket(roomName) {
 
 	socket.onclose = function(e) {
 		console.log('entered the close function');
-		if (gameended === false) {
-			const link = document.createElement('a');
-			link.href = '/sudoku/';
-			link.setAttribute('data-link', '');
-			document.body.appendChild(link);
-			console.log(link);
-			link.click();
-			document.body.removeChild(link);
-		}
+		sudokuSocket = null;
+		gameended = false;
+		currentUser = null;
+		adversary = null;
 	};
 
 	return socket;
@@ -62,20 +65,32 @@ function handleSocketMessage(e) {
 
 	if (data.type === 'board_complete') {
 		// Show the game result modal
+		if (gameended !== true) {
+			gameended = true;
+			const timeUsed = data.time_used || "N/A";
+			const winningUser = data.winner || "N/A";
+			//const winningTime = data.winner_time || "N/A";
+
+			const winningId = data.winner_id;
+			const losingId = data.loser_id;
+
+			showModal(timeUsed, winningUser, currentUser);
+			if (currentUser === winningUser)
+				sendGameResults(winningId, losingId, 1, 0);
+			stopTimer();
+			if (sudokuSocket) {
+				sudokuSocket.close();
+			}
+		}
+	}
+
+	if (data.type === 'close_room') {
+		console.log('Room is closing! Redirecting to home page...');
 		gameended = true;
-		const timeUsed = data.time_used || "N/A";
-		const winningUser = data.winner || "N/A";
-		//const winningTime = data.winner_time || "N/A";
-
-		const winningId = data.winner_id;
-		const losingId = data.loser_id;
-		console.log(data);
-
-		showModal(timeUsed, winningUser, currentUser);
-		console.log(winningId, losingId);
-		if (currentUser === winningUser)
-			sendGameResults(winningId, losingId, 1, 0);
-		stopTimer();
+		navigateTo('/sudoku/');
+		if (sudokuSocket) {
+			sudokuSocket.close();
+		}
 	}
 }
 
@@ -84,16 +99,28 @@ export async function initialize() {
 	const roomName = document.getElementById('room-name');
 
 	window.addEventListener('popstate', function (event) {
-		if (window.location.pathname !== `/sudoku/${roomName.value}/`) {
-			// User navigated away from the game, so notify the server and close the socket
+		if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/`) {
+
 			if (sudokuSocket) {
 				sudokuSocket.send(JSON.stringify({
 					'type': 'user_left',
 					'username': currentUser,
 					'adversary': adversary
 				}));
-				sudokuSocket.close();  // Optionally close the WebSocket connection
 			}
+		}
+	});
+
+	window.addEventListener('beforeunload', function (event) {
+		if (roomName) {
+			if (sudokuSocket) {
+				sudokuSocket.send(JSON.stringify({
+					'type': 'user_left',
+					'username': currentUser,
+					'adversary': adversary
+				}));
+			}
+			navigateTo('/sudoku/');
 		}
 	});
 
@@ -105,7 +132,6 @@ export async function initialize() {
 	}
 
 	currentUser = userInfo.Username;
-	console.log('Current user:', currentUser);
 	// Initialize WebSocket and assign to sudokuSocket
 	sudokuSocket = initializeWebSocket(roomName);
 	if (sudokuSocket) {

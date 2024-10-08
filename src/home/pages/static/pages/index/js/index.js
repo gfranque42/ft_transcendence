@@ -343,7 +343,6 @@ const router = async () => {
             });
         });
 	} else if (match.route.path == "/sudoku/") {
-        console.log("post awaited");
 
 		inSudoku = true;
 
