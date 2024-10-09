@@ -347,7 +347,7 @@ export async function checkConnection()
 
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
 	if (!response.ok)
 	{
 		navigateToInstead("/login/");

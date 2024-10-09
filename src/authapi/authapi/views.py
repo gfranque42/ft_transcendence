@@ -5,6 +5,8 @@ from rest_framework import status
 
 from django.db import IntegrityError
 
+import base64
+
 from django.shortcuts import render
 
 from django.http import JsonResponse    
@@ -209,9 +211,7 @@ class sendOTP(APIView):
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
-            print("is verification on?")
-            print(CheckForTFA(userProfile))
-
+            
             for item in DICT:
                 if (DICT[item]):
                     userProfile.tfa[item] = DICT[item]
@@ -357,9 +357,6 @@ class Profile(APIView):
                 'friend': friend,
                 'is_logged_in': is_logged_in
             })
-
-
-
             # for userProfile_key, userProfile_value in friend_requests.items:
             
         return render(request, "profile.html", {"friend_requests": friend_requests,

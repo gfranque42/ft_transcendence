@@ -22,6 +22,7 @@ import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
+let TmpToken = null;
 var isLoaded = false;
 // var view = null;
 
@@ -82,8 +83,6 @@ export const navigateToInstead = url => {
 function JSONItirator(form) {
     const valuesArray = [];
     
-    console.log(form);
-
     if (form.success)
         return;
     for(const key in form) {
@@ -196,7 +195,6 @@ const router = async () => {
     });
 
     let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
-    console.log(match);
     if (!match) {
         match = {
             route: routes[0],
@@ -240,6 +238,7 @@ const router = async () => {
     async function VerificationRoute(tempToken) {
         var verification = new Verification();
         const token = await tempToken;
+        TmpToken = token;
         if (token === null)
             return ;
         const navStatus = await navigateToOTP(verification, token);
@@ -319,7 +318,6 @@ const router = async () => {
             UserToken = checkForm(view.registerUser(email, username, password1, password2));
             navigateAfterPost(UserToken);
         });
-
 
     } else if (match.route.path == "/login/") {
                                                                             // LOGIN    sends credentials to authapi, and gets verification if user has verification finally sends the code inpiuted by the user also adds a cookie with token
@@ -477,8 +475,7 @@ async function displayUser()
         }
         
     };
-
-    const response = await fetch('https://localhost:8083/auth/test_token', options);
+    const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
     if (!response.ok)
     {
         eraseCookie("token");
@@ -495,7 +492,7 @@ async function displayUser()
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
         ${profileButton}
-    </div>`;
+        </div>`;
     }
 }
 
@@ -592,6 +589,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target.matches('.code-btn')) {
             const verification = new Verification();
             verification.LastCheckAddVerification(UserToken);
+        }
+        if (event.target.matches('.code-btn')) {
+            const verification = new Verification();
+            verification.LastCheckAddVerification(TmpToken);
         }
     });
 

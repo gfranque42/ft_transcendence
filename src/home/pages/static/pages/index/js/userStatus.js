@@ -4,7 +4,7 @@ async function updateUserStatus(UserToken) {
 	
 	// Always include the CSRF token and token
 	
-	const response = await fetch('https://localhost:8083/auth/user-status', {
+	const response = await fetch('https://localhost:8083/auth/user-status?request_by=Home', {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
