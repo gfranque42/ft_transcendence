@@ -540,7 +540,7 @@ def test_token(request):
         userProfile = UserProfile.objects.get(id=payload['id'])
         return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
     except jwt.ExpiredSignatureError:
-        return Response({"method": False}, status=status.HTTP_200_OK)
+        return Response({"expired": True}, status=status.HTTP_200_OK)
     except UserProfile.DoesNotExist:
         return Response({"token": None}, status=status.HTTP_200_OK)
 

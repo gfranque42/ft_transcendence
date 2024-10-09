@@ -562,11 +562,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		// Handling data-action for button actions
 		renewToken();
         
-        if (!getToken()) {
-            
-            return ;
-        }
-        
         
 		const actionHandlers = {
             PvP,
