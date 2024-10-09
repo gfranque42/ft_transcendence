@@ -134,6 +134,10 @@ export function getCookie(name)
 export async function Start()
 {
 	const userInfo = await getUser();
+	if (!userInfo.method) {
+		navigateTo('/login/');
+		return ;
+	}
 	console.log('Start button clicked');
 	if (gameMode == -1)
 		return ;

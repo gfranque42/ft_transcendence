@@ -520,6 +520,8 @@ class RegisterForm(APIView):
 def get_token(request):
     try:
         auth_header = request.headers.get('Authorization')
+        if (not auth_header):
+            return Response({"token": None}, status=status.HTTP_200_OK)
         token = auth_header.split(' ')[1]
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=payload['id'])

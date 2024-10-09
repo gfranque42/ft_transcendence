@@ -27,6 +27,17 @@ var isLoaded = false;
 var inSudoku = false;
 // var view = null;
 
+
+async function renewToken() {
+    if (!UserToken) {
+        const token = getCookie("token")
+            
+        if (token != null)
+            UserToken = getRenewedToken(token)
+    } else
+        UserToken = getRenewedToken(await UserToken);
+}
+
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
 }
@@ -306,12 +317,7 @@ const router = async () => {
     }
 	console.log(match.route);
 
-    if (!UserToken) {
-        const token = getCookie("token")
-            
-        if (token != null)
-            UserToken = getRenewedToken(token)
-    }
+    renewToken();
     if (match.route.path == "/") {
         if (isLoaded)
             document.querySelector('#app').style.display = 'block';
@@ -457,7 +463,7 @@ const router = async () => {
 };
     
 async function getToken() {
-    return UserToken;
+    return await UserToken;
 }
 
 async function displayUser()
@@ -498,6 +504,14 @@ async function displayUser()
 
 // Listen for popstate event and trigger router
 window.addEventListener("popstate", router);
+
+
+async function checkPermissionSudokuLobby(action, actionHandlers) {
+    const token = await UserToken;
+    if (!token)
+        navigateToInstead("/login/");
+    actionHandlers[action](); // Call the corresponding function from the lookup table
+}
 
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
@@ -546,9 +560,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	document.addEventListener('click', function(event) {
 		// Handling data-action for button actions
-		
+		renewToken();
+        
+        if (!getToken()) {
+            
+            return ;
+        }
+        
+        
 		const actionHandlers = {
-			PvP,
+            PvP,
 			Solo,
 			Start,
 			Easy,
@@ -559,7 +580,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		
 		const action = event.target.getAttribute('data-action');
 		if (action && actionHandlers[action]) {
-			actionHandlers[action](); // Call the corresponding function from the lookup table
+            console.log(action);
+            checkPermissionSudokuLobby(action, actionHandlers);
 		} else if (action) {
 			console.warn('No action defined for', action);
 		}
