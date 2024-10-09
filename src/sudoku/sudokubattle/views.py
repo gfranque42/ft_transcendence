@@ -21,6 +21,7 @@ def check_or_create_sudoku_room(request):
 	# try:
 	data = json.loads(request.body)
 	difficulty = data.get('difficulty')
+	multiplayer = data.get('multiplayer')
 
 	username = data.get('user')
 	user_id = data.get('id')
@@ -31,31 +32,46 @@ def check_or_create_sudoku_room(request):
 		username=username,
 		user_id=user_id
 	)
-	available_room = SudokuRoom.objects.filter(
-		difficulty=difficulty,
-		is_full=False,
-		is_completed=False,
-	).exclude(player1=current_user).first()
 
-	if available_room:
-		available_room.add_player(current_user)
+	if multiplayer == True:
+		available_room = SudokuRoom.objects.filter(
+			difficulty=difficulty,
+			is_full=False,
+			is_completed=False,
+		).exclude(player1=current_user).first()
 
-		return JsonResponse({
-			'status': 'Joined existing room',
-			'roomUrl': available_room.url,
-		}, status=200)
+		if available_room:
+			available_room.add_player(current_user)
+
+			return JsonResponse({
+				'status': 'Joined existing room',
+				'roomUrl': available_room.url,
+			}, status=200)
+		else:
+			room_url = generate_random_url()
+			
+			board = generate_sudoku(difficulty)
+			
+			room = SudokuRoom.objects.create(
+				url=room_url,
+				difficulty=difficulty,
+				board=board,
+				player1=current_user,
+				multiplayer=True,
+			)
+			return JsonResponse({'status': 'Room created', 'roomUrl': room_url, 'board': board, 'username': username, 'multiplayer': 'true'}, status=201)
 	else:
 		room_url = generate_random_url()
-		
 		board = generate_sudoku(difficulty)
 		
 		room = SudokuRoom.objects.create(
 			url=room_url,
 			difficulty=difficulty,
 			board=board,
-			player1=current_user
+			player1=current_user,
+			multiplayer=False,
 		)
-		return JsonResponse({'status': 'Room created', 'roomUrl': room_url, 'board': board, 'username': username}, status=201)
+		return JsonResponse({'status': 'Room created', 'roomUrl': room_url, 'board': board, 'username': username, 'multiplayer': 'false'}, status=201)
 	# except Exception as e:
 	# 	return JsonResponse({'error': str(e)}, status=400)
 

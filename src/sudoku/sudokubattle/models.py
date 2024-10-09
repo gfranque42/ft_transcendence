@@ -16,6 +16,7 @@ class SudokuRoom(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     start_time = models.DateTimeField(null=True, blank=True)
     is_completed = models.BooleanField(default=False)
+    multiplayer = models.BooleanField(default=False)
 
     def add_player(self, user):
         """Add a player to the room if there's space."""

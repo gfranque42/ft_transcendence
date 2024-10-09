@@ -10,9 +10,10 @@ let currentUser = null;
 let gameended = false;
 let sudokuSocket = null;
 let adversary = null;
+let multiplayer = false;
 
 export function initializeWebSocket(roomName) {
-
+	console.log('initializing websocket');
 	if (!roomName) {
 		console.error("Room name is not provided!");
 		return;
@@ -51,7 +52,9 @@ function handleSocketMessage(e) {
 		// Get the board from the message and pass it to setBoard function
 		const board = data.board;
 		const startTime = data.time;
-		adversary = data.adversary;
+		if (data.multiplayer === true)
+			multiplayer = true;
+			adversary = data.adversary;
 
 		console.log("data: ", data);
 
@@ -67,16 +70,16 @@ function handleSocketMessage(e) {
 		// Show the game result modal
 		if (gameended !== true) {
 			gameended = true;
-			const timeUsed = data.time_used || "N/A";
+			const timeUsed = data.time_used || "N/A"; // Time used to win
 			const winningUser = data.winner || "N/A";
-			//const winningTime = data.winner_time || "N/A";
 
 			const winningId = data.winner_id;
-			const losingId = data.loser_id;
 
 			showModal(timeUsed, winningUser, currentUser);
-			if (currentUser === winningUser)
+			if (currentUser === winningUser && multiplayer === true) {
+				const losingId = data.loser_id;
 				sendGameResults(winningId, losingId, 1, 0);
+			}
 			stopTimer();
 			if (sudokuSocket) {
 				sudokuSocket.close();
@@ -88,6 +91,7 @@ function handleSocketMessage(e) {
 		console.log('Room is closing! Redirecting to home page...');
 		gameended = true;
 		navigateTo('/sudoku/');
+		stopTimer();
 		if (sudokuSocket) {
 			sudokuSocket.close();
 		}
@@ -97,17 +101,18 @@ function handleSocketMessage(e) {
 export async function initialize() {
 
 	const roomName = document.getElementById('room-name');
-	
+	console.log(`inirialize`);
 	const userInfo = await getUser();
 
 	if (!roomName) {
 		console.error("Room name is not available in the HTML!");
 		return;
 	}
-
-	currentUser = userInfo.Username;
 	
 	sudokuSocket = initializeWebSocket(roomName);
+	currentUser = userInfo.Username;
+
+	console.log('sudokuSocket: ', sudokuSocket);
 	if (sudokuSocket) {
 		sudokuSocket.onmessage = handleSocketMessage;
 	}

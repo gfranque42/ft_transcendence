@@ -11,6 +11,7 @@ game modes:
 */
 
 let	gameMode = -1;
+let multiplayer = false;
 
 export async function changeUsername(view)
 {
@@ -35,6 +36,7 @@ export function Solo()
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
 	gameMode = -1;
+	multiplayer = false;
 }
 
 export function PvP()
@@ -55,6 +57,7 @@ export function PvP()
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
 	gameMode = -1;
+	multiplayer = true;
 }
 
 export function Easy()
@@ -135,10 +138,12 @@ export async function Start()
 	if (gameMode == -1)
 		return ;
 
+	console.log('MULTIPLAYER??', multiplayer);
 	const roomData = {
 		difficulty: gameMode,
 		user: userInfo.Username,
 		id: userInfo.ID,
+		multiplayer: multiplayer,
 	};
 
 	try
