@@ -1,4 +1,5 @@
 @import "register/register.css?request_by=Home";
 @import "register/login.css?request_by=Home";
-/* @import "register/navbar.css"; */
+@import "register/profile.css?request_by=Home";
+@import "register/navbar.css?request_by=Home";
 @import "register/index.css?request_by=Home";

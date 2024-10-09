@@ -211,9 +211,7 @@ class sendOTP(APIView):
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
-            print("is verification on?")
-            print(CheckForTFA(userProfile))
-
+            
             for item in DICT:
                 if (DICT[item]):
                     userProfile.tfa[item] = DICT[item]

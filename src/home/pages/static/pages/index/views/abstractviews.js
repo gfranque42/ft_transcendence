@@ -6,6 +6,8 @@ export default class {
     async LastCheckAddVerification(tmpToken) { 
         const token = await tmpToken;
 
+        if (!token)
+            return false;
         let response = await fetch('https://localhost:8083/auth/send-otp?request_by=Home', {
             method: 'GET',
             headers: {
