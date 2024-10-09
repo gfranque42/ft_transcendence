@@ -43,7 +43,7 @@ class	Room(models.Model):
 			self.players = playersList
 			self.save()
 
-	def playersCount(self):
-		self.playerCount = len(self.getPlayers())
-		self.save()
-		return self.playerCount
+	# def playersCount(self):
+	# 	self.playerCount = len(self.getPlayers())
+	# 	self.save()
+	# 	return self.playerCount

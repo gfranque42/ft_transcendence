@@ -70,10 +70,12 @@ class	room():
 			with self.lock:
 				if player not in self.players:
 					self.players.append(player)
+					print("playercount",room.playerCount,flush=True)
 					room.addPlayer(player)
-					room.playersCount()
+					# room.playersCount()
 					room.playerCount = len(self.players)
 					room.save()
+					print("playercount",room.playerCount,flush=True)
 				else:
 					print(self.roomName,": ",player," reconnect !")
 					# raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
@@ -101,15 +103,15 @@ class	room():
 			with self.lock:
 				if player in self.players:
 					print(room.players,flush=True)
-					print(room.playersCount(),flush=True)
+					print(room.playerCount,flush=True)
 					self.players.remove(player)
 					print(type(room.players),flush=True)
 					room.removePlayer(player)
 					# room.save()
-					print(room.players,flush=True)
-					print(room.playersCount(),flush=True)
 					room.playerCount = len(self.players)
 					room.save()
+					print(room.players,flush=True)
+					print(room.playerCount,flush=True)
 				else:
 					raise roomException(self.roomName+": Player " + player + " isn't in this room!", 1002)
 
