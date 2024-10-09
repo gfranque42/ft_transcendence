@@ -390,7 +390,7 @@ const router = async () => {
 		if (!inSudoku)
 		{
 			console.log("leaving sudoku");
-			// navigateTo("/sudoku/");
+			navigateTo("/sudoku/");
 		} else {
 			console.log("leavingn't sudoku");
 			initialize();
