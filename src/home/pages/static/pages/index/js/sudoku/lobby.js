@@ -134,7 +134,8 @@ export function getCookie(name)
 export async function Start()
 {
 	const userInfo = await getUser();
-	if (!userInfo.method) {
+	console.log()
+	if (userInfo.expired) {
 		navigateTo('/login/');
 		return ;
 	}

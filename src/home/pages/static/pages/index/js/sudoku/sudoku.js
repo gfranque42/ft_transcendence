@@ -103,7 +103,7 @@ export async function initialize() {
 	const roomName = document.getElementById('room-name');
 	console.log(`inirialize`);
 	const userInfo = await getUser();
-	if (!userInfo.method) {
+	if (userInfo.expired) {
 		navigateTo('/login/');
 		return ;
 	}
