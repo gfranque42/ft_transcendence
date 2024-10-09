@@ -79,10 +79,14 @@ def check_or_create_sudoku_room(request):
 def sudoku_board(request, room_url):
 	if request.method == 'GET':
 		# Fetch the room data (no need to check is_full here)
-		room = get_object_or_404(SudokuRoom, url=room_url)
-		
-		# Render a template for both players, WebSocket will manage the game state
-		context = { 'room_url': room.url, }
-		return render(request, 'sudokubattle/sudoku.html', context)
+		try:
+			# room = get_object_or_404(SudokuRoom, url=room_url)
+			room = SudokuRoom.objects.get(url=room_url)
+			
+			# Render a template for both players, WebSocket will manage the game state
+			context = { 'room_url': room.url, }
+			return render(request, 'sudokubattle/sudoku.html', context)
+		except SudokuRoom.DoesNotExist:
+			return render(request, 'sudokubattle/noRoom.html')
 	else:
 		return HttpResponse(status=405)

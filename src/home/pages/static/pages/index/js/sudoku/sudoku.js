@@ -29,7 +29,7 @@ export function initializeWebSocket(roomName) {
 
 	// Initialize the WebSocket with the correct protocol
 	const socket = new WebSocket(
-		`${wsProtocol}://${window.location.host}/ws/sudokubattle/${roomName.value}/`
+		`${wsProtocol}://${window.location.host}/ws/sudokubattle/${roomName.value}/?request_by=Home`
 	);
 
 	socket.onclose = function(e) {
@@ -78,7 +78,7 @@ function handleSocketMessage(e) {
 			showModal(timeUsed, winningUser, currentUser);
 			if (currentUser === winningUser && multiplayer === true) {
 				const losingId = data.loser_id;
-				sendGameResults(winningId, losingId, 1, 0);
+				sendGameResults(losingId, winningId, 5, 0);
 			}
 			stopTimer();
 			if (sudokuSocket) {
@@ -116,7 +116,7 @@ export async function initialize() {
 	}
 
 	window.addEventListener('popstate', function (event) {
-		if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/`) {
+		if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/?request_by=Home`) {
 
 			if (sudokuSocket) {
 				sudokuSocket.send(JSON.stringify({
@@ -131,15 +131,15 @@ export async function initialize() {
 	window.addEventListener('beforeunload', function (event) {
 		if (roomName) {
 			if (sudokuSocket) {
+				// navigateTo('/sudoku/');
 				sudokuSocket.send(JSON.stringify({
 					'type': 'user_left',
 					'username': currentUser,
 					'adversary': adversary
 				}));
 			}
-			navigateTo('/sudoku/');
+			socket.close();
+			//navigateTo('/sudoku/');
 		}
 	});
 }
-
-document.addEventListener('DOMContentLoaded', initialize);

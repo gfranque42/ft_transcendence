@@ -19,7 +19,7 @@ export default class extends abstractviews {
             return ;
         }
 
-        const response = await fetch('https://localhost:8083/sudokubattle/api/waiting_room/');
+        const response = await fetch('https://localhost:8083/sudokubattle/api/waiting_room/?request_by=Home');
         const tempContentHtml = await response.text();
 
         const parser = new DOMParser();

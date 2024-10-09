@@ -23,7 +23,7 @@ export default class extends abstractviews {
             return ;
         }
 
-        const response = await fetch('https://localhost:8083/sudokubattle/');
+        const response = await fetch('https://localhost:8083/sudokubattle/?request_by=Home');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form

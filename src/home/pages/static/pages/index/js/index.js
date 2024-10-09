@@ -25,7 +25,6 @@ let UserToken = null;
 let TmpToken = null;
 var isLoaded = false;
 var inSudoku = false;
-let sudokuSocket = null;
 // var view = null;
 
 function isEmptyOrWhitespace(str) {
@@ -247,11 +246,14 @@ const router = async () => {
         console.log(navStatus);
         // UserToken = token
         if (navStatus == 1) {
+			console.log("navigating to profile");
+
             if (VerificationEvent(verification, token));
-            return ;
+            	return ;
             
         }
         else if (navStatus == 2) {
+			UserToken = token;
             navigateAfterPost(token);
             return ;
         }
@@ -302,6 +304,7 @@ const router = async () => {
         clickOff.style.filter = 'blur(5px)';
         // }
     }
+	console.log(match.route);
 
     if (!UserToken) {
         const token = getCookie("token")
@@ -385,8 +388,13 @@ const router = async () => {
 		changeUsername(view);
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
 		if (!inSudoku)
-			navigateTo("/sudoku/");
-		initialize();
+		{
+			console.log("leaving sudoku");
+			// navigateTo("/sudoku/");
+		} else {
+			console.log("leavingn't sudoku");
+			initialize();
+		}
 	} else if (match.route.path == "/pong/") {
 		await checkConnection();
 		eventPong(view);

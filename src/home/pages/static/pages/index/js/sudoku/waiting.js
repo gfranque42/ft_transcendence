@@ -16,7 +16,7 @@ export function joinRoom()
 		// console.log('dns: ', dns);
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		// console.log('fetchurl: ', fetchurl);
-		const response = await fetch('/sudokubattle/api/sudoku/create/', {
+		const response = await fetch('/sudokubattle/api/sudoku/create/?request_by=Home', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

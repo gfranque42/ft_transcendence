@@ -70,8 +70,8 @@ services:
     build:
       context: ./sudoku/
       dockerfile: Dockerfile
-    ports:
-      - "8005:8005"
+    expose:
+      - "8005"
     networks:
       - Transcendence
     volumes:
