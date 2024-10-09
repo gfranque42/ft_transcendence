@@ -2,24 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-""" class SudokuBoard(models.Model):
-    row1 = models.CharField(max_length=9, default="---------")
-    row2 = models.CharField(max_length=9, default="---------")
-    row3 = models.CharField(max_length=9, default="---------")
-    row4 = models.CharField(max_length=9, default="---------")
-    row5 = models.CharField(max_length=9, default="---------")
-    row6 = models.CharField(max_length=9, default="---------")
-    row7 = models.CharField(max_length=9, default="---------")
-    row8 = models.CharField(max_length=9, default="---------")
-    row9 = models.CharField(max_length=9, default="---------")
-    start_time = models.DateTimeField(default=timezone.now) # start time of the game
-
-    def __str__(self):
-        return f"Sudoku Board ID {self.id}" """
-
 class myUser(models.Model):
-	username = models.CharField(max_length=50)
-	user_id = models.IntegerField()
+	username = models.CharField(max_length=50, unique=True)
+	user_id = models.IntegerField(unique=True)
 
 class SudokuRoom(models.Model):
     url = models.CharField(max_length=10, unique=True)
@@ -29,6 +14,9 @@ class SudokuRoom(models.Model):
     player2 = models.ForeignKey(myUser, related_name='player2', on_delete=models.CASCADE, null=True, blank=True)
     is_full = models.BooleanField(default=False)  # Track if the room is full
     created_at = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    multiplayer = models.BooleanField(default=False)
 
     def add_player(self, user):
         """Add a player to the room if there's space."""

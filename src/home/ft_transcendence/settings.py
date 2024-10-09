@@ -61,12 +61,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ft_transcendence.urls'
 
-
 CORS_ORIGIN_WHITELIST = [
-    'https://localhost:8083', 'https://127.0.0.1:8083', 'https://made-f0Cr8s2:8083'
+    'https://localhost:8083', 'https://127.0.0.1:8083',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083',]
 
 CORS_ALLOW_METHODS = [
     'DELETE',

@@ -24,6 +24,8 @@ import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 let UserToken = null;
 let TmpToken = null;
 var isLoaded = false;
+var inSudoku = false;
+let sudokuSocket = null;
 // var view = null;
 
 function isEmptyOrWhitespace(str) {
@@ -300,6 +302,13 @@ const router = async () => {
         clickOff.style.filter = 'blur(5px)';
         // }
     }
+
+    if (!UserToken) {
+        const token = getCookie("token")
+            
+        if (token != null)
+            UserToken = getRenewedToken(token)
+    }
     if (match.route.path == "/") {
         if (isLoaded)
             document.querySelector('#app').style.display = 'block';
@@ -371,29 +380,12 @@ const router = async () => {
             });
         });
 	} else if (match.route.path == "/sudoku/") {
-        console.log("post awaited");
 
-		const actionHandlers = {
-			PvP: PvP,
-			Solo: Solo,
-			Start: Start,
-			Easy: Easy,
-			Medium: Medium,
-			Hard: Hard,
-			Start: Start,
-		};
-
+		inSudoku = true;
 		changeUsername(view);
-		document.addEventListener('click', function(event) {
-			// Handling data-action for button actions
-			const action = event.target.getAttribute('data-action');
-			if (action && actionHandlers[action]) {
-				actionHandlers[action](view); // Call the corresponding function from the lookup table
-			} else if (action) {
-				console.warn('No action defined for', action);
-			}
-		});
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
+		if (!inSudoku)
+			navigateTo("/sudoku/");
 		initialize();
 	} else if (match.route.path == "/pong/") {
 		await checkConnection();
@@ -453,7 +445,7 @@ const router = async () => {
 		}
 	}
 
-    displayUser();
+	displayUser();
 };
     
 async function getToken() {
@@ -543,6 +535,27 @@ document.addEventListener("DOMContentLoaded", () => {
             navigateTo(event.target);
         }
     });
+
+	document.addEventListener('click', function(event) {
+		// Handling data-action for button actions
+		
+		const actionHandlers = {
+			PvP,
+			Solo,
+			Start,
+			Easy,
+			Medium,
+			Hard,
+			Start,
+		};
+		
+		const action = event.target.getAttribute('data-action');
+		if (action && actionHandlers[action]) {
+			actionHandlers[action](); // Call the corresponding function from the lookup table
+		} else if (action) {
+			console.warn('No action defined for', action);
+		}
+	});
 
     document.addEventListener("click", function(event) {
         const UserTest = document.querySelector(".navbar-content.user-present")
