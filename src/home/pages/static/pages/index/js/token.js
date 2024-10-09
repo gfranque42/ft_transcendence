@@ -5,12 +5,11 @@ export async function getRenewedToken(token) {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			'Requested-by': 'Home',
 			'Authorization': `Token ${token}`
 		}
 	};
 
-	const response = await fetch('https://localhost:8083/auth/get_token', options);
+	const response = await fetch('https://localhost:8083/auth/get_token?request_by=Home', options);
 	const newToken = await response.json();
 
 	if (!newToken)

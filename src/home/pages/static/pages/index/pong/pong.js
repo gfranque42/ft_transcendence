@@ -202,13 +202,12 @@ export async function testToken(roomSocket)
 		method: 'GET', // HTTP method
 		headers: {
 			'Content-Type': 'application/json',
-			'Requested-by': 'Home',
 			'Authorization': `Token ${cookie}`
 		}
 
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
 	if (!response.ok)
 	{
 		navigateToInstead("/login/");

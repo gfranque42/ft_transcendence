@@ -12,12 +12,11 @@ export async function getUser()
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			'Requested-by': 'Home',
 			'Authorization': `Token ${token}`
 		}
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
 	const UserInformation = await response.json();
 
 	return UserInformation;

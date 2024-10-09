@@ -6,10 +6,9 @@ export default class {
     async LastCheckAddVerification(tmpToken) { 
         const token = await tmpToken;
 
-        let response = await fetch('https://localhost:8083/auth/send-otp', {
+        let response = await fetch('https://localhost:8083/auth/send-otp?request_by=Home', {
             method: 'GET',
             headers: {
-    			'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken,
                 'Authorization': `Token ${token}`

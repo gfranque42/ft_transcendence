@@ -79,12 +79,11 @@ export default class extends abstractviews {
         const options = {
             method: 'GET',
             headers: {
-                'Requested-by': 'Home',
                 'Content-Type': 'application/json'
             }
         };
         
-        const response = await fetch('https://localhost:8083/auth/register', options);
+        const response = await fetch('https://localhost:8083/auth/register?request_by=Home', options);
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
@@ -99,7 +98,7 @@ export default class extends abstractviews {
         if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-        let response = await fetch('https://localhost:8083/auth/register', {
+        let response = await fetch('https://localhost:8083/auth/register?request_by=Home', {
             method: 'POST',
             body: JSON.stringify({ 
                 "csrfmiddlewaretoken": this.csrfToken,
@@ -109,7 +108,6 @@ export default class extends abstractviews {
                 "password2": password2.value
             }),
             headers: {
-                'Requested-by': 'Home',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': this.csrfToken
             },

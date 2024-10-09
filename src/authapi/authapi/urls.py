@@ -8,8 +8,8 @@ from django.views.static import serve
 import os
 
 urlpatterns = [
-    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'pages/static'),}),
-    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'media/'),}),
+    re_path(r'^auth/static/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'authapi/static'),}),
+    re_path(r'^auth/media/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'media/'),}),
 
 	path("admin/", admin.site.urls),
     re_path(r'^auth/login$', views.LoginForm.as_view(), name='login'),
