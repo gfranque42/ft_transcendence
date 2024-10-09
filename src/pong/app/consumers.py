@@ -54,7 +54,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			await self.channel_layer.group_send(
 							self.room_group_name, {"type": "quit", "message": "quitting"})
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-	
+
 	# Receive message from WebSocket
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)

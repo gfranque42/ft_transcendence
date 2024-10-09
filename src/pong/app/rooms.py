@@ -7,8 +7,8 @@ import asyncio
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from concurrent.futures import ThreadPoolExecutor
-# from pydantic import BaseModel
 import time
+import random
 
 class	roomException(Exception):
 	def	__init__(self, message: str, errorCode: int) -> None:
@@ -53,6 +53,7 @@ class	room():
 		self.finish: bool						= False
 		self.lock: threading.Lock				= Lock()
 		self.thread: Optional[threading.Thread]	= None
+		self.looser: str						= ""
 		print(self.roomName,": Je suis initialisé !",flush=True)
 
 	def	__repr__(self):
@@ -61,7 +62,7 @@ class	room():
 	@database_sync_to_async
 	def	addPlayer(self, player: str) -> None:
 		print(self.roomName,": I have to append ",player,flush=True)
-		if self.partyType != 4:
+		if self.partyType < 4:
 			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
@@ -94,7 +95,7 @@ class	room():
 	@database_sync_to_async
 	def	removePlayer(self, player: str) -> None:
 		print(self.roomName,": I have to remove ",player,flush=True)
-		if self.partyType != 4:
+		if self.partyType < 4:
 			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
@@ -167,6 +168,10 @@ class	room():
 			if self.scoreL == 5 or self.scoreR == 5:
 				self.inGame = False
 				self.finish = True
+				if self.scoreL == 5:
+					self.looser = self.players[1]
+				else:
+					self.looser = self.players[0]
 				message = "finish"
 				print(self.roomName,": the game is finished",flush=True)
 			self.sendUpdate(message)
@@ -189,7 +194,7 @@ class	room():
 				self.paddleR.key -= self.paddleR.vel
 			if data['down'] == True:
 				self.paddleR.key += self.paddleR.vel
-		elif self.partyType == 0:
+		elif self.partyType == 0 and self.partyType == 5:
 			if username == self.players[0]:
 				if data['w'] == True:
 					self.paddleL.key -= self.paddleL.vel
@@ -262,3 +267,76 @@ class	room():
 							"id": 0,
 							"partyType": self.partyType
 							})
+
+def	randomUrl() -> str:
+	url:str = ""
+	while len(url) != 10:
+		c:str = chr(random.randint(0, 127))
+		if c.isalnum():
+			url += c
+	return url
+
+class	Tournament():
+	def	__init__(self) -> None:
+		self.lobbyRoom: room		= room(randomUrl(), 8, 6)
+		lroom = Room.objects.create(url=self.lobbyRoom.roomName,difficulty=6,maxPlayers=8)
+		lroom.save()
+		self.rooms					= {}
+		self.players: List[str]		= []
+		self.thread
+
+	def	shufflePlayers(self) -> None:
+		playerPlaces = []
+		newPlaces = []
+		for player in self.players:
+			playerPlaces.append(player)
+		while len(newPlaces) < len(self.players):
+			i = random.randint(0, len(self.players) - 1)
+			if i not in newPlaces:
+				newPlaces.append(i)
+		self.players = [playerPlaces[i] for i in newPlaces]
+		print (self.players)
+
+	def	checkRoom(self) -> int:
+		for key in self.rooms:
+			if self.rooms[key].inGame == False:
+				return 0
+		return 1
+
+	async def	sendRooms(self) -> None:
+		infos = {'type': 'tournament', 'message': 'tournament'}
+		infos['numberOfRooms'] = len(self.players) / 2
+		i = 0
+		for key in self.rooms:
+			roomName = "Room"+str(i)
+			infos[roomName] = key
+			roomNamep1 = roomName+str(1)
+			infos[roomNamep1] = self.players[i * 2]
+			roomNamep1 = roomName+str(2)
+			infos[roomNamep1] = self.players[i * 2 + 1]
+		print("infos de sendRooms: ",infos,flush=True)
+		await self.channelLayer.group_send(self.roomGroupName, infos)
+
+	def	routine(self) -> None:
+		while len(self.players) > 1:
+			self.shufflePlayers()
+			i = 0
+			while i < (len(self.players) / 2):
+				url = randomUrl()
+				self.rooms[url] = room(url,2,5)
+			async_to_sync(self.sendRooms)()
+			while self.checkRoom() == 0:
+				async_to_sync(asyncio.sleep)(1)
+			for key in self.rooms:
+				self.rooms[key].thread.join()
+			for key in self.rooms:
+				self.players.remove(self.rooms[key].looser)
+			self.lobbyRoom.players.clear()
+			self.lobbyRoom.nbPlayers = len(self.players)
+
+'''
+	faire la fonction start de tournament
+	reset le thread a la fin de la routine
+	faire la fonction du groupe dans le consumer
+	changer de page dans le front
+'''
