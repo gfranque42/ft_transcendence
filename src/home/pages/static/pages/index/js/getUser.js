@@ -16,7 +16,7 @@ export async function getUser()
 		}
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
 	const UserInformation = await response.json();
 
 	return UserInformation;

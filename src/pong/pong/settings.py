@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8nhfzz4l(q@*%8vk(z-09p1ha!f)5i-g)u871izm)w&m(5jwu-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 
@@ -98,11 +98,16 @@ DATABASES = {
     }
 }
 
+bob = 'http://' + os.getenv('DNS') + ':8002'
+boby = 'https://' + os.getenv('DNS') + ':8083'
+print('bob: ', bob, '\nboby: ', boby)
 CORS_ALLOWED_ORIGINS = [
+	'https://localhost:8083',
 	'http://localhost:8002',
-	'http://paul-f4ar7s2:8002',
-	'http://localhost:8082',
-	'http://paul-f4ar7s2:8082',
+    'http://' + os.getenv('DNS') + ':8002',
+    'https://' + os.getenv('DNS') + ':8083',
+    bob,
+	boby,
 ]
 
 # Password validation
@@ -139,7 +144,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'pong/static/'
+STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app/static'),
@@ -155,4 +160,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 print(os.getenv('DNS'))
 
 ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']
-ALLOWED_HOSTS = ['pop-os', 'localhost']

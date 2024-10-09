@@ -5,6 +5,8 @@ from rest_framework import status
 
 from django.db import IntegrityError
 
+import base64
+
 from django.shortcuts import render
 
 from django.http import JsonResponse    
@@ -209,9 +211,7 @@ class sendOTP(APIView):
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             user_id = decoded['id']
             userProfile = UserProfile.objects.get(id=user_id)
-            print("is verification on?")
-            print(CheckForTFA(userProfile))
-
+            
             for item in DICT:
                 if (DICT[item]):
                     userProfile.tfa[item] = DICT[item]
@@ -316,7 +316,12 @@ class AddVerification(APIView):
 class Profile(APIView):
 
     def get(self, request):
+        print("Profile Get", flush=True)
+
         auth_header = request.headers.get('Authorization')
+        if not auth_header :
+            return Response({'error': 'Unauthorized access'}, status=status.HTTP_401_UNAUTHORIZED)
+        print("Profile Gett", flush=True)
         try: 
             token = auth_header.split(' ')[1]
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
@@ -324,8 +329,12 @@ class Profile(APIView):
             userProfile = UserProfile.objects.get(id=user_id)
         except UserProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        
+        print("authentication", flush=True)        
         initial_data = {'username': userProfile.user.username}
 
         formAvatar = changeAvatar()
@@ -348,9 +357,6 @@ class Profile(APIView):
                 'friend': friend,
                 'is_logged_in': is_logged_in
             })
-
-
-
             # for userProfile_key, userProfile_value in friend_requests.items:
             
         return render(request, "profile.html", {"friend_requests": friend_requests,
@@ -525,11 +531,18 @@ def get_token(request):
 
 @api_view(['GET'])
 def test_token(request):
-    auth_header = request.headers.get('Authorization')
-    token = auth_header.split(' ')[1]
-    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-    userProfile = UserProfile.objects.get(id=payload['id'])
-    return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        userProfile = UserProfile.objects.get(id=payload['id'])
+        return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
+    except jwt.ExpiredSignatureError:
+        return Response({"method": False}, status=status.HTTP_200_OK)
+    except UserProfile.DoesNotExist:
+        return Response({"token": None}, status=status.HTTP_200_OK)
+
+
 
 @api_view(['GET'])
 def test_OTP(request):

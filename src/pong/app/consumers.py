@@ -1,72 +1,98 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.generic.websocket import WebsocketConsumer
+from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from .models import Room, Player
 from .pong import *
+import asyncio
+from .rooms import *
+
+gRoomsManager: roomsManager = roomsManager()
+
+gTournament: tournament = tournament()
 
 class	PongConsumer(AsyncWebsocketConsumer):
-	def	__init__(self, *args, **kwargs):
-		super().__init(*args, **kwargs)
-		self.room_name = None
-		self.room_group_name = None
-		self.party_state = "waiting"
-		self.game_state = {
-		'ball': Ball(Vec2(45, 45), Vec2(10, 10), Vec2(10, 0), 10),
-		'paddlel': Paddle(Vec2(5, 35),Vec2(10, 30), 0),
-		'paddler': Paddle(Vec2(85, 35),Vec2(10, 30), 0),
-		}
-
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
 		self.room_group_name = "pong_%s" % self.room_name
-		
+
+		print(self.room_name,": connection en cours",flush=True)
+
 		try:
-			room = await self.get_room(self.room_name)
-			if await self.room_is_full(room):
-				await self.close()
-			else:
-				await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-				# Search for the player name from Stan
-				await self.add_player_to_room(self.room)
-				await self.accept()
-		except:
-			await self.close()
+			if gRoomsManager.rooms[self.room_name].ready == True:
+				#maybe send an error message to display ?
+				self.close()
+				return
+			# Join room group
+			await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+			print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
+			if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
+				print(self.room_name,": coucou @@@@@@@",flush=True)
+				await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
+				await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
+			if gRoomsManager.rooms[self.room_name].channelLayer == None:
+				gRoomsManager.rooms[self.room_name].channelLayer = self.channel_layer
+				gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
+				gRoomsManager.rooms[self.room_name].channelName = self.channel_name
+			await self.accept()
+			await self.send(text_data=json.dumps({"type": "connected"}))
+		except Exception as e:
+			print(self.room_name,": error: ",e,flush=True)
+			self.close()
 
 	async def disconnect(self, close_code):
+		if int(gRoomsManager.rooms[self.room_name].partyType) != 4:
+			await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
 		# Leave room group
+		await self.channel_layer.group_send(
+						self.room_group_name, {"type": "quit", "message": "quitting"})
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	# Receive message from WebSocket
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
-		message = text_data_json["message"]
-
-		# Send message to room group
-		await self.channel_layer.group_send(
-			self.room_group_name, {"type": "chat_message", "message": message}
-		)
+		type_data = text_data_json["type"]
+		print('coucou de receive, type: ',text_data_json["type"], flush=True)
+		if type_data == "username":
+			self.username = text_data_json["username"]
+			self.id = text_data_json["id"]
+			if gRoomsManager.rooms[self.room_name].partyType != 4:
+				await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
+			else:
+				await self.channel_layer.group_send(
+					self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
+				await gRoomsManager.rooms[self.room_name].start()
+		elif type_data == "ping":
+			print('ping recu !:',text_data,flush=True)
+			print('ping recu !:',text_data_json,flush=True)
+			gRoomsManager.rooms[self.room_name].updateData(text_data_json, self.username)
 
 	# Receive message from room group
-	async def chat_message(self, event):
+	async def gameUpdate(self, event):
+		print(self.username, ': bisous de game_update', flush=True)
 		message = event["message"]
+		print(self.username, ': ', message, flush=True)
+		if (message == "update"):
+			await self.send(text_data=json.dumps(event))
+		elif (message == "finish"):
+			await self.send(text_data=json.dumps(event))
+			await self.close()
+		elif (message == "countdown"):
+			await self.send(text_data=json.dumps({"type": "compte a rebour",
+					"message": "compte a rebour",
+					"number": event["number"]}))
+		elif (message == "fin du compte"):
+			await self.send(text_data=json.dumps({"type": "fin du compte",
+										 "message": "fin du compte",
+			}))
+		elif (message == "ready for playing"):
+			await self.send(text_data=json.dumps({"type": "ready for playing", "message": "ready for playing",
+										"player1Name": gRoomsManager.rooms[self.room_name].players[0],
+										"player2Name": gRoomsManager.rooms[self.room_name].players[1],}))
 
-		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message}))
-
-	@sync_to_async
-	def get_room(self, room_name):
-		return (Room.objects.get(url=room_name))
-
-	@sync_to_async
-	def room_is_full(self, room):
-		return (room.players.count() >= room.maxPlayers)
-
-	@sync_to_async
-	def	add_player_to_room(self, room):
-		player, created = Player.objects.get_or_create(username="current_player")
-		room.players.add(player)
-
-
-
-
+	async def quit(self, event):
+		print(self.username, ': bisous de quit', flush=True)
+		message = event["message"]
+		await self.send(text_data=json.dumps({"type": "end game", "message": message}))
+		await self.close()

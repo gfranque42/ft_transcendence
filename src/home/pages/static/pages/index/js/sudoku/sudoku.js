@@ -104,10 +104,8 @@ export async function initialize() {
 	console.log(`inirialize`);
 	const userInfo = await getUser();
 
-	if (!roomName) {
-		console.error("Room name is not available in the HTML!");
+	if (!roomName)
 		return;
-	}
 	
 	sudokuSocket = initializeWebSocket(roomName);
 	currentUser = userInfo.Username;

@@ -19,7 +19,7 @@ export default class extends abstractviews {
         const token = getCookie("token")
         
         if (token == null) {
-            navigateToInstead("/register/");
+            navigateToInstead("/login/");
             return ;
         }
 

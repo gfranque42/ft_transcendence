@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rx*(a-*_sz=a=)^-5zg4v_e_yt_jumxpze#564((ar1k=-n(av'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -61,8 +61,6 @@ INSTALLED_APPS = [
     "vonage",
 	
     'sms',
-
-
 ]
 
 MIDDLEWARE = [
@@ -77,7 +75,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8000', 'https://localhost:8083', 'http://localhost:8082' , 'http://127.0.0.1:8000', 'https://127.0.0.1:8083', 'http://127.0.0.1:8082' 
+    'https://127.0.0.1:8083', 'https://localhost:8083' 
 ]
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082', 'https://localhost:8083']
@@ -185,9 +183,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'authapi/static'),
 ]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

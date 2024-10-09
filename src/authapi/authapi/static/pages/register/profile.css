@@ -108,10 +108,11 @@ button, input, optgroup, select, textarea {
 .btn-profile {
 	width: 100%;
     border-radius: 12px;
-    font: 1.7rem oswald;
+    font: 1.5rem oswald;
+    text-align: center;
+
     color: #FFFBFC;
     border: unset;
-    text-align: center;
     padding: 1vh 1vw;
     background-color: #2E2C2F;
 }
@@ -281,4 +282,303 @@ button, input, optgroup, select, textarea {
     /* width: max-content; */
     /* margin-top: 1vh; */
     /* padding: 1vh 1vw; */
+}
+
+.form-friend-profile {
+    display: none;
+}
+
+.friend-avatar {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+    align-self: center;
+}
+
+.friend-card {
+    display: flex;
+    /* border: solid 1px; */
+    padding: 5px 15px;
+    margin-top: 10px;
+    border-radius: 9px;
+}
+
+.friend-username {
+    font-family: 'Oswald';
+    align-self: center;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.btn-friend-request{
+    font: 1rem oswald;
+    padding: 4px;
+    border: solid 1px;
+    /* height: 20px;
+    width: 20px; */
+    margin: 2%;
+    width: 45%;
+    align-self: center;
+    margin: 3px;
+    border-radius: 3px;
+}
+#accept {
+    color: #FFFBFC;
+    background-color: #2E2C2F;
+}
+
+#reject {
+    color: #2E2C2F;
+    background-color: #FFFBFC;
+    /* padding: 5px; */
+}
+
+.friend-request-buttons{
+    width: 100%;
+    display: flex;
+}
+
+.friend-requests {
+    /* line-height:3em; */
+    max-height: 40%;
+    overflow:auto;
+    direction: rtl;
+    /* padding:5px; */
+}
+
+.friend-request-scroll::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: unset ;
+    margin-top: 22px;
+    margin-bottom: 22px;
+}
+
+.friend-request-scroll::-webkit-scrollbar
+{
+	width: 9px;
+	/* background-color: #F5F5F5; */
+}
+
+.friend-request-scroll::-webkit-scrollbar-thumb
+{
+	border-radius: 4px;
+	background-color: #2E2C2F;
+}
+
+.friend-code {
+    margin: 5px;
+    padding: 3vw;
+}
+
+.btn-send-friend{
+    width: 100%;
+}
+
+#uuid {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.5rem;
+}
+
+.form-friend {
+    margin-top: 5vh;
+}
+
+.friend-label {
+    width: 100%;
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    font-family: oswald;
+}
+
+#fight {
+    visibility: hidden;
+    color: #FFFBFC;
+    background-color: #2E2C2F;
+}
+
+
+#unfriend {
+    color: #2E2C2F;
+    background-color: #FFFBFC;
+}
+
+.friends {
+    /* line-height:3em; */
+    max-height: 70%;
+    overflow:auto;
+    /* padding:5px; */
+}
+
+#friend-request {
+    margin-top: 1rem;
+}
+
+.loser-no-friends {
+    text-align: center;
+    font-family: 'OSWALD';
+    font-weight: 300;
+}
+
+.dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+    align-self: center;
+}
+
+.green-background {
+    background-color: #53917E;
+}
+
+.red-background {
+    background-color: #F08080;
+}
+
+.green-online {
+    color:#53917E;
+    font-size: 0.8rem;
+}
+
+.red-offline {
+    color: #F08080;
+    font-size: 0.8rem;
+}
+
+.match-history-card {
+    display: flex;
+    max-height: 9vh;
+    width: 100%;
+    padding: 1.2vh;
+    border-radius: 9px;
+    margin: 1vh 0;
+}
+
+.match-game-type-pong {
+    height: 5vh;
+    margin: 0.5vh;
+}
+
+.match-game-type-pong svg {
+    fill: #FFFBFC;
+}
+
+.match-users {
+    font: 1.4rem 'Oswald';
+    line-height: 1.2; 
+}
+
+.match-history-card-pong {
+    background-color: #53917E;
+}
+
+.match-history-card-sudoku {
+    background-color: #726DA8;
+}
+
+.match-information {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.match-history-win {
+    /* padding: 0.5vh 0.7vw; */
+    align-self: center;
+    border-radius: 7px;
+    color: #53917E;
+    font: 1.8rem 'Oswald';
+}
+
+
+.match-history-loss {
+    /* padding: 0.5vh 0.7vw; */
+    align-self: center;
+    border-radius: 7px;
+    color: #F08080;
+    font: 1.8rem 'Oswald';
+}
+
+.match-status-card{
+    background: #FFFBFC;
+    align-self: center;
+    width: 4vw;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.match-score {
+    font: 0.8rem 'Oswald';
+    margin-left: 0.1vw;
+}
+
+.match-player-info {
+    color:#FFFBFC;
+    margin-left: 1vw;
+}
+
+.scroll-match-history::-webkit-scrollbar
+{
+	width: 0px;
+	/* background-color: #F5F5F5; */
+}
+
+.scroll-match-history::-webkit-scrollbar-thumb
+{
+	border-radius: 4px;
+	background-color: none;
+}
+
+.scroll-match-history {
+    /* line-height:3em; */
+    max-height: 65vh;;
+    overflow:auto;
+    
+    /* padding:5px; */
+}
+
+.stats-card {
+    background: #2E2C2F;
+    color: #FFFBFC;
+    width: 100%;
+    padding: 1vh;
+    border-radius: 9px;
+    margin-bottom: 1vh;
+}
+
+.stats {
+    font: 1.5rem 'Oswald';
+    margin-bottom: 1vh;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-stats {
+    width: 100%;
+}
+
+.container-fluid {
+    padding: 2vh 20vw;
+}
+
+#fight:hover {
+    transition: 0.3s;
+    background-color: #FFFBFC;
+    color: #2E2C2F;
+}
+
+#unfriend:hover {
+    transition: 0.3s;
+    color: #FFFBFC;
+    background-color: #2E2C2F;
+}
+
+#friend-request:hover {
+    cursor: pointer;
 }

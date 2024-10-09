@@ -22,14 +22,19 @@ createdb -O $DATABASEUSER $MYDATABASE
 
 EOF
 
+
 python manage.py makemigrations
 
 echo "makemigrations done"
 
 python manage.py migrate
 
+# python manage.py collectstatic --noinput
+
 echo "migrate done"
 
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
+
+# iptables -A INPUT -p tcp --dport 8000 -j DROP  # Block access to port 8000
 
 python manage.py runserver 0.0.0.0:8001

@@ -4,8 +4,13 @@ from authapi.utils import CheckForTFA
 from . import views
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.static import serve
+import os
 
 urlpatterns = [
+    re_path(r'^auth/static/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'authapi/static'),}),
+    re_path(r'^auth/media/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'media/'),}),
+
 	path("admin/", admin.site.urls),
     re_path(r'^auth/login$', views.LoginForm.as_view(), name='login'),
     re_path(r'^auth/logout$', views.LogOut.as_view(), name='logout'),

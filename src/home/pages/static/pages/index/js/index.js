@@ -1,9 +1,14 @@
 
 // Import the Home view class
 import Home from "../views/home.js";
+import NotFound from "../views/404.js";
 import Login from "../views/login.js";
 import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
+import Pong from "../views/pong.js";
+import PongLobby from "../views/pong_lobby.js";
+import {vec2, paddle, ball, game, waitForSocketConnection, wsonmessage} from  "../pong/pong.js";
+import {eventPong, checkConnection} from "../pong/index.js";
 import Profile from "../views/profile.js";
 import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
@@ -17,6 +22,7 @@ import {logout} from "./logout.js"
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
 
 let UserToken = null;
+let TmpToken = null;
 var isLoaded = false;
 var inSudoku = false;
 let sudokuSocket = null;
@@ -27,20 +33,43 @@ function isEmptyOrWhitespace(str) {
 }
 
 
+async function checkValidity() {
+    if (await UserToken)
+        return ;
+    const token = getCookie("token")
+        
+    if (token != null){
+        console.log("renewing token");
+        UserToken = getRenewedToken(token)
+    }
+    if (await UserToken == null) {
+        console.log("annuling token");
+
+        eraseCookie("token");
+    }
+    // console.log("token: " + await UserToken);
+}
+
+checkValidity();
+
+
 window.addEventListener('beforeunload', function (event) {
     console.log("UNLOADING");
     logout(UserToken);
 });
 
+export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
+
+// Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
-    const values = match.result.slice(1);
-    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+	const values = match.result.slice(1);
+	const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
 
-    return Object.fromEntries(keys.map((key, i) => {
-        return [key, values[i]];
-    }));
+	return Object.fromEntries(keys.map((key, i) => {
+		return [key, values[i]];
+	}));
 };
 
 export const navigateTo = url => {
@@ -56,8 +85,6 @@ export const navigateToInstead = url => {
 function JSONItirator(form) {
     const valuesArray = [];
     
-    console.log(form);
-
     if (form.success)
         return;
     for(const key in form) {
@@ -122,6 +149,8 @@ function VerificationEvent(verification, token) {
         event.preventDefault();
         if (event.target.id == 'form-otp') {
             // console.log("VerificationForm: ", event.target);
+            const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            verification.csrfToken = csrf.value;
             const otp = document.querySelector('input[name="otp"]');
             const status = verification.verifactionUser(otp, token);
             return checkOTP(status, token);
@@ -143,21 +172,23 @@ function hidePopstate() {
     if (clickOff) clickOff.style.filter = 'none';
 }
 
-
 const router = async () => {
+  
     ("Router function called");
     const routes = [
+        { path: '/404/', view: NotFound },
         { path: "/", view: Home },
         { path: "/login/", view: Login },
         { path: "/profile/", view: Profile },
         { path: "/register/", view: Register },
         { path: "/sudoku/", view: Sudoku },
         { path: "/sudoku/waiting-room", view: SudokuWaiting },
-		{ path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby }
+        { path: '/sudoku/[A-Za-z0-9]{10}/', view: SudokuLobby },
+        { path: "/pong/", view: Pong },
+        { path: '/pong/[A-Za-z0-9]{10}/', view: PongLobby }
         // { path: "/signup/", view: () => console.log("Viewing signup")},
     ];
-    
-    
+        
     const potentialMatches = routes.map(route => {
         return {
             route: route,
@@ -166,7 +197,6 @@ const router = async () => {
     });
 
     let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
-
     if (!match) {
         match = {
             route: routes[0],
@@ -208,15 +238,18 @@ const router = async () => {
     }
 
     async function VerificationRoute(tempToken) {
-        const verification = new Verification();
+        var verification = new Verification();
         const token = await tempToken;
+        TmpToken = token;
         if (token === null)
             return ;
         const navStatus = await navigateToOTP(verification, token);
-        UserToken = token
+        console.log(navStatus);
+        // UserToken = token
         if (navStatus == 1) {
             if (VerificationEvent(verification, token));
             return ;
+            
         }
         else if (navStatus == 2) {
             navigateAfterPost(token);
@@ -236,9 +269,14 @@ const router = async () => {
 
         if (IsCorrect)
         {
+            console.log(isOTP);
+            console.log(IsCorrect);
             // console.log(isOTP);
-            if (isOTP && isOTP.otp)
+            if (isOTP)
+            {
+                console.log("navigating to profile");
                 navigateTo("/profile/")
+            }
             return true;
         }
         return false;
@@ -290,7 +328,6 @@ const router = async () => {
             navigateAfterPost(UserToken);
         });
 
-
     } else if (match.route.path == "/login/") {
                                                                             // LOGIN    sends credentials to authapi, and gets verification if user has verification finally sends the code inpiuted by the user also adds a cookie with token
 
@@ -318,16 +355,16 @@ const router = async () => {
                 const avatar = document.querySelector('input[name="avatar"]');
                 const to_user = document.querySelector('input[name="to_user"]');
                 if ('btn-profile-update' == event.submitter.id) {
-                    FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)))
+                    FollowingProfile(checkForm(view.profileUserPatch(UserToken, username, avatar)), true);
                 } else if (event.submitter.id == 'accept' || event.submitter.id == 'reject') {
                     if (event.submitter.id == 'accept')
-                        FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value))
+                        FollowingProfile(view.friendRequest(UserToken, true,  event.submitter.value), true);
                     else
-                        FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value))
+                        FollowingProfile(view.friendRequest(UserToken, false,  event.submitter.value), true);
                 } else if (event.submitter.id == 'friend-form') {
                     friendRequestCheck(view.sendFriendRequest(UserToken, to_user));
                 } else if (event.submitter.id == 'unfriend') {
-                    FollowingProfile(view.deleteFriend(UserToken, event.submitter));
+                    FollowingProfile(view.deleteFriend(UserToken, event.submitter), true);
                     navigateTo("/profile/")
                 } else {
                     const email = document.querySelector('input[name="email"]');
@@ -350,6 +387,62 @@ const router = async () => {
 		if (!inSudoku)
 			navigateTo("/sudoku/");
 		initialize();
+	} else if (match.route.path == "/pong/") {
+		await checkConnection();
+		eventPong(view);
+
+	} else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
+		await checkConnection();
+		var socketProtocol = 'ws://';
+		console.log(window.location.protocol);
+		if (window.location.protocol === 'https:')
+		{
+			console.log('protocol https');
+			socketProtocol = 'wss://';
+		}
+
+		const roomSocket = new WebSocket(
+			socketProtocol
+			+ window.location.host
+			+ '/ws'
+			+ window.location.pathname
+		);
+		await waitForSocketConnection(roomSocket);
+
+		console.log('my game is ready: ', myGame.gameState);
+
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth * 0.8;
+		canvas.height = window.innerHeight * 0.7;
+		roomSocket.onmessage = function (e)
+		{
+			const data = JSON.parse(e.data);
+			if (data.type === "fin du compte")
+			{
+				myGame.gameState = "playing";
+			}
+			wsonmessage(data, roomSocket, canvas, ctx);
+		};
+
+		roomSocket.onclose = function (e)
+		{
+			console.error('Chat socket closed unexpectedly');
+		};
+
+		let starttime = Date.now();
+		while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
+		{	
+			let elapstime = Date.now() - starttime;
+			console.log("time: ",elapstime);
+			if (elapstime > 1000 / 60)
+			{
+				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
+				starttime += 1000 / 60;
+				console.log(".");
+			}
+			await new Promise(r => setTimeout(r, 2));
+		}
 	}
 
 	displayUser();
@@ -374,8 +467,7 @@ async function displayUser()
         }
         
     };
-
-    const response = await fetch('https://localhost:8083/auth/test_token', options);
+    const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
     if (!response.ok)
     {
         eraseCookie("token");
@@ -392,7 +484,7 @@ async function displayUser()
         <div class="art-marg"></div>
         <div class="disconnect" id="disconnect">Log out</div>
         ${profileButton}
-    </div>`;
+        </div>`;
     }
 }
 
@@ -402,6 +494,8 @@ window.addEventListener("popstate", router);
 // Listen for DOMContentLoaded event and trigger router
 document.addEventListener("DOMContentLoaded", () => {
     //Loader
+    // checkValidity();
+
     console.log("DOM loading")
 
     const handleHomePageLoad = () => {
@@ -415,7 +509,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (loader)
                 document.querySelector('.loader').style.display = 'block';
             console.log("Display swicthed")
-        },40);
+        },200);
         
         
         setTimeout(function() {
@@ -427,10 +521,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (app)
                 document.querySelector('#app').style.display = 'block';
             isLoaded = true;
-        },1000);
+        },1200);
     };
     
     handleHomePageLoad();
+    router();
+
 //fin Loader
 
     document.addEventListener('click', function(event) {
@@ -467,7 +563,14 @@ document.addEventListener("DOMContentLoaded", () => {
         {
             eraseCookie("token");
             UserToken = logout(UserToken);
-            document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+            if (window.location.pathname === '/')
+                {
+                    document.getElementById('user').outerHTML = '<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>';
+                }
+                else
+                {
+                    navigateTo('/');
+                }
         } else if (event.target.matches('#profile')) {
             navigateTo('/profile/');
         }
@@ -500,6 +603,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const verification = new Verification();
             verification.LastCheckAddVerification(UserToken);
         }
+        if (event.target.matches('.code-btn')) {
+            const verification = new Verification();
+            verification.LastCheckAddVerification(TmpToken);
+        }
     });
-    router();
+
 });
