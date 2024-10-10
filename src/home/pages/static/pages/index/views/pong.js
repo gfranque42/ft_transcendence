@@ -1,5 +1,6 @@
 import abstractviews from "./abstractviews.js";
 import {Start} from "../pong/index.js";
+import {DNS} from "../js/dns.js";
 
 export let csrfToken = null;
 

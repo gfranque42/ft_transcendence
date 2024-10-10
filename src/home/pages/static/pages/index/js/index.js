@@ -17,9 +17,11 @@ import SudokuWaiting from "../views/waiting_sudoku.js";
 import { initialize } from "./sudoku/sudoku.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
-import {getRenewedToken} from "./token.js"
-import {logout} from "./logout.js"
+import {getRenewedToken} from "./token.js";
+import {logout} from "./logout.js";
 import {setCookie, getCookie, eraseCookie} from "./cookie.js";
+
+import {DNS} from "./dns.js";
 
 let UserToken = null;
 let TmpToken = null;
@@ -481,7 +483,7 @@ async function displayUser()
         }
         
     };
-    const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
+    const response = await fetch('https://'+DNS+':8083/auth/test_token?request_by=Home', options);
     if (!response.ok)
     {
         eraseCookie("token");

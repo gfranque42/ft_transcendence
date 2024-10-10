@@ -1,4 +1,5 @@
 import abstractviews from "./abstractviews.js";
+import {DNS} from "../js/dns.js";
 
 export let csrfToken = null;
 

@@ -1,5 +1,6 @@
 import abstractviews from "./abstractviews.js";
 import {navigateToInstead} from "../js/index.js";
+import {DNS} from "../js/dns.js";
 
 
 import {setCookie, getCookie, eraseCookie} from "../js/cookie.js";
@@ -23,7 +24,7 @@ export default class extends abstractviews {
             return ;
         }
 
-        const response = await fetch('https://localhost:8083/sudokubattle/?request_by=Home');
+        const response = await fetch('https://'+DNS+':8083/sudokubattle/?request_by=Home');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
