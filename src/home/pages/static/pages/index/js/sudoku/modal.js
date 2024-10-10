@@ -1,3 +1,5 @@
+import { navigateTo } from "../index.js";
+
 // TODO: Change the modal to have a play again button and a go back to lobby button
 export function showModal(timeUsed, winningUser, currentUser) {
 	const modal = document.getElementById("game-result-modal");
@@ -28,10 +30,6 @@ export function showModal(timeUsed, winningUser, currentUser) {
 	};
 
 	document.getElementById("play-again").onclick = function() {
-		window.location.href = "https://localhost:8083/sudoku/";  // Redirect to the lobby page
+		navigateTo('/sudoku/');
 	};
 }
-
-// Example usage when the game is finished
-// showModal(true, "12:34", "10:00"); // If player won
-// showModal(false, "15:00", "12:34"); // If player lost
