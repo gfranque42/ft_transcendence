@@ -11,8 +11,9 @@ let gameended = false;
 let sudokuSocket = null;
 let adversary = null;
 let multiplayer = false;
+let roomName = null;
 
-export function initializeWebSocket(roomName) {
+export function initializeWebSocket() {
 	console.log('initializing websocket');
 	if (!roomName) {
 		console.error("Room name is not provided!");
@@ -75,6 +76,10 @@ function handleSocketMessage(e) {
 			const winningUser = data.winner || "N/A";
 			const winningId = data.winner_id;
 
+			if (window.location.pathname !== `/sudoku/${roomName.value}/`) {
+				console.log('wrong location???');
+				return;
+			}
 			showModal(timeUsed, winningUser, currentUser);
 			if (currentUser === winningUser && data.multiplayer === true) {
 				const losingId = data.loser_id;
@@ -100,7 +105,7 @@ function handleSocketMessage(e) {
 
 export async function initialize() {
 
-	const roomName = document.getElementById('room-name');
+	roomName = document.getElementById('room-name');
 	console.log(`inirialize`);
 	const userInfo = await getUser();
 	if (userInfo.expired) {
@@ -111,7 +116,7 @@ export async function initialize() {
 	if (!roomName)
 		return;
 	
-	sudokuSocket = initializeWebSocket(roomName);
+	sudokuSocket = initializeWebSocket();
 	currentUser = userInfo.Username;
 
 	console.log('sudokuSocket: ', sudokuSocket);
@@ -121,7 +126,6 @@ export async function initialize() {
 
 	window.addEventListener('popstate', function (event) {
 		if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/?request_by=Home`) {
-
 			if (sudokuSocket) {
 				sudokuSocket.send(JSON.stringify({
 					'type': 'user_left',
@@ -129,6 +133,7 @@ export async function initialize() {
 					'adversary': adversary || ''
 				}));
 			}
+			stopTimer();
 		}
 	});
 
@@ -142,6 +147,7 @@ export async function initialize() {
 					'adversary': adversary || ''
 				}));
 			}
+			stopTimer();
 			sudokuSocket.close();
 			//navigateTo('/sudoku/');
 		}
