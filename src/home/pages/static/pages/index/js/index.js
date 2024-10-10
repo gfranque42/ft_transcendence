@@ -554,7 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
 //fin Loader
 
     document.addEventListener('click', function(event) {
-        if (event.target.matches('a[data-link]')) {
+        if (event.target.matches('[data-link]')) {
+            console.log("data-link clicked");
             event.preventDefault();
             navigateTo(event.target);
         }

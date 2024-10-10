@@ -1,1 +1,1 @@
-export const DNS='made-f0Ar6s3';
+export const DNS='made-f0Cr8s4';
