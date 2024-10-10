@@ -105,7 +105,7 @@
         <div class="col-sm">
             <form method="POST" class="form-profile">
                 <div style="display: flex;">
-                    <img src="https://localhost:8083/auth{{ user.avatar.url }}?request_by=Home" alt="User Avatar" class="avatar">
+                    <img src="https://{{ DNS }}:8083/auth{{ user.avatar.url }}?request_by=Home" alt="User Avatar" class="avatar">
                     
                     {% csrf_token %}
                     {{ formAvatar.avatar }}
@@ -204,7 +204,7 @@
                 </div>
 
                 <form class="friend-card">
-                    <img src="https://localhost:8083/auth{{ stats.0.rival.user.avatar.url }}?request_by=Home" alt="{{ stats.0.rival.user.user.username }}'s avatar" class="friend-avatar" />
+                    <img src="https://{{ DNS }}:8083/auth{{ stats.0.rival.user.avatar.url }}?request_by=Home" alt="{{ stats.0.rival.user.user.username }}'s avatar" class="friend-avatar" />
                     <div style="width:100%">
                         <div class="d-flex justify-content-between">
                             <div class="friend-username">{{ stats.0.rival.user }}</div>
@@ -242,7 +242,7 @@
                 
                 
                 <form class="friend-card">
-                    <img src="https://localhost:8083/auth{{ item.friend.avatar.url }}?request_by=Home" alt="{{ item.friend.from_user.user.username }}'s avatar" class="friend-avatar" />
+                    <img src="https://{{ DNS }}:8083/auth{{ item.friend.avatar.url }}?request_by=Home" alt="{{ item.friend.from_user.user.username }}'s avatar" class="friend-avatar" />
                     <div style="width:100%">
                         <div class="d-flex justify-content-between">
                             <div class="friend-username">{{ item.friend }}</div>
@@ -287,7 +287,7 @@
                                 <button id="accept" type="submit" value="{{item.from_user.user.id}}" class="btn-friend-request btn-login">Accept</button>
                             </div>
                         </div>
-                        <img src="https://localhost:8083/auth{{ item.from_user.avatar }}?request_by=Home" alt="{{ item.from_user.user.username }}'s avatar" class="friend-avatar" />
+                        <img src="https://{{ DNS }}:8083/auth{{ item.from_user.avatar }}?request_by=Home" alt="{{ item.from_user.user.username }}'s avatar" class="friend-avatar" />
                     <!-- </div> -->
                 </form>
                 {% endfor %}
