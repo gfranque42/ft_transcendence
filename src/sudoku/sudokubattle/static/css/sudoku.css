@@ -14,9 +14,9 @@ body {
 #board {
 	display: grid;
 	grid-template-columns: repeat(9, 1fr);
-	width: 90vw; /* Set width to viewport percentage to make it responsive */
-	max-width: 600px; /* Limit maximum size to keep grid manageable on large screens */
-	margin: 0 auto;
+	width: 85vw; /* Set width to viewport percentage to make it responsive */
+	max-width: 500px; /* Limit maximum size to keep grid manageable on large screens */
+	margin: 1vh auto 0;
 	z-index: 1;
 	aspect-ratio: 1; /* Maintain a 1:1 ratio for a perfect square */
 }
@@ -77,7 +77,7 @@ body {
 .number {
 	width: calc(100% / 9 - 4px);
 	margin: 2px;
-	height: 40px;
+	height: 60px;
 	border: 2px solid #fffbfc;
 	font-size: 1.5em;
 	color: #ffffff;

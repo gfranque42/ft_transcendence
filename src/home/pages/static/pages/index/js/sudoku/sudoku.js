@@ -124,32 +124,63 @@ export async function initialize() {
 		sudokuSocket.onmessage = handleSocketMessage;
 	}
 
-	window.addEventListener('popstate', function (event) {
-		if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/?request_by=Home`) {
-			if (sudokuSocket) {
-				sudokuSocket.send(JSON.stringify({
-					'type': 'user_left',
-					'username': currentUser,
-					'adversary': adversary || ''
-				}));
+	document.addEventListener("DOMContentLoaded", function () {
+		const homeButton = document.getElementById("home");
+	
+		homeButton.addEventListener("click", function (event) {
+			const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
+			if (!confirmation) {
+				event.preventDefault();
 			}
-			stopTimer();
+			else {
+				if (sudokuSocket) {
+					sudokuSocket.send(JSON.stringify({
+						'type': 'user_left',
+						'username': currentUser,
+						'adversary': adversary || ''
+					}));
+				}
+				stopTimer();
+			}
+		});
+	});
+
+	window.addEventListener('popstate', function (event) {
+		const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
+		if (!confirmation) {
+			event.preventDefault();
+		}
+		else {
+			if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/?request_by=Home`) {
+				if (sudokuSocket) {
+					sudokuSocket.send(JSON.stringify({
+						'type': 'user_left',
+						'username': currentUser,
+						'adversary': adversary || ''
+					}));
+				}
+				stopTimer();
+			}
 		}
 	});
 
 	window.addEventListener('beforeunload', function (event) {
-		if (roomName) {
-			if (sudokuSocket) {
-				// navigateTo('/sudoku/');
-				sudokuSocket.send(JSON.stringify({
-					'type': 'user_left',
-					'username': currentUser,
-					'adversary': adversary || ''
-				}));
+		const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
+		if (!confirmation) {
+			event.preventDefault();
+		}
+		else {
+			if (roomName) {
+				if (sudokuSocket) {
+					sudokuSocket.send(JSON.stringify({
+						'type': 'user_left',
+						'username': currentUser,
+						'adversary': adversary || ''
+					}));
+				}
+				stopTimer();
+				sudokuSocket.close();
 			}
-			stopTimer();
-			sudokuSocket.close();
-			//navigateTo('/sudoku/');
 		}
 	});
 }
