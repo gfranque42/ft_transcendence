@@ -51,8 +51,8 @@ a:hover {
 .index-sudoku {
     transition: transform 0.3s ease, margin 0.3s ease; /* Smooth transition */
     /* transition: margin 0.3s ease; Smooth transition */
-    margin: -15vh -2vw;
-} */
+    /* margin: -15vh -2vw;
+}  */
 
 .scaled-sudoku {
     /* transition: transform 0.3s ease, margin 0.3s ease; Smooth transition */

@@ -51,8 +51,8 @@ a:hover {
 .index-sudoku {
     transition: transform 0.3s ease, margin 0.3s ease; /* Smooth transition */
     /* transition: margin 0.3s ease; Smooth transition */
-    margin: -15vh -2vw;
-} */
+    /* margin: -15vh -2vw;
+} */ */
 
 .scaled-sudoku {
     /* transition: transform 0.3s ease, margin 0.3s ease; Smooth transition */
@@ -105,9 +105,9 @@ a:hover {
     margin-right: 5vw;
 }
 
-.navbar{
+/* .navbar{
     width: 100%;
-}
+} */
 
 .art-marg {
     height: 2vh;
