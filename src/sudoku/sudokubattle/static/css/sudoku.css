@@ -1,107 +1,111 @@
 * {
 	box-sizing: border-box;
-  }
-   
-  body {
+}
+
+body {
 	font-family: Arial, Helvetica, sans-serif;
 	text-align: center;
 	background-color: #585481;
 	color: #fffbfc;
-  }
-   
-  #board {
+	margin: 0;
+	padding: 0;
+}
+
+#board {
 	display: grid;
 	grid-template-columns: repeat(9, 1fr);
-	width: 90vw;
-	max-width: 500px;
+	width: 90vw; /* Set width to viewport percentage to make it responsive */
+	max-width: 600px; /* Limit maximum size to keep grid manageable on large screens */
 	margin: 0 auto;
 	z-index: 1;
-  }
-   
-  /* Default tile borders */
-  .tile {
-	border: 1px solid #c1bde9;
+	aspect-ratio: 1; /* Maintain a 1:1 ratio for a perfect square */
+}
+
+/* Default tile borders */
+.tile {
+	border: 1px solid #fffbfc;
 	background-color: #a19cd6;
 	color: #fffbfc;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 2em;
-  }
-   
-  /* Thicker left border for column 1 */
-  .tile:nth-child(9n + 1) {
+	font-size: calc(1.5vw + 10px); /* Use viewport-based font size to make it responsive */
+	aspect-ratio: 1; /* Ensure each tile is a perfect square */
+}
+
+/* Thicker left border for column 1 */
+.tile:nth-child(9n + 1) {
 	border-left-width: 3px;
-  }
-   
-  /* Thicker right borders for columns 3 and 6 */
-  .tile:nth-child(9n + 3),
-  .tile:nth-child(9n + 6) {
+}
+
+/* Thicker right borders for columns 3 and 6 */
+.tile:nth-child(9n + 3),
+.tile:nth-child(9n + 6) {
 	border-right-width: 3px;
-  }
-   
-  /* Thicker right border for column 9 */
-  .tile:nth-child(9n) {
+}
+
+/* Thicker right border for column 9 */
+.tile:nth-child(9n) {
 	border-right-width: 3px;
-  }
-   
-  /* Thicker top border for row 1 */
-  .tile:nth-child(-n + 9) {
+}
+
+/* Thicker top border for row 1 */
+.tile:nth-child(-n + 9) {
 	border-top-width: 3px;
-  }
-   
-  /* Thicker bottom borders for rows 3 and 6 */
-  .tile:nth-child(n + 19):nth-child(-n + 27),
-  .tile:nth-child(n + 46):nth-child(-n + 54) {
+}
+
+/* Thicker bottom borders for rows 3 and 6 */
+.tile:nth-child(n + 19):nth-child(-n + 27),
+.tile:nth-child(n + 46):nth-child(-n + 54) {
 	border-bottom-width: 3px;
-  }
-   
-  /* Thicker bottom border for row 9 */
-  .tile:nth-child(n + 73) {
+}
+
+/* Thicker bottom border for row 9 */
+.tile:nth-child(n + 73) {
 	border-bottom-width: 3px;
-  }
-   
-  #digits {
+}
+
+#digits {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
 	width: 90vw;
-	max-width: 500px;
+	max-width: 600px;
 	margin: 20px auto;
-  }
-   
-  .number {
+}
+
+.number {
 	width: calc(100% / 9 - 4px);
 	margin: 2px;
 	height: 40px;
 	border: 2px solid #fffbfc;
 	font-size: 1.5em;
-	color: #fffbfc;
+	color: #ffffff;
 	background-color: #726da8;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	border-radius: 15%;
 	cursor: pointer;
-  }
-   
-  .number-selected {
+}
+
+.number-selected {
 	background-color: gray;
-  }
-   
-  .tile-start {
+}
+
+.tile-start {
 	background-color: #726da8;
-  }
-   
-  .tile-selected {
-	background-color: #ffd700;
-  }
-   
-  .tile-highlight {
-	background-color: #d3d3d3;
-  }
-   
-  .modal {
+}
+
+.tile-selected {
+	background-color: #575380;
+}
+
+.tile-highlight {
+	background-color: #c69fcb;
+}
+
+.modal {
 	display: none;
 	position: fixed;
 	z-index: 1000;
@@ -111,9 +115,9 @@
 	height: 100%;
 	overflow: auto;
 	background-color: rgba(0, 0, 0, 0.4);
-  }
-   
-  .modal-content {
+}
+
+.modal-content {
 	color: #fffbfc;
 	background-color: #726da8;
 	margin: 15% auto;
@@ -122,35 +126,35 @@
 	width: 80%;
 	max-width: 400px;
 	text-align: center;
-  }
-   
-  .close {
+}
+
+.close {
 	color: #aaa;
 	float: right;
 	font-size: 28px;
 	font-weight: bold;
-  }
-   
-  .close:hover,
-  .close:focus {
+}
+
+.close:hover,
+.close:focus {
 	color: black;
 	text-decoration: none;
 	cursor: pointer;
-  }
-   
-  #play-again {
+}
+
+#play-again {
 	padding: 10px 20px;
 	background-color: #585481;
 	color: white;
 	border: none;
 	cursor: pointer;
-  }
-   
-  #play-again:hover {
+}
+
+#play-again:hover {
 	background-color: #c1bde9;
-  }
-   
-  footer {
+}
+
+footer {
 	position: fixed;
 	bottom: 0;
 	left: 0;
@@ -159,9 +163,9 @@
 	text-align: left;
 	font-family: "Oswald", sans-serif;
 	z-index: 0;
-  }
-   
-  .background-text {
+}
+
+.background-text {
 	position: fixed;
 	bottom: -6%;
 	left: 0;
@@ -173,9 +177,9 @@
 	margin: 0;
 	padding: 0;
 	text-align: left;
-  }
-   
-  .header-band {
+}
+
+.header-band {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -184,22 +188,22 @@
 	color: #fffbfc;
 	font-family: "Oswald", sans-serif;
 	font-size: 2.5vw;
-  }
-   
-  .header-band .left,
-  .header-band .center,
-  .header-band .right {
+}
+
+.header-band .left,
+.header-band .center,
+.header-band .right {
 	flex: 1;
-  }
-   
-  .header-band .center {
+}
+
+.header-band .center {
 	text-align: center;
-  }
-   
-  .header-band .left {
+}
+
+.header-band .left {
 	text-align: left;
-  }
-   
-  .header-band .right {
+}
+
+.header-band .right {
 	text-align: right;
-  }
+}
