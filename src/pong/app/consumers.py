@@ -18,6 +18,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
 		self.room_group_name = "pong_%s" % self.room_name
 		self.username = None
+		self.tournament = False
+		self.tournamentRoom = False
 
 		print(self.room_name,": connection en cours",flush=True)
 
@@ -28,31 +30,48 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			# 	return
 			# Join room group
 			await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-			print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
-			if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
-				await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
-				await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
-			if gRoomsManager.rooms[self.room_name].channelLayer == None:
-				gRoomsManager.rooms[self.room_name].channelLayer = get_channel_layer()
-				gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
-				gRoomsManager.rooms[self.room_name].channelName = self.channel_name
-			await self.accept()
-			await self.send(text_data=json.dumps({"type": "connected"}))
+			if self.room_name == gTournament.lobbyRoom.roomName:
+				self.tournament = True
+				if gTournament.lobbyRoom.roomName == None:
+					gTournament.lobbyRoom.channelLayer = get_channel_layer()
+					gTournament.lobbyRoom.roomGroupName = self.room_group_name
+					gTournament.lobbyRoom.channelName = self.channel_name
+				await self.accept()
+			else:
+				print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
+				if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
+					await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
+					await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
+				if gRoomsManager.rooms[self.room_name].channelLayer == None:
+					gRoomsManager.rooms[self.room_name].channelLayer = get_channel_layer()
+					gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
+					gRoomsManager.rooms[self.room_name].channelName = self.channel_name
+				await self.accept()
+				await self.send(text_data=json.dumps({"type": "connected"}))
 		except Exception as e:
 			print(self.room_name,": error: ",e,flush=True)
 			self.close()
 
 	async def disconnect(self, close_code):
-		if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].ready == False:
-			try:
-				await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
-			except Exception as e:
-				print(self.room_name,": error: ",e,flush=True)
-		# Leave room group
-		if gRoomsManager.rooms[self.room_name].thread and self.username and gRoomsManager.rooms[self.room_name].players[0] == self.username and gRoomsManager.rooms[self.room_name].finish == True:
-			gRoomsManager.rooms[self.room_name].thread.join()
+		if self.tournament == True:
+			if self.username:
+				await gTournament.lobbyRoom.removePlayer(self.username)
+		elif self.tournamentRoom == True:
+			if self.username:
+				await gTournament.rooms[self.room_name].removePlayer(self.username)
+				await self.channel_layer.group_send(
+								self.room_group_name, {"type": "quit", "message": "quitting", "left": self.username})
+		else:
+			if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].ready == False:
+				try:
+					await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
+				except Exception as e:
+					print(self.room_name,": error: ",e,flush=True)
+			# Leave room group
 			await self.channel_layer.group_send(
-							self.room_group_name, {"type": "quit", "message": "quitting"})
+							self.room_group_name, {"type": "quit", "message": "quitting", "left": self.username})
+			if gRoomsManager.rooms[self.room_name].thread and self.username and gRoomsManager.rooms[self.room_name].players[0] == self.username and gRoomsManager.rooms[self.room_name].finish == True:
+				gRoomsManager.rooms[self.room_name].thread.join()
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	# Receive message from WebSocket
@@ -63,30 +82,56 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		if type_data == "username":
 			self.username = text_data_json["username"]
 			self.id = text_data_json["id"]
-			if gRoomsManager.rooms[self.room_name].partyType != 4:
+			if self.tournament == True:
 				try:
-					await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
-					if gRoomsManager.rooms[self.room_name].partyType > 0 and gRoomsManager.rooms[self.room_name].partyType < 4:
-						await gRoomsManager.rooms[self.room_name].addPlayer("AI")
-						gRoomsManager.rooms[self.room_name].paddleR.ai = gRoomsManager.rooms[self.room_name].partyType
+					await gTournament.lobbyRoom.addPlayer(self.username)
 				except Exception as e:
 					print(self.username,": error: ",e,flush=True)
-					self.close()
-					# say to the front goodbye
-				if gRoomsManager.rooms[self.room_name].ready == True:
+					await self.close()
+				if gTournament.lobbyRoom.ready == True:
+					# await self.channel_layer.group_send(
+					# self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
+					gTournament.start()
+					print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
+			elif self.tournamentRoom == True:
+				try:
+					await gTournament.rooms[self.room_name].addPlayer(self.username)
+				except Exception as e:
+					print(self.username,": error: ",e,flush=True)
+					await self.close()
+				if gTournament.rooms[self.room_name].ready == True:
 					await self.channel_layer.group_send(
 					self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
-					await gRoomsManager.rooms[self.room_name].start()
+					gTournament.rooms[self.room_name].start()
 					print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
 			else:
-				await self.channel_layer.group_send(
-					self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
-				await gRoomsManager.rooms[self.room_name].start()
-				print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
+				if gRoomsManager.rooms[self.room_name].partyType != 4:
+					try:
+						await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
+						if gRoomsManager.rooms[self.room_name].partyType > 0 and gRoomsManager.rooms[self.room_name].partyType < 4:
+							await gRoomsManager.rooms[self.room_name].addPlayer("AI")
+							gRoomsManager.rooms[self.room_name].paddleR.ai = gRoomsManager.rooms[self.room_name].partyType
+					except Exception as e:
+						print(self.username,": error: ",e,flush=True)
+						await self.close()
+						# say to the front goodbye
+					if gRoomsManager.rooms[self.room_name].ready == True:
+						await self.channel_layer.group_send(
+						self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
+						await gRoomsManager.rooms[self.room_name].start()
+						print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
+				else:
+					await self.channel_layer.group_send(
+						self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
+					await gRoomsManager.rooms[self.room_name].start()
+					print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
 		elif type_data == "ping":
 			print('ping recu !:',text_data,flush=True)
 			print('ping recu !:',text_data_json,flush=True)
-			gRoomsManager.rooms[self.room_name].updateData(text_data_json, self.username)
+			if self.tournamentRoom == True:
+				gTournament.rooms[self.room_name].updataData(text_data_json, self.username)
+			else:
+				gRoomsManager.rooms[self.room_name].updateData(text_data_json, self.username)
 
 	# Receive message from room group
 	async def gameUpdate(self, event):
@@ -112,12 +157,42 @@ class	PongConsumer(AsyncWebsocketConsumer):
 										 "message": "fin du compte",
 			}))
 		elif (message == "ready for playing"):
-			await self.send(text_data=json.dumps({"type": "ready for playing", "message": "ready for playing",
+			if self.tournament == False and self.tournamentRoom == False:
+				await self.send(text_data=json.dumps({"type": "ready for playing", "message": "ready for playing",
 										"player1Name": gRoomsManager.rooms[self.room_name].players[0],
 										"player2Name": gRoomsManager.rooms[self.room_name].players[1],}))
+			elif self.tournamentRoom == True:
+				await self.send(text_data=json.dumps({"type": "ready for playing", "message": "ready for playing",
+										"player1Name": gTournament.rooms[self.room_name].players[0],
+										"player2Name": gTournament.rooms[self.room_name].players[1],}))
+
+	async def tournament(self, event):
+		print("From Tournament: ",event["numberOfRooms"]," number of rooms",flush=True)
+		roomKey = ""
+		for key, value in event.item():
+			if value == self.username:
+				roomKey = key
+				break
+		roomKey = roomKey[:-1]
+		print("roomKey: ",roomKey,flush=True)
+		await self.send(text_data=json.dumps({
+			"type": "tournament",
+			"message": "redirect",
+			"url": roomKey
+		}))
 
 	async def quit(self, event):
 		print(self.username, ': bisous de quit', flush=True)
 		message = event["message"]
-		await self.send(text_data=json.dumps({"type": "end game", "message": message}))
+		if self.tournamentRoom == True and gTournament.rooms[self.room_name].inGame == True:
+			if gTournament.rooms[self.room_name].players[0] == event["left"]:
+				gTournament.rooms[self.room_name].scoreR = 5
+			else:
+				gTournament.rooms[self.room_name].scoreL = 5
+		else:
+			if gRoomsManager.rooms[self.room_name].players[0] == event["left"]:
+				gRoomsManager.rooms[self.room_name].scoreR = 5
+			else:
+				gRoomsManager.rooms[self.room_name].scoreL = 5
+		# await self.send(text_data=json.dumps({"type": "end game", "message": message}))
 		await self.close()

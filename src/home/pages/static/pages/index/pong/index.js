@@ -228,6 +228,8 @@ async function checkRoom(options, gameMode)
 export async	function Start(csrftoken, url)
 {
 	checkConnection();
+	const result = document.getElementById("url");
+	const tournamentUrl = result.textContent
 	if (gameMode == -1)
 		return ;
 	let maxPlayers = 1;
@@ -237,6 +239,8 @@ export async	function Start(csrftoken, url)
 		maxPlayers = 0;
 	let roomExist = 0;
 	let roomUrl = generateRandomUrl();
+	if (gameMode == 5)
+		roomUrl = tournamentUrl;
 	try
 	{
 		const cookie = getCookie('token');
@@ -265,38 +269,42 @@ export async	function Start(csrftoken, url)
 		difficulty: gameMode,
 		maxPlayers: maxPlayers,
 	};
-	try
+	console.log("tournament url: ",tournamentUrl);
+	if (gameMode != 5)
 	{
-		if (roomExist == 0)
+		try
 		{
-			getCookie('token');
-			// console.log('dns: ', dns);
-			const fetchurl = 'https://localhost:8083/api_pong/postroom/';
-			// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-			console.log('fetchurl: ', fetchurl);
-			const response = await fetch(fetchurl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': csrftoken,
-				},
-				body: JSON.stringify(roomData),
-			});
-			if (response.ok)
+			if (roomExist == 0)
 			{
-				const responseData = await response.json();
-				console.log('Room created: ', responseData);
-			}
-			else
-			{
-				console.error('Failed to create a room: ', response.statusText);
+				getCookie('token');
+				// console.log('dns: ', dns);
+				const fetchurl = 'https://localhost:8083/api_pong/postroom/';
+				// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+				console.log('fetchurl: ', fetchurl);
+				const response = await fetch(fetchurl, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrftoken,
+					},
+					body: JSON.stringify(roomData),
+				});
+				if (response.ok)
+				{
+					const responseData = await response.json();
+					console.log('Room created: ', responseData);
+				}
+				else
+				{
+					console.error('Failed to create a room: ', response.statusText);
+				}
 			}
 		}
-	}
-	catch (error)
-	{
-		console.error('Error: ',error);
-		return ;
+		catch (error)
+		{
+			console.error('Error: ',error);
+			return ;
+		}
 	}
 	console.log("Start !");
 	const link = document.createElement('a');

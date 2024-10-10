@@ -23,6 +23,15 @@ export class paddle
 		this.dir = 0;
 	};
 
+	reset()
+	{
+		this.pos.x = -5;
+		this.pos.y = -5;
+		this.size.x = 2;
+		this.size.y = 2;
+		this.dir = 0;
+	}
+
 	update(paddlecx, paddlecy, paddlesx, paddlesy, paddledy)
 	{
 		this.pos.update(paddlecx, paddlecy);
@@ -51,6 +60,16 @@ export class ball
 		this.size = size;
 		this.dir = dir;
 	};
+
+	reset()
+	{
+		this.pos.x = -5;
+		this.pos.y = -5;
+		this.size.x = 2;
+		this.size.y = 2;
+		this.dir.x = 0;
+		this.dir.y = 0;
+	}
 
 	update(ballcx, ballcy, ballsx, ballsy, balldx, balldy)
 	{
@@ -88,6 +107,15 @@ export class game
 		this.gameState = "waiting";
 		this.startTime = Date.now();
 	};
+
+	reset()
+	{
+		this.gameState = "waiting";
+		this.startTime = Date.now();
+		this.paddleL.reset();
+		this.paddleR.reset();
+		this.ball.reset();
+	}
 
 	update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleLdy, paddleRcx, paddleRcy, paddleRsx, paddleRsy, paddleRdy, ballcx, ballcy, ballsx, ballsy, balldx, balldy, frameTime)
 	{
@@ -353,6 +381,17 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			// link.click();
 			// document.body.removeChild(link);
 		}
+	}
+	else if (data.type == "tournament")
+	{
+		myGame.reset();
+		const link = document.createElement('a');
+		link.href = '/pong/'+data.url;
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+		document.body.removeChild(link);
 	}
 	else if (data.type === "end game")
 	{

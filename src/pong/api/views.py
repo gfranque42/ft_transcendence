@@ -90,10 +90,15 @@ def	deleteRoom(request, pk):
 def	getIndex(request):
 	template = loader.get_template('index.html')
 	status: str = "bob"
-	if gTournament.waiting == False and gTournament.inGame == False:
+	if gTournament.inTour == False and len(gTournament.lobbyRoom.players) == 0:
 		status = "No tournament for now"
+	elif gTournament.inTour == True:
+		status = "Tournament in progress"
+	else:
+		status = str(gTournament.lobbyRoom.nbPlayers - len(gTournament.lobbyRoom.players))+" left to start"
 	context = {
 		'status': status,
+		'url': gTournament.lobbyRoom.roomName,
 	}
 	return HttpResponse(template.render(context, request))
 	# return (render(request, "index.html"))

@@ -89,8 +89,11 @@ class	room():
 					self.players.append(player)
 				else:
 					raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
-				if len(self.players) == 2:
+				if self.partyType == 4 and len(self.players) == 2:
 					self.ready = True
+				else:
+					if len(self.players) == self.nbPlayers:
+						self.ready = True
 
 	@database_sync_to_async
 	def	removePlayer(self, player: str) -> None:
@@ -276,14 +279,15 @@ def	randomUrl() -> str:
 			url += c
 	return url
 
-class	Tournament():
+class	tournament():
 	def	__init__(self) -> None:
-		self.lobbyRoom: room		= room(randomUrl(), 8, 6)
-		lroom = Room.objects.create(url=self.lobbyRoom.roomName,difficulty=6,maxPlayers=8)
-		lroom.save()
-		self.rooms					= {}
-		self.players: List[str]		= []
-		self.thread
+		self.lobbyRoom: room				= room(randomUrl(), 4, 6)
+		# lroom = Room.objects.create(url=self.lobbyRoom.roomName,difficulty=6,maxPlayers=8)
+		# lroom.save()
+		self.rooms							= {}
+		self.players: List[str]				= []
+		self.thread: Optional[threading.Thread]	= None
+		self.inTour: bool					= False
 
 	def	shufflePlayers(self) -> None:
 		playerPlaces = []
@@ -317,6 +321,13 @@ class	Tournament():
 		print("infos de sendRooms: ",infos,flush=True)
 		await self.channelLayer.group_send(self.roomGroupName, infos)
 
+	def	start(self) -> None:
+		self.thread = Thread(target=self.routine, args=())
+		self.inTour = True
+		self.thread.start()
+		if self.thread:
+			self.thread.join()
+
 	def	routine(self) -> None:
 		while len(self.players) > 1:
 			self.shufflePlayers()
@@ -333,10 +344,7 @@ class	Tournament():
 				self.players.remove(self.rooms[key].looser)
 			self.lobbyRoom.players.clear()
 			self.lobbyRoom.nbPlayers = len(self.players)
+		self.inTour = False
+		self.rooms.clear()
+		self.lobbyRoom.players.clear()
 
-'''
-	faire la fonction start de tournament
-	reset le thread a la fin de la routine
-	faire la fonction du groupe dans le consumer
-	changer de page dans le front
-'''

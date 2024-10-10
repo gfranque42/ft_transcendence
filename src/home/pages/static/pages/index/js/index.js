@@ -373,10 +373,35 @@ const router = async () => {
 		initialize();
 	} else if (match.route.path == "/pong/") {
 		await checkConnection();
+		myGame.reset();
 		eventPong(view);
 
 	} else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
 		await checkConnection();
+		window.addEventListener('beforeunload', function (event) {
+			// Perform cleanup actions here
+			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+				roomSocket.close();
+			}
+			myGame.gameState = "end";
+			// Optionally, you can show a confirmation dialog (optional)
+			event.preventDefault();  // Some browsers require this
+			event.returnValue = '';  // This prompts the confirmation dialog in most browsers
+		});
+
+		// Handle back/forward navigation using the "popstate" event
+		window.addEventListener('popstate', function (event) {
+			// Perform any specific cleanup needed here
+			console.log('Back or forward button pressed');
+			
+			// Close WebSocket connection if it's open
+			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+				roomSocket.close();
+			}
+			myGame.gameState = "end";
+
+		});
+
 		var socketProtocol = 'ws://';
 		console.log(window.location.protocol);
 		if (window.location.protocol === 'https:') {
@@ -396,6 +421,7 @@ const router = async () => {
 
 		roomSocket.onopen = function () {
 			testToken(roomSocket).then(() => {
+				myGame.reset();
 				console.log('my game is ready: ', myGame.gameState);
 
 				canvas.width = window.innerWidth * 0.8;
