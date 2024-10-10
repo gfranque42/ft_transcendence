@@ -36,7 +36,7 @@ python manage.py migrate
 
 # python manage.py migrate --fake authapi 0002_alter_userprofile_otp_secret
 
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
+# echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'pass')" | python manage.py shell
 
 echo "migrate done"
 
