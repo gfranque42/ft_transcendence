@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-rx*(a-*_sz=a=)^-5zg4v_e_yt_jumxpze#564((ar1k=-n(av
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+DNS = os.getenv('DNS')
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -112,6 +113,9 @@ CORS_EXPOSE_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 
 
+def dns(request):
+    return {'DNS': DNS}
+
 # CSRF_COOKIE_SAMESITE = 'None'
 
 ROOT_URLCONF = 'authapi.urls'
@@ -127,6 +131,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'authapi.settings.dns',
             ],
         },
     },
