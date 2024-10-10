@@ -52,9 +52,10 @@ function handleSocketMessage(e) {
 		// Get the board from the message and pass it to setBoard function
 		const board = data.board;
 		const startTime = data.time;
-		if (data.multiplayer === true)
+		if (data.multiplayer === true) {
 			multiplayer = true;
 			adversary = data.adversary;
+		}
 
 		console.log("data: ", data);
 
@@ -72,11 +73,10 @@ function handleSocketMessage(e) {
 			gameended = true;
 			const timeUsed = data.time_used || "N/A"; // Time used to win
 			const winningUser = data.winner || "N/A";
-
 			const winningId = data.winner_id;
 
 			showModal(timeUsed, winningUser, currentUser);
-			if (currentUser === winningUser && multiplayer === true) {
+			if (currentUser === winningUser && data.multiplayer === true) {
 				const losingId = data.loser_id;
 				sendGameResults(losingId, winningId, 5, 0);
 			}
@@ -126,7 +126,7 @@ export async function initialize() {
 				sudokuSocket.send(JSON.stringify({
 					'type': 'user_left',
 					'username': currentUser,
-					'adversary': adversary
+					'adversary': adversary || ''
 				}));
 			}
 		}
@@ -139,10 +139,10 @@ export async function initialize() {
 				sudokuSocket.send(JSON.stringify({
 					'type': 'user_left',
 					'username': currentUser,
-					'adversary': adversary
+					'adversary': adversary || ''
 				}));
 			}
-			socket.close();
+			sudokuSocket.close();
 			//navigateTo('/sudoku/');
 		}
 	});

@@ -81,8 +81,12 @@ def sudoku_board(request, room_url):
 		# Fetch the room data (no need to check is_full here)
 		try:
 			# room = get_object_or_404(SudokuRoom, url=room_url)
+			print(f"room_url: {room_url}", flush=True)
 			room = SudokuRoom.objects.get(url=room_url)
-			
+			if room.is_completed:
+				return render(request, 'sudokubattle/noRoom.html')
+			print(f"room: {room}", flush=True)
+			print(f"room is completed: {room.is_completed}", flush=True)
 			# Render a template for both players, WebSocket will manage the game state
 			context = { 'room_url': room.url, }
 			return render(request, 'sudokubattle/sudoku.html', context)
