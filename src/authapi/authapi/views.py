@@ -523,7 +523,7 @@ def get_token(request):
         if (not auth_header):
             return Response({"token": None}, status=status.HTTP_200_OK)
         token = auth_header.split(' ')[1]
-        if (token == None):
+        if (token == 'null'):
             return Response({"token": None}, status=status.HTTP_200_OK)
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=payload['id'])
@@ -558,3 +558,6 @@ def test_OTP(request):
         return Response({"method": any(userProfile.tfa.values())})
     except jwt.ExpiredSignatureError:
         return Response({"method": False}, status=status.HTTP_200_OK)
+    except UserProfile.DoesNotExist:
+        return Response({"token": None}, status=status.HTTP_200_OK)
+

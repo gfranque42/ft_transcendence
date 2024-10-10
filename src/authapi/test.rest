@@ -1,5 +1,5 @@
 ### Login request
-POST https://localhost:8083/auth/login
+POST https://localhost:8083/auth/login?request_by=Home
 Content-Type: application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### Signup request
-POST https://localhost:8083/auth/register
+POST https://localhost:8083/auth/register?request_by=Home
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 ###
 
-POST https://localhost:8083/auth/register
+POST https://localhost:8083/auth/register?request_by=Home
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 ###
 
-POST https://localhost:8083/auth/register
+POST https://localhost:8083/auth/register?request_by=Home
 Content-Type: application/json
 
 {
@@ -272,10 +272,17 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNz
 
 ###
 
-GET https://localhost:8083/auth/get_token
+GET https://localhost:8083/auth/get_token?request_by=Home
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI3MTc4NTkwLCJpYXQiOjE3MjcxNzYwNzB9.5VsuYOf-Bsw4W6W4lXDahEbJy3vvIiGkFyR5p9vXbNo
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI4NTM2NTI0LCJpYXQiOjE3Mjg1MjkzMjR9.9qTHxrH9OE3VE3evCqxVy24BTTQiwuZ_7QIEAENeaAo
 
+{
+}
+###
+
+GET https://localhost:8083/auth/get_token?request_by=Home
+Content-Type: application/json
+Authorization: Token null
 
 {
 }
