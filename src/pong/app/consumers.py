@@ -91,8 +91,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				if gTournament.lobbyRoom.ready == True:
 					# await self.channel_layer.group_send(
 					# self.room_group_name, {"type": "gameUpdate", "message": "ready for playing"})
-					gTournament.start()
 					print(self.username,": start lanceeeeeeee", "on room: ",self.room_name,flush=True)
+					gTournament.start()
 			elif self.tournamentRoom == True:
 				try:
 					await gTournament.rooms[self.room_name].addPlayer(self.username)

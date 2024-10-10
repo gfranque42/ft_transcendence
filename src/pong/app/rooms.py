@@ -322,6 +322,7 @@ class	tournament():
 		await self.channelLayer.group_send(self.roomGroupName, infos)
 
 	def	start(self) -> None:
+		print(self.lobbyRoom.roomName,": from start, thread in comming",flush=True)
 		self.thread = Thread(target=self.routine, args=())
 		self.inTour = True
 		self.thread.start()
@@ -329,8 +330,11 @@ class	tournament():
 			self.thread.join()
 
 	def	routine(self) -> None:
+		print(self.lobbyRoom.roomName,": bisous de la routine",flush=True)
 		while len(self.players) > 1:
+			print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
 			self.shufflePlayers()
+			print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
 			i = 0
 			while i < (len(self.players) / 2):
 				url = randomUrl()
