@@ -520,11 +520,18 @@ class RegisterForm(APIView):
 def get_token(request):
     try:
         auth_header = request.headers.get('Authorization')
+        print("auth_header: ", auth_header, flush=True)
         if (not auth_header):
             return Response({"token": None}, status=status.HTTP_200_OK)
+        print("auth_header: ", auth_header, flush=True)
         token = auth_header.split(' ')[1]
+        if (not token):
+            return Response({"token": None}, status=status.HTTP_200_OK)
+        print("token: ", token, flush=True)
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        print("payload: ", payload, flush=True)
         userProfile = UserProfile.objects.get(id=payload['id'])
+        print("userProfile: ", userProfile, flush=True)
         return Response({"token": CreateToken(userProfile) }, status=status.HTTP_201_CREATED)
     except jwt.ExpiredSignatureError:
         return Response({"token": None}, status=status.HTTP_200_OK)
