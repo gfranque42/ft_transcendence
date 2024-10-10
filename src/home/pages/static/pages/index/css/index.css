@@ -24,35 +24,30 @@ a:hover {
 }
 
 .index-game-title {
-    font-family: Oswald;
-    font-weight: 400;
-    margin: -15vh -2vw;
-    align-self: end;
-    display: block;
-    font-size: 2em;
+  font-family: Oswald;
+  font-weight: 400;
+  align-self: end;
+  display: block;
+  font-size: 2em;
+  height: 28vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
+
+
 
 .index-game-titles-container {
 }
 
 .index-page-layout {
-    height: 80vh;
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    font-size: 15vh;
+  height: 85vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  font-size: 15vh;
 }
-
-/* .index-pong {
-    transition: transform 0.3s ease, margin 0.3s ease;
-    margin: -15vh -2vw;
-}
-
-.index-sudoku {
-    transition: transform 0.3s ease, margin 0.3s ease; /* Smooth transition */
-    /* transition: margin 0.3s ease; Smooth transition */
-    margin: -15vh -2vw;
-} */
 
 .scaled-sudoku {
     /* transition: transform 0.3s ease, margin 0.3s ease; Smooth transition */
@@ -100,9 +95,9 @@ a:hover {
 }
 
 .index-logo {
-    height: 45vh;
-    margin-bottom: 10vh;
-    margin-right: 5vw;
+  height: 45vh;
+  margin-bottom: 25vh;
+  margin-right: 5vw;
 }
 
 .navbar{
