@@ -1,4 +1,7 @@
 
+import {DNS} from "../js/dns.js";
+
+
 export default class {
     constructor() {
         this.setTitle("Home");

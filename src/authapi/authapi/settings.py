@@ -76,10 +76,10 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'https://127.0.0.1:8083', 'https://localhost:8083' 
+    'https://127.0.0.1:8083', 'https://localhost:8083', f"https://{os.getenv('DNS')}:8083"
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082', 'https://localhost:8083']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:8082', 'https://localhost:8083', f"https://{os.getenv('DNS')}:8083"]
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -205,4 +205,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ALLOWED_HOSTS = ['*']
 
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', os.getenv('DNS')]

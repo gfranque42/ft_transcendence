@@ -1,4 +1,5 @@
 import abstractviews from "./abstractviews.js";
+import {DNS} from "../js/dns.js";
 
 export default class extends abstractviews {
     constructor() 
@@ -16,7 +17,7 @@ export default class extends abstractviews {
             }
         };
         
-        const response = await fetch('https://localhost:8083/auth/login?request_by=Home', options);
+        const response = await fetch('https://'+DNS+':8083/auth/login?request_by=Home', options);
         const tempContentHtml = await response.text();
 
         const parser = new DOMParser();
@@ -31,7 +32,7 @@ export default class extends abstractviews {
         if (this.csrfToken === null) {
             throw new Error('CSRF token not available');
         }
-        let response = await fetch('https://localhost:8083/auth/login?request_by=Home', {
+        let response = await fetch('https://'+DNS+':8083/auth/login?request_by=Home', {
             method: 'POST',
             body: JSON.stringify({ 
                 "csrfmiddlewaretoken": this.csrfToken, 

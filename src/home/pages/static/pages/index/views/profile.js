@@ -1,6 +1,7 @@
 import abstractviews from "./abstractviews.js";
 import {getCookie} from "../js/cookie.js";
 import {navigateToInstead} from "../js/index.js";
+import {DNS} from "../js/dns.js";
 
 
 // var DICT = {
@@ -38,7 +39,7 @@ export default class extends abstractviews {
             }
         };
         
-        const response = await fetch('https://localhost:8083/auth/profile?request_by=Home', options);
+        const response = await fetch('https://'+DNS+':8083/auth/profile?request_by=Home', options);
         const tempContentHtml = await response.text();
         
 
@@ -67,7 +68,7 @@ export default class extends abstractviews {
         formdata.append('avatar', avatar.files[0]);
         formdata.append('token', await token);
 
-        let response = await fetch('https://localhost:8083/auth/profile?request_by=Home', {
+        let response = await fetch('https://'+DNS+':8083/auth/profile?request_by=Home', {
             method: 'PATCH',
             body: formdata,
             headers: {
@@ -103,7 +104,7 @@ export default class extends abstractviews {
         if (otp && !isEmptyOrWhitespace(otp.value))
             body["otp"] = otp.value;
         // console.log("!", DICT, "!");
-        let response = await fetch('https://localhost:8083/auth/verification-add?request_by=Home', {
+        let response = await fetch('https://'+DNS+':8083/auth/verification-add?request_by=Home', {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
@@ -138,7 +139,7 @@ export default class extends abstractviews {
 
     //     // Conditionally add properties if they have values
     //     console.log(DICT);
-    //     let response = await fetch('https://localhost:8083/auth/verification-add', {
+    //     let response = await fetch('https://'+DNS+':8083/auth/verification-add', {
     //         method: 'DELETE',
     //         body: JSON.stringify(DICT),
     //         headers: {
@@ -171,7 +172,7 @@ export default class extends abstractviews {
         let response;
         if (checkbox)
         {
-            response = await fetch('https://localhost:8083/auth/send-friend-request?request_by=Home', {
+            response = await fetch('https://'+DNS+':8083/auth/send-friend-request?request_by=Home', {
                 method: 'PATCH',
                 body: JSON.stringify(body),
                 headers: {
@@ -180,7 +181,7 @@ export default class extends abstractviews {
                 },
             });
         } else {
-            response = await fetch('https://localhost:8083/auth/send-friend-request?request_by=Home', {
+            response = await fetch('https://'+DNS+':8083/auth/send-friend-request?request_by=Home', {
                 method: 'DELETE',
                 body: JSON.stringify(body),
                 headers: {
@@ -206,7 +207,7 @@ export default class extends abstractviews {
         body["token"] = await token;
         body["to_user"] = to_user.value;
 
-        const response = await fetch('https://localhost:8083/auth/send-friend-request?request_by=Home', {
+        const response = await fetch('https://'+DNS+':8083/auth/send-friend-request?request_by=Home', {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
@@ -231,7 +232,7 @@ export default class extends abstractviews {
         body["friend_id"] = friend.value;
         body["token"] = await token;
 
-        const response = await fetch('https://localhost:8083/auth/friends?request_by=Home', {
+        const response = await fetch('https://'+DNS+':8083/auth/friends?request_by=Home', {
             method: 'DELETE',
             body: JSON.stringify(body),
             headers: {

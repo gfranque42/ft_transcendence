@@ -1,4 +1,5 @@
 import {setCookie, getCookie, eraseCookie} from "../cookie.js";
+import {DNS} from "../dns.js";
 
 export async function sendGameResults(winner_id, loser_id, score_winner, score_loser) {
 	const token = getCookie("token")
@@ -11,7 +12,7 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 		}
 	};
 	
-	var response = await fetch('https://localhost:8083/auth/games?request_by=Home', options);
+	var response = await fetch('https://'+DNS+':8083/auth/games?request_by=Home', options);
 	console.log(response);
 
 	var data = await response.json();
@@ -29,7 +30,7 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 	body["game_type"] = 'sudoku';
 
 
-	var response = await fetch('https://localhost:8083/auth/games?request_by=Home', {
+	var response = await fetch('https://'+DNS+':8083/auth/games?request_by=Home', {
 		method: 'POST',
 		body: JSON.stringify(body),
 		headers: {
