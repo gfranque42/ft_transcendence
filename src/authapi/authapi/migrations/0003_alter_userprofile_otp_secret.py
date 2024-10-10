@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authapi', '0002_alter_userprofile_otp_secret'),
+        ('authapi', '0001_initial'),
     ]
 
     operations = [
