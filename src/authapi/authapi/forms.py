@@ -7,8 +7,7 @@ from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.utils.safestring import mark_safe
 from django import forms
-
-import jwt, pyotp
+import jwt, pyotp, re
 
 
 class SVGFileInput(forms.ClearableFileInput):
@@ -40,6 +39,14 @@ class CreateUserForm(UserCreationForm):
         # self.fields.pop('usable_password')
         # print(self.fields) 
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if not re.match(r'^[a-zA-Z0-9]+$', username):
+            raise forms.ValidationError("The username must only contain letters and numbers.")
+        if len(username) > 20:
+            raise forms.ValidationError("Username exceeds maximum length(20).")
+        return username
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email:
@@ -63,6 +70,10 @@ class GetUserForm(forms.Form):
         cleaned_data = super().clean()
         username = cleaned_data.get('username')
         password = cleaned_data.get('password')
+        
+        if len(username) > 20:
+            raise forms.ValidationError("Username exceeds maximum length.")
+        
         user = authenticate(username=username, password=password)
         if not user:
             raise forms.ValidationError("Invalid username or password.")
@@ -102,6 +113,14 @@ class Get2faForm(forms.Form):
 class changeAvatar(forms.Form):
     avatar = forms.ImageField(required=False, widget=SVGFileInput())
 
+    # def clean_avatar(self):
+    #     avatar = self.cleaned_data.get('avatar')
+    #     if avatar:
+    #         allowed_types = ['image/jpeg', 'image/png', 'image/svg+xml']
+    #         if avatar.content_type not in allowed_types:
+    #             raise forms.ValidationError('Invalid file type. Only JPEG and PNG and SVG images are allowed.')
+    #         pass
+    #     return avatar
 
 
 class changeUsername(forms.Form):
@@ -110,9 +129,14 @@ class changeUsername(forms.Form):
         widget=forms.TextInput(attrs={'class': 'profile-username-field'}),
         label='Username',
         )
+
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if username:
+            if not re.match(r'^[a-zA-Z0-9]+$', username):
+                raise forms.ValidationError("The username must only contain letters and numbers.")
+            if len(username) > 20: #max_length
+                raise forms.ValidationError('Username exceeds maximum length.')
             if User.objects.filter(username=username).exists():
                 raise forms.ValidationError('Username already exists.')
         return username
