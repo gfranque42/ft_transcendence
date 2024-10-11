@@ -477,12 +477,12 @@ const router = async () => {
         while (myGame.gameState != "end")
         {	
 			let elapstime = Date.now() - starttime;
-			console.log("time: ",elapstime);
+			// console.log("time: ",elapstime);
 			if (elapstime > 1000 / 60)
 			{
 				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
 				starttime += 1000 / 60;
-				console.log(".");
+				// console.log(".");
 			}
 			await new Promise(r => setTimeout(r, 2));
         }
