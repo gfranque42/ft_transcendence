@@ -1,4 +1,6 @@
 import {myGame} from "../js/index.js"
+import {DNS} from "../js/dns.js";
+
 export class vec2
 {
 	constructor(x, y)
@@ -239,7 +241,7 @@ export async function testToken(roomSocket)
 
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
+	const response = await fetch('https://'+DNS+':8083/auth/test_token?request_by=Home', options);
 	if (!response.ok)
 	{
 		navigateToInstead("/login/");

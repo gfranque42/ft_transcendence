@@ -13,7 +13,7 @@ export default class extends abstractviews {
 
     async getHtml() 
     {
-        const response = await fetch('https://localhost:8083/api_pong/getindex/');
+        const response = await fetch('https://'+DNS+':8083/api_pong/getindex/' + '?request_by=Home');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form

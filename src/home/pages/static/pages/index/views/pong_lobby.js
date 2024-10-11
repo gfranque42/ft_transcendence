@@ -15,7 +15,7 @@ export default class extends abstractviews {
 		const url = location.pathname;
 		const bob = url.replace('/pong/', '');
 		const room_name = bob.replace('/', '');
-        const response = await fetch('https://localhost:8083/api_pong/getlobby/' + room_name);
+        const response = await fetch('https://'+DNS+':8083/api_pong/getlobby/' + room_name + '?request_by=Home');
         const tempContentHtml = await response.text();
 
         // Extract CSRF token from HTML form
