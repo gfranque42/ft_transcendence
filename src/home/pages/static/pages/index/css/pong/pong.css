@@ -80,7 +80,7 @@ canvas {
 	transition-duration: 1s;
 }
 
-#win {
+#result {
 	font-family: "Oswald", sans-serif;
 	text-align: center;
 	color: #FFFBFC;
@@ -95,17 +95,9 @@ canvas {
 	justify-content: space-evenly;
 }
 
-#loose {
-	font-family: "Oswald", sans-serif;
-	text-align: center;
-	color: #FFFBFC;
-	align-items: center;
-	width: 80vw;
-	height: 70vh;
-	position: absolute;
-	top: 20vh;
-	left: 10vw;
+#backtopong {
+	bottom: 18vh;
+	left: 35vw;
+	width: 30vw;
 	display: none;
-	font-size: 10vh;
-	justify-content: space-evenly;
 }

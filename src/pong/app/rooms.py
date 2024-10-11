@@ -2,13 +2,13 @@ from typing import List, Optional
 from threading import Thread, Lock
 import threading
 from .pong import *
-from .models import Room, Player
+from .models import Room
 import asyncio
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from concurrent.futures import ThreadPoolExecutor
-# from pydantic import BaseModel
 import time
+import random
 
 class	roomException(Exception):
 	def	__init__(self, message: str, errorCode: int) -> None:
@@ -50,8 +50,10 @@ class	room():
 		self.players: List[str]					= []
 		self.ready: bool						= False
 		self.inGame: bool						= False
+		self.finish: bool						= False
 		self.lock: threading.Lock				= Lock()
 		self.thread: Optional[threading.Thread]	= None
+		self.looser: str						= ""
 		print(self.roomName,": Je suis initialisé !",flush=True)
 
 	def	__repr__(self):
@@ -60,11 +62,7 @@ class	room():
 	@database_sync_to_async
 	def	addPlayer(self, player: str) -> None:
 		print(self.roomName,": I have to append ",player,flush=True)
-		if self.partyType != 4:
-			try:
-				user = Player.objects.get(username=player)
-			except Player.DoesNotExist:
-				user = Player.objects.create(username=player)
+		if self.partyType < 4:
 			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
@@ -73,9 +71,16 @@ class	room():
 			with self.lock:
 				if player not in self.players:
 					self.players.append(player)
-					room.players.add(user)
+					print("playercount",room.playerCount,flush=True)
+					room.addPlayer(player)
+					# room.playersCount()
+					room.playerCount = len(self.players)
+					room.save()
+					print("playercount",room.playerCount,flush=True)
 				else:
-					raise roomException("Player ", player, " is already in this room!", 1001)
+					print(self.roomName,": ",player," reconnect !")
+					# raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
+				print(self.roomName,": Number of players: ",len(self.players), ",number of players requested: ",self.nbPlayers,flush=True)
 				if len(self.players) == self.nbPlayers:
 					self.ready = True
 		else:
@@ -83,67 +88,160 @@ class	room():
 				if player not in self.players:
 					self.players.append(player)
 				else:
-					raise roomException("Player ", player, " is already in this room!", 1001)
-				if len(self.players) == 2:
+					raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
+				if self.partyType == 4 and len(self.players) == 2:
 					self.ready = True
+				else:
+					if len(self.players) == self.nbPlayers:
+						self.ready = True
 
 	@database_sync_to_async
 	def	removePlayer(self, player: str) -> None:
-		print(self.roomName,": I have to remove ",player,flush=True)
-		if self.partyType != 4:
+		print(self.roomName,": I have to remove ",player," in partyType: ",self.partyType,flush=True)
+		if self.partyType < 4:
 			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
 				print("Room Does Not Exist: ", self.roomName, flush=True)
 				return
 			with self.lock:
-				if self.inGame == True:
-					async_to_sync(self.channelLayer.group_send)(
-							self.roomGroupName, {"type": "quit", "message": "quitting"})
 				if player in self.players:
+					print(room.players,flush=True)
+					print(room.playerCount,flush=True)
 					self.players.remove(player)
-					room.players.delete(username=player)
+					print(type(room.players),flush=True)
+					room.removePlayer(player)
+					# room.save()
+					room.playerCount = len(self.players)
+					room.save()
+					print(room.players,flush=True)
+					print(room.playerCount,flush=True)
 				else:
-					raise roomException("Player ", player, " isn't in this room!", 1002)
+					raise roomException(self.roomName+": Player " + player + " isn't in this room!", 1002)
+		if self.partyType == 6 or self.partyType == 5:
+			if player in self.players:
+				self.players.remove(player)
 
-	def	countDown(self) -> None:
+	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
 		if self.ready == True and self.inGame == False:
 			x: int = 3
 			while x > 0:
 				#send to the group with the channel layer
-				async_to_sync(self.channelLayer.group_send(
+				await self.channelLayer.group_send(
 						self.roomGroupName, {"type": "gameUpdate",
 							"message": "countdown",
-							"number": x,}))
-				time.sleep(1)
+							"number": x,})
+				await asyncio.sleep(1)
+				# async_to_sync(asyncio.sleep(1))
 				x -= 1
 			#send the end of the count down
-			async_to_sync(self.channelLayer.group_send(
+			await self.channelLayer.group_send(
 						self.roomGroupName, {"type": "gameUpdate",
-							"message": "fin du compte",}))
+							"message": "fin du compte",})
 		else:
-			raise roomException("Room ", self.roomName, " haven't the good amount of players or is already in game", 1003)
+			raise roomException("Room " + self.roomName + " haven't the good amount of players or is already in game", 1003)
 
 	async def	start(self) -> None:
 		try:
 			print(self.roomName,": start on our way !",flush=True)
-			self.countDown()
-			print(self.roomName,": countdown done !",flush=True)
-			self.inGame = True
-			print(self.roomName,": in game = ",self.inGame,flush=True)
 			self.thread = Thread(target=self.gameLoop, args=())
 			print(self.roomName,": thread created",flush=True)
 			self.thread.start()
 			if self.thread:
 				print(self.roomName,": thread launched !",flush=True)
-				self.thread.join()
+				# self.thread.join()
 		except roomException as e:
 					print(f"Error from start: {e}")
 
-	async def	sendUpdate(self, message) -> None:
+	def	gameLoop(self) -> None:
+		print(self.roomName,": gameLoop started !",flush=True)
+		try:
+			async_to_sync(self.countDown)()
+			print(self.roomName,": countdown done !",flush=True)
+			self.inGame = True
+			print(self.roomName,": in game = ",self.inGame,flush=True)
+		except Exception as e:
+			print(self.roomName,": error: ",e,flush=True)
+			async_to_sync(self.channelLayer.group_send)(
+						self.roomGroupName, {"type": "quit", "message": "quit"})
+			exit()
+		message: str = "update"
+		while self.inGame == True:
+			# with self.lock:
+			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
+			print(self.roomName,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
+			if self.scoreL == 5 or self.scoreR == 5:
+				self.inGame = False
+				self.finish = True
+				if self.scoreL == 5:
+					self.looser = self.players[1]
+				else:
+					self.looser = self.players[0]
+				message = "finish"
+				print(self.roomName,": the game is finished",flush=True)
+			self.sendUpdate(message)
+			print(self.roomName,": bobbbbbb paddleLdir=",self.paddleL.dir,"\npaddleLkey=",self.paddleL.dir,"\npaddleRdir=",self.paddleR.dir,"\npaddleRkey=",self.paddleR.vel,flush=True)
+			async_to_sync(asyncio.sleep)(1/20)
+			# time.sleep(1/20)
+		if self.scoreL != 5 and self.scoreR != 5:
+			async_to_sync(self.channelLayer.group_send)(
+						self.roomGroupName, {"type": "quit", "message": "quit"})
+
+	def	updateData(self, data, username: str) -> None:
+		# with self.lock:
+		print(self.roomName,": data receive for updateData",flush=True)
+		if self.partyType == 4:
+			if data['w'] == True:
+				self.paddleL.key -= self.paddleL.vel
+			if data['s'] == True:
+				self.paddleL.key += self.paddleL.vel
+			if data['up'] == True:
+				self.paddleR.key -= self.paddleR.vel
+			if data['down'] == True:
+				self.paddleR.key += self.paddleR.vel
+		elif self.partyType == 0 and self.partyType == 5:
+			if username == self.players[0]:
+				if data['w'] == True:
+					self.paddleL.key -= self.paddleL.vel
+				if data['s'] == True:
+					self.paddleL.key += self.paddleL.vel
+				if data['up'] == True:
+					self.paddleL.key -= self.paddleL.vel
+				if data['down'] == True:
+					self.paddleL.key += self.paddleL.vel
+			else:
+				if data['w'] == True:
+					self.paddleR.key -= self.paddleR.vel
+				if data['s'] == True:
+					self.paddleR.key += self.paddleR.vel
+				if data['up'] == True:
+					self.paddleR.key -= self.paddleR.vel
+				if data['down'] == True:
+					self.paddleR.key += self.paddleR.vel
+		else:
+			if data['w'] == True:
+				self.paddleL.key -= self.paddleL.vel
+			if data['s'] == True:
+				self.paddleL.key += self.paddleL.vel
+			if data['up'] == True:
+				self.paddleL.key -= self.paddleL.vel
+			if data['down'] == True:
+				self.paddleL.key += self.paddleL.vel
+		if self.paddleL.key > 0 and self.paddleL.key > self.paddleL.vel:
+			self.paddleL.key = self.paddleL.vel
+		elif self.paddleL.key < 0 and self.paddleL.key < -self.paddleL.vel:
+			self.paddleL.key = -self.paddleL.vel
+		if self.paddleR.key > 0 and self.paddleR.key > self.paddleR.vel:
+			self.paddleR.key = self.paddleR.vel
+		elif self.paddleR.key < 0 and self.paddleR.key < -self.paddleR.vel:
+			self.paddleR.key = -self.paddleR.vel
+		print(self.roomName,": fin de updateData!",flush=True)
+		print(self.roomName,": paddleLdir=",self.paddleL.dir,"\npaddleLkey=",self.paddleL.dir,"\npaddleRdir=",self.paddleR.dir,"\npaddleRkey=",self.paddleR.vel,flush=True)
+
+	def	sendUpdate(self, message) -> None:
 		print(self.roomName,": sendUpdate with message \"",message,"\"",flush=True)
-		await self.channelLayer.group_send(
+		async_to_sync(self.channelLayer.group_send)(
 						self.roomGroupName, {"type": "gameUpdate", "message": message,
 							"ballcx": self.ball.coor.x,
 							"ballcy": self.ball.coor.y,
@@ -170,68 +268,98 @@ class	room():
 							"player1Name": self.players[0],
 							"player2Name": self.players[1],
 							"scoreL": self.scoreL,
-							"scoreR": self.scoreR
+							"scoreR": self.scoreR,
+							"username": "bob",
+							"id": 0,
+							"partyType": self.partyType
 							})
 
-	def	gameLoop(self) -> None:
-		print(self.roomName,": gameLoop started !",flush=True)
-		message: str = "update"
-		while self.inGame == True:
-			# with self.lock:
-			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
-			if self.scoreL == 5 or self.scoreR == 5:
-				self.inGame = False
-				message = "finish"
-				print(self.roomName,": the game is finished",flush=True)
-			async_to_sync(self.sendUpdate(message))
-			async_to_sync(asyncio.sleep(1/20))
+def	randomUrl() -> str:
+	url:str = ""
+	while len(url) != 10:
+		c:str = chr(random.randint(0, 127))
+		if c.isalnum():
+			url += c
+	return url
 
-	def	updateData(self, data, username: str) -> None:
-		# with self.lock:
-		print(self.roomName,": data receive for updateData",flush=True)
-		if self.partyType == 4:
-			if data['w'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if data['s'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if data['up'] == True:
-				self.paddleR.key += self.paddleR.vel
-			if data['down'] == True:
-				self.paddleR.key -= self.paddleR.vel
-		elif self.partyType == 0:
-			if username == self.players[0]:
-				if data['w'] == True:
-					self.paddleL.key += self.paddleL.vel
-				if data['s'] == True:
-					self.paddleL.key -= self.paddleL.vel
-				if data['up'] == True:
-					self.paddleL.key += self.paddleL.vel
-				if data['down'] == True:
-					self.paddleL.key -= self.paddleL.vel
-			else:
-				if data['w'] == True:
-					self.paddleR.key += self.paddleR.vel
-				if data['s'] == True:
-					self.paddleR.key -= self.paddleR.vel
-				if data['up'] == True:
-					self.paddleR.key += self.paddleR.vel
-				if data['down'] == True:
-					self.paddleR.key -= self.paddleR.vel
-		else:
-			if data['w'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if data['s'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if data['up'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if data['down'] == True:
-				self.paddleL.key -= self.paddleL.vel
-		if self.paddleL.key > 0 and self.paddleL.key > self.paddleL.vel:
-			self.paddleL.key = self.paddleL.vel
-		elif self.paddleL.key < 0 and self.paddleL.key < -self.paddleL.vel:
-			self.paddleL.key = -self.paddleL.vel
-		if self.paddleR.key > 0 and self.paddleR.key > self.paddleR.vel:
-			self.paddleR.key = self.paddleR.vel
-		elif self.paddleR.key < 0 and self.paddleR.key < -self.paddleR.vel:
-			self.paddleR.key = -self.paddleR.vel
-		print(self.roomName,": fin de updateData!",flush=True)
+class	tournament():
+	def	__init__(self) -> None:
+		self.lobbyRoom: room				= room(randomUrl(), 4, 6)
+		# lroom = Room.objects.create(url=self.lobbyRoom.roomName,difficulty=6,maxPlayers=8)
+		# lroom.save()
+		self.rooms							= {}
+		self.players: List[str]				= []
+		self.thread: Optional[threading.Thread]	= None
+		self.inTour: bool					= False
+
+	def	shufflePlayers(self) -> None:
+		playerPlaces = []
+		newPlaces = []
+		for player in self.players:
+			playerPlaces.append(player)
+		while len(newPlaces) < len(self.players):
+			i = random.randint(0, len(self.players) - 1)
+			if i not in newPlaces:
+				newPlaces.append(i)
+		self.players = [playerPlaces[i] for i in newPlaces]
+		print (self.players)
+
+	def	checkRoom(self) -> int:
+		for key in self.rooms:
+			if self.rooms[key].inGame == False:
+				return 0
+		return 1
+
+	def	sendRooms(self) -> None:
+		infos = {'type': 'tournamentRedirect', 'message': 'tournament'}
+		infos['numberOfRooms'] = int(len(self.players) / 2)
+		i = 0
+		for key in self.rooms:
+			print("key: ",key,flush=True)
+			roomName = "Room"+str(i)
+			infos[roomName] = key
+			roomNamep1 = roomName+str(1)
+			infos[roomNamep1] = self.players[i * 2]
+			roomNamep1 = roomName+str(2)
+			infos[roomNamep1] = self.players[i * 2 + 1]
+			i += 1
+		print("infos de sendRooms: ",infos,flush=True)
+		print("channelLayer: ",self.lobbyRoom.channelLayer,", roomgroupname: ",self.lobbyRoom.roomGroupName,flush=True)
+		print("booooooooooooooob:[",async_to_sync(self.lobbyRoom.channelLayer.group_send)(self.lobbyRoom.roomGroupName, infos),"]",flush=True)
+
+	def	start(self) -> None:
+		print(self.lobbyRoom.roomName,": from start, thread in comming",flush=True)
+		self.thread = Thread(target=self.routine, args=())
+		self.inTour = True
+		self.players = self.lobbyRoom.players
+		self.thread.start()
+		if self.thread:
+			self.thread.join()
+
+	def	routine(self) -> None:
+		print(self.lobbyRoom.roomName,": bisous de la routine",flush=True)
+		print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
+		while len(self.players) > 1:
+			print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
+			self.shufflePlayers()
+			print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
+			i = 0
+			while i < (len(self.players) / 2):
+				url = randomUrl()
+				self.rooms[url] = room(url,2,5)
+				i += 1
+			self.sendRooms()
+			while self.checkRoom() == 0:
+				async_to_sync(asyncio.sleep)(1)
+			for key in self.rooms:
+				if self.rooms[key].thread:
+					print(self.lobbyRoom.roomName,": je join la room ",self.rooms[key].roomName,flush=True)
+					self.rooms[key].thread.join()
+			for key in self.rooms:
+				self.players.remove(self.rooms[key].looser)
+			self.lobbyRoom.players.clear()
+			self.lobbyRoom.nbPlayers = len(self.players)
+		self.inTour = False
+		self.rooms.clear()
+		self.lobbyRoom.players.clear()
+

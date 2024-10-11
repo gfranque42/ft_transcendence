@@ -25,7 +25,7 @@ export default class extends abstractviews {
     }
 
     async PongLobbyCreation() {
-        return (Start(csrfToken));
+        return (Start(csrfToken),tournamentUrl);
     }
 
     setTitle(title) {

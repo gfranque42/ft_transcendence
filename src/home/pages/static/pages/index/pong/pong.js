@@ -23,11 +23,21 @@ export class paddle
 		this.dir = 0;
 	};
 
+	reset()
+	{
+		this.pos.x = -5;
+		this.pos.y = -5;
+		this.size.x = 2;
+		this.size.y = 2;
+		this.dir = 0;
+	}
+
 	update(paddlecx, paddlecy, paddlesx, paddlesy, paddledy)
 	{
 		this.pos.update(paddlecx, paddlecy);
 		this.size.update(paddlesx, paddlesy);
 		this.dir = paddledy;
+		console.log("paddle coor:\nx:",this.pos.x,"\ny:",this.pos.y,"\nsx:",this.size.x,"\nsy:",this.size.y);
 	};
 
 	draw(canvas, ctx, color, frameTime)
@@ -35,7 +45,9 @@ export class paddle
 		var width = canvas.width;
 		var height = canvas.height;
 		ctx.fillStyle = color;
-		const posy = this.pos.y + this.dir * (frameTime / (1 / 20));
+		const frame = frameTime / (1/20);
+		const posy = this.pos.y + this.dir * frame;
+		console.log('draw posy:',posy,"\nframe:",frame,"\ndir:",this.dir,"\npos.y:",this.pos.y);
 		ctx.fillRect(this.pos.x / 100 * width, posy / 100 * height, this.size.x / 100 * width, this.size.y / 100 * height);
 	};
 }
@@ -48,6 +60,16 @@ export class ball
 		this.size = size;
 		this.dir = dir;
 	};
+
+	reset()
+	{
+		this.pos.x = -5;
+		this.pos.y = -5;
+		this.size.x = 2;
+		this.size.y = 2;
+		this.dir.x = 0;
+		this.dir.y = 0;
+	}
 
 	update(ballcx, ballcy, ballsx, ballsy, balldx, balldy)
 	{
@@ -83,7 +105,17 @@ export class game
 		this.player1 = player1;
 		this.player2 = player2;
 		this.gameState = "waiting";
+		this.startTime = Date.now();
 	};
+
+	reset()
+	{
+		this.gameState = "waiting";
+		this.startTime = Date.now();
+		this.paddleL.reset();
+		this.paddleR.reset();
+		this.ball.reset();
+	}
 
 	update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleLdy, paddleRcx, paddleRcy, paddleRsx, paddleRsy, paddleRdy, ballcx, ballcy, ballsx, ballsy, balldx, balldy, frameTime)
 	{
@@ -130,7 +162,7 @@ function compteARebour(number)
 
 function gameUpdate(data, game)
 {
-	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleLdy, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.paddleRdy, data.ballcx, data.ballcy, data.ballsx, data.ballsy, data.balldx, data.balldy, Date.now());
+	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleLd, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.paddleRd, data.ballcx, data.ballcy, data.ballsx, data.ballsy, data.balldx, data.balldy, Date.now());
 	console.log('game updated');
 }
 
@@ -161,14 +193,14 @@ export function getCookie(name)
 
 const	keyPressed = [];
 
-keyPressed['w'] = false;
-keyPressed['s'] = false;
+keyPressed[87] = false;
+keyPressed[83] = false;
 keyPressed[38] = false;
 keyPressed[40] = false;
 
 window.addEventListener('keydown', function(e){
 	keyPressed[e.keyCode] = true;
-	console.log("Key pressed: ", keyPressed[e.keyCode]);
+	// console.log("Key pressed: ",e.keyCode, keyPressed[e.keyCode]);
 })
 
 window.addEventListener('keyup', function(e){
@@ -235,6 +267,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 	if (data.type === "connected")
 	{
 		console.log('player connected!');
+		myGame.gameState = "waiting";
 	}
 	else if (data.type === "ready for playing")
 	{
@@ -254,16 +287,17 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		console.log("mon json en preparation!!",keyPressed['w']);
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
-			'w': keyPressed['w'],
-			's': keyPressed['s'],
+			'w': keyPressed[87],
+			's': keyPressed[83],
 			'up': keyPressed[38],
 			'down': keyPressed[40],
 		}));
+		myGame.gameState = "playing";
 	}
 	else if (data.type === "gameUpdate")
 	{
-		console.log("data.message: ", data.message);
-		if (data.message === "update")
+		console.log("data.message: !"+data.message+"!");
+		if (data.message == "update")
 		{
 			console.log(data);
 			gameUpdate(data, myGame);
@@ -274,46 +308,65 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		
 			roomSocket.send(JSON.stringify({
 				'type': "ping",
-				'w': keyPressed['w'],
-				's': keyPressed['s'],
+				'w': keyPressed[87],
+				's': keyPressed[83],
 				'up': keyPressed[38],
 				'down': keyPressed[40],
 			}));
+			myGame.gameState = "playing";
 		}
-		else if (data.message === "finish")
+		else if (data.message == "finish")
 		{
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			document.getElementById('player1Score').textContent = data.scoreL;
 			document.getElementById('player2Score').textContent = data.scoreR;
-			console.log(username);
 			console.log(data.scoreL);
 			console.log(data.scoreR);
 			console.log(data.player1Name);
 			console.log(data.player2Name);
-			// if (data.scoreL === 5 && data.player1Name === me.username)
-			// {
-			// 	const	result = document.getElementById("win");
-			// 	result.style.display = "flex";
-			// }
-			// else if (data.scoreR === 5 && data.player2Name === me.username)
-			// {
-			// 	const	result = document.getElementById("win");
-			// 	result.style.display = "flex";
-			// }
-			// else
+			if (data.partyType == 0 && data.scoreL === 5 && data.player1Name === data.username)
 			{
-				const	result = document.getElementById("loose");
+				const	result = document.getElementById("result");
+				result.textContent = "You win !";
 				result.style.display = "flex";
 			}
+			else if (data.partyType == 0 && data.scoreR === 5 && data.player2Name === data.username)
+			{
+				const	result = document.getElementById("result");
+				result.textContent = "You win !";
+				result.style.display = "flex";
+			}
+			else if (data.partyType == 0)
+			{
+				const	result = document.getElementById("result");
+				result.textContent = "You loose !";
+				result.style.display = "flex";
+			}
+			else
+			{
+				const	result = document.getElementById("result");
+				if (data.scoreL == 5)
+				{
+					result.textContent = data.player1Name + " win !";
+				}
+				else
+				{
+					result.textContent = data.player2Name + " win !";
+				}
+				result.style.display = "flex";
+			}
+			let back = document.getElementById('backtopong');
+			back.style.display = 'block';
 			myGame.gameState = "end";
-			const pourStan = {
-				"player one" : data.player1id,
-				"player two": data.player2id,
-				"score one": scoreL,
-				"score two": scoreR,
-				"winner": 1,// ou 2 player id du winner
-				"game": "pong"
-			};
+			console.log('myGame.gameState:'+myGame.gameState);
+			// const pourStan = {
+			// 	"player one" : data.player1id,
+			// 	"player two": data.player2id,
+			// 	"score one": scoreL,
+			// 	"score two": scoreR,
+			// 	"winner": 1,// ou 2 player id du winner
+			// 	"game": "pong"
+			// };
 			// const link = document.createElement('a');
 			// link.href = '/pong/';
 			// link.setAttribute('data-link', '');
@@ -322,6 +375,17 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			// link.click();
 			// document.body.removeChild(link);
 		}
+	}
+	else if (data.type == "tournament")
+	{
+		myGame.reset();
+		const link = document.createElement('a');
+		link.href = '/pong/'+data.url;
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+		document.body.removeChild(link);
 	}
 	else if (data.type === "end game")
 	{

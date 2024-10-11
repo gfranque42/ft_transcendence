@@ -195,17 +195,31 @@ function getCookie(name)
 	return cookieValue;
 }
 
-async function checkRoom(options)
+async function checkRoom(options, gameMode)
 {
+	if (gameMode != 0)
+		return "None";
 	const response = await fetch('https://localhost:8083/api_pong/getroom', options);
 	const rooms = await response.json();
+	console.log('rooms:',rooms);
+	let room;
 	for (let i = 0; i < rooms.length; i++)
 	{
-		console.log("room search: ", rooms[i].url);
-		if (rooms[i].maxPlayers > rooms[i].players.length)
+		console.log("i = ",i," rooms[i].maxPlayers - players.length = ",(rooms[i].maxPlayers - rooms[i].playerCount));
+		console.log("i = ",i," rooms[i].maxPlayers = ",(rooms[i].maxPlayers));
+		console.log("i = ",i," players.length = ",rooms[i].playerCount);
+		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 1)
 		{
-			console.log('room found: ', rooms[i].url);
-			return rooms[i].url;
+			console.log(rooms[i]);
+			return (rooms[i].url);
+		}
+	}
+	for (let i = 0; i < rooms.length; i++)
+	{
+		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 2)
+		{
+			console.log(rooms[i]);
+			return (rooms[i].url);
 		}
 	}
 	return "None";
@@ -214,6 +228,8 @@ async function checkRoom(options)
 export async	function Start(csrftoken, url)
 {
 	checkConnection();
+	const result = document.getElementById("url");
+	const tournamentUrl = result.textContent
 	if (gameMode == -1)
 		return ;
 	let maxPlayers = 1;
@@ -223,6 +239,8 @@ export async	function Start(csrftoken, url)
 		maxPlayers = 0;
 	let roomExist = 0;
 	let roomUrl = generateRandomUrl();
+	if (gameMode == 5)
+		roomUrl = tournamentUrl;
 	try
 	{
 		const cookie = getCookie('token');
@@ -234,7 +252,7 @@ export async	function Start(csrftoken, url)
 				'Authorization': `Token ${cookie}`
 			}
 			};
-		const str = await checkRoom(options);
+		const str = await checkRoom(options, gameMode);
 		if (gameMode == 0 && str != "None")
 		{
 			roomExist = 1;
@@ -251,41 +269,44 @@ export async	function Start(csrftoken, url)
 		difficulty: gameMode,
 		maxPlayers: maxPlayers,
 	};
-	try
+	console.log("tournament url: ",tournamentUrl);
+	if (gameMode != 5)
 	{
-		if (roomExist == 0)
+		try
 		{
-			getCookie('token');
-			// console.log('dns: ', dns);
-			const fetchurl = 'https://localhost:8083/api_pong/postroom/';
-			// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-			console.log('fetchurl: ', fetchurl);
-			const response = await fetch(fetchurl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': csrftoken,
-				},
-				body: JSON.stringify(roomData),
-			});
-			if (response.ok)
+			if (roomExist == 0)
 			{
-				const responseData = await response.json();
-				console.log('Room created: ', responseData);
-			}
-			else
-			{
-				console.error('Failed to create a room: ', response.statusText);
+				getCookie('token');
+				// console.log('dns: ', dns);
+				const fetchurl = 'https://localhost:8083/api_pong/postroom/';
+				// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
+				console.log('fetchurl: ', fetchurl);
+				const response = await fetch(fetchurl, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrftoken,
+					},
+					body: JSON.stringify(roomData),
+				});
+				if (response.ok)
+				{
+					const responseData = await response.json();
+					console.log('Room created: ', responseData);
+				}
+				else
+				{
+					console.error('Failed to create a room: ', response.statusText);
+				}
 			}
 		}
-	}
-	catch (error)
-	{
-		console.error('Error: ',error);
-		return ;
+		catch (error)
+		{
+			console.error('Error: ',error);
+			return ;
+		}
 	}
 	console.log("Start !");
-	
 	const link = document.createElement('a');
 	link.href = '/pong/' + roomUrl + '/';
 	link.setAttribute('data-link', '');
