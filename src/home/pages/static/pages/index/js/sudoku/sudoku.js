@@ -5,13 +5,16 @@ import { getUser } from '../getUser.js';
 import { sendGameResults } from './sendGameResults.js';
 import { navigateTo } from '../index.js';
 import sudoku from '../../views/sudoku.js';
+import { game } from '../../pong/pong.js';
 
 let currentUser = null;
 let gameended = false;
+export let gameInProgress = false;
 let sudokuSocket = null;
 let adversary = null;
 let multiplayer = false;
 let roomName = null;
+let startTime = null;
 
 export function initializeWebSocket() {
 	console.log('initializing websocket');
@@ -52,13 +55,20 @@ function handleSocketMessage(e) {
 
 		// Get the board from the message and pass it to setBoard function
 		const board = data.board;
-		const startTime = data.time;
+		if (!gameInProgress)
+		{
+			console.log('gameInProgress: ', gameInProgress);
+			startTime = data.time;
+			gameInProgress = true;
+		}
 		if (data.multiplayer === true) {
 			multiplayer = true;
 			adversary = data.adversary;
 		}
 
 		console.log("data: ", data);
+
+		console.log("gameInProgress: ", gameInProgress);
 
 		setStartTime(startTime);
 		startTimer();
@@ -72,6 +82,7 @@ function handleSocketMessage(e) {
 		// Show the game result modal
 		if (gameended !== true) {
 			gameended = true;
+			gameInProgress = false;
 			const timeUsed = data.time_used || "N/A"; // Time used to win
 			const winningUser = data.winner || "N/A";
 			const winningId = data.winner_id;
@@ -95,6 +106,7 @@ function handleSocketMessage(e) {
 	if (data.type === 'close_room') {
 		console.log('Room is closing! Redirecting to home page...');
 		gameended = true;
+		gameInProgress = false;
 		navigateTo('/sudoku/');
 		stopTimer();
 		if (sudokuSocket) {
@@ -103,13 +115,19 @@ function handleSocketMessage(e) {
 	}
 }
 
-function eventFunc(event) {
+export function eventFunc(event) {
+	console.log("eventFunc");
 	if (!window.location.pathname.includes('/sudoku/'))
 		return;
 	const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
 	if (!confirmation) {
+		console.log("event: ", event.defaultPrevented);
+		// event.defaultPrevented = true;
+		console.log("no confirmation");
 		event.preventDefault();
-		event.stopPropagation();
+		event.stopImmediatePropagation();
+
+		console.log("event: ", event.defaultPrevented);
 	}
 	else {
 		if (sudokuSocket) {
@@ -119,6 +137,9 @@ function eventFunc(event) {
 				'adversary': adversary || ''
 			}));
 		}
+		console.log("leaving confirmed");
+		gameInProgress = false;
+		console.log(gameInProgress);
 		stopTimer();
 		if (sudokuSocket) {
 			sudokuSocket.close();
@@ -141,15 +162,15 @@ export async function initialize() {
 	
 	sudokuSocket = initializeWebSocket();
 	currentUser = userInfo.Username;
-
+	
 	console.log('sudokuSocket: ', sudokuSocket);
 	if (sudokuSocket) {
 		sudokuSocket.onmessage = handleSocketMessage;
 	}
-
+	
 	const homeButton = document.getElementById("home");
 
 	homeButton.addEventListener("click", eventFunc);
-	window.addEventListener('popstate', eventFunc);
+	// window.addEventListener('popstate', eventFunc);
 	window.addEventListener('beforeunload', eventFunc);
 }

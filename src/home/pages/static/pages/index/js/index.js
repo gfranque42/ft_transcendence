@@ -14,7 +14,7 @@ import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
 import SudokuWaiting from "../views/waiting_sudoku.js";
 
-import { initialize } from "./sudoku/sudoku.js";
+import { initialize, eventFunc, gameInProgress } from "./sudoku/sudoku.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
 
 import {getRenewedToken} from "./token.js";
@@ -400,7 +400,7 @@ const router = async () => {
         {
             console.log("leaving sudoku");
             navigateTo("/sudoku/");
-        } else {
+		} else {
             console.log("leavingn't sudoku");
             initialize();
         }
@@ -494,19 +494,38 @@ async function displayUser()
     const userElement = document.getElementById('user');
     if (userElement) {
         let profileButton = '';
+        let logout = '';
         if (window.location.pathname === '/' || window.location.pathname === '/home/') {
             profileButton = `<div class="profile" id="profile">Profile</div>`;
         }
-        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
+		if (window.location.pathname === '/sudoku/*') {
+            logout = `<div class="disconnect" id="disconnect">Log out</div>`;
+		}
+		userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
         <div class="art-marg"></div>
-        <div class="disconnect" id="disconnect">Log out</div>
+        ${logout}
         ${profileButton}
         </div>`;
     }
 }
 
-// Listen for popstate event and trigger router
-window.addEventListener("popstate", router);
+
+window.addEventListener("popstate", function(event) {
+	event.preventDefault();
+	if (window.location.pathname === '/sudoku/') {
+		eventFunc(event);
+		if (gameInProgress) {
+			// history.pushState(null, null, window.location.pathname);
+			history.forward();
+			console.log("popstate cancelled");
+			// The event has been handled and default action prevented; do nothing.
+			return;
+		}
+	}
+	console.log("popstate: ", event.defaultPrevented);
+	router();
+	
+});
 
 
 async function checkPermissionSudokuLobby(action, actionHandlers) {
