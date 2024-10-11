@@ -520,13 +520,13 @@ async function displayUser()
     const userElement = document.getElementById('user');
     if (userElement) {
         let profileButton = '';
-        if (window.location.pathname === '/' || window.location.pathname === '/home/') {
+        if (window.location.pathname !== '/profile/' ) {
             profileButton = `<div class="profile" id="profile">Profile</div>`;
         }
-        userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
+        userElement.outerHTML = `<div class="navbar-content user-present" id="user"><div class="user-hover">${await UserInformation.Username}</div>
         <div class="art-marg"></div>
-        <div class="disconnect" id="disconnect">Log out</div>
         ${profileButton}
+        <div class="disconnect" id="disconnect">Log out</div>
         </div>`;
     }
 }

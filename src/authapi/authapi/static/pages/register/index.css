@@ -24,19 +24,19 @@ a:hover {
 }
 
 .index-game-title {
-    font-family: Oswald;
-    font-weight: 400;
-    margin: -15vh -2vw;
-    align-self: end;
-    display: block;
-    font-size: 2em;
+  font-family: Oswald;
+  font-weight: 400;
+  align-self: end;
+  display: block;
+  font-size: 2em;
+  line-height: 1;
 }
 
 .index-game-titles-container {
 }
 
 .index-page-layout {
-    height: 80vh;
+    height: 90vh;
     display: flex;
     justify-content: space-around;
     align-items: flex-end;
@@ -97,7 +97,7 @@ a:hover {
   justify-content: space-between;
   width: -webkit-fill-available;
   margin-bottom: 2vh;
-  padding: 0 10vh;
+  padding: 0 2vw;
 }
 
 .index-logo {
@@ -118,19 +118,6 @@ a:hover {
     text-decoration: underline;
 }
 
-.disconnect, .profile{
-    position: absolute;
-    right: -100%;
-    border-radius: 11px 0 0 11px;
-    width: 13vw;
-    font-size: 1.2vw;
-    height: 6vh;
-    align-content: center;
-    padding-left: 3vw;
-    background-color: #b0dbdf;
-    transition: right 0.7s ease-in-out;
-}
-
 .disconnect {
     top: 75px;
 }
@@ -140,12 +127,10 @@ a:hover {
 }
 
 .user-present:hover .disconnect {
-    right: -3vw;
     cursor: pointer;
 }
 
 .user-present:hover .profile {
-    right: -3vw;
     cursor: pointer;
 }
 
@@ -154,9 +139,7 @@ a:hover {
 }
 
 .user-present:hover .disconnect {
-    right: -3vw;
-    cursor: pointer;
-	overflow: hidden;
+  cursor: pointer;
 }
   
 .auth-link {
