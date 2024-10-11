@@ -81,7 +81,7 @@ function handleSocketMessage(e) {
 				return;
 			}
 			showModal(timeUsed, winningUser, currentUser);
-			if (currentUser === winningUser && data.multiplayer === true) {
+			if (currentUser === winningUser && multiplayer === true) {
 				const losingId = data.loser_id;
 				sendGameResults(losingId, winningId, 5, 0);
 			}
@@ -96,6 +96,29 @@ function handleSocketMessage(e) {
 		console.log('Room is closing! Redirecting to home page...');
 		gameended = true;
 		navigateTo('/sudoku/');
+		stopTimer();
+		if (sudokuSocket) {
+			sudokuSocket.close();
+		}
+	}
+}
+
+function eventFunc(event) {
+	if (!window.location.pathname.includes('/sudoku/'))
+		return;
+	const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
+	if (!confirmation) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+	else {
+		if (sudokuSocket) {
+			sudokuSocket.send(JSON.stringify({
+				'type': 'user_left',
+				'username': currentUser,
+				'adversary': adversary || ''
+			}));
+		}
 		stopTimer();
 		if (sudokuSocket) {
 			sudokuSocket.close();
@@ -124,63 +147,9 @@ export async function initialize() {
 		sudokuSocket.onmessage = handleSocketMessage;
 	}
 
-	document.addEventListener("DOMContentLoaded", function () {
-		const homeButton = document.getElementById("home");
-	
-		homeButton.addEventListener("click", function (event) {
-			const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
-			if (!confirmation) {
-				event.preventDefault();
-			}
-			else {
-				if (sudokuSocket) {
-					sudokuSocket.send(JSON.stringify({
-						'type': 'user_left',
-						'username': currentUser,
-						'adversary': adversary || ''
-					}));
-				}
-				stopTimer();
-			}
-		});
-	});
+	const homeButton = document.getElementById("home");
 
-	window.addEventListener('popstate', function (event) {
-		const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
-		if (!confirmation) {
-			event.preventDefault();
-		}
-		else {
-			if (roomName && window.location.pathname !== `/sudoku/${roomName.value}/?request_by=Home`) {
-				if (sudokuSocket) {
-					sudokuSocket.send(JSON.stringify({
-						'type': 'user_left',
-						'username': currentUser,
-						'adversary': adversary || ''
-					}));
-				}
-				stopTimer();
-			}
-		}
-	});
-
-	window.addEventListener('beforeunload', function (event) {
-		const confirmation = confirm("Are you sure you want to leave? Leaving now means you will give up the game.");
-		if (!confirmation) {
-			event.preventDefault();
-		}
-		else {
-			if (roomName) {
-				if (sudokuSocket) {
-					sudokuSocket.send(JSON.stringify({
-						'type': 'user_left',
-						'username': currentUser,
-						'adversary': adversary || ''
-					}));
-				}
-				stopTimer();
-				sudokuSocket.close();
-			}
-		}
-	});
+	homeButton.addEventListener("click", eventFunc);
+	window.addEventListener('popstate', eventFunc);
+	window.addEventListener('beforeunload', eventFunc);
 }

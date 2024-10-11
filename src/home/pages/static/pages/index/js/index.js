@@ -76,12 +76,12 @@ export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new p
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
-	const values = match.result.slice(1);
-	const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+    const values = match.result.slice(1);
+    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
 
-	return Object.fromEntries(keys.map((key, i) => {
-		return [key, values[i]];
-	}));
+    return Object.fromEntries(keys.map((key, i) => {
+        return [key, values[i]];
+    }));
 };
 
 export const navigateTo = url => {
@@ -186,6 +186,7 @@ function hidePopstate() {
 
 const router = async () => {
   
+    
     ("Router function called");
     const routes = [
         { path: '/404/', view: NotFound },
@@ -259,14 +260,14 @@ const router = async () => {
         console.log(navStatus);
         // UserToken = token
         if (navStatus == 1) {
-			console.log("navigating to profile");
+            console.log("navigating to profile");
 
             if (VerificationEvent(verification, token));
-            	return ;
+                return ;
             
         }
         else if (navStatus == 2) {
-			UserToken = token;
+            UserToken = token;
             navigateAfterPost(token);
             return ;
         }
@@ -317,7 +318,7 @@ const router = async () => {
         clickOff.style.filter = 'blur(5px)';
         // }
     }
-	console.log(match.route);
+    console.log(match.route);
 
     renewToken();
     if (match.route.path == "/") {
@@ -390,78 +391,78 @@ const router = async () => {
                 }
             });
         });
-	} else if (match.route.path == "/sudoku/") {
+    } else if (match.route.path == "/sudoku/") {
 
-		inSudoku = true;
-		changeUsername(view);
+        inSudoku = true;
+        changeUsername(view);
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
-		if (!inSudoku)
-		{
-			console.log("leaving sudoku");
-			navigateTo("/sudoku/");
-		} else {
-			console.log("leavingn't sudoku");
-			initialize();
-		}
-	} else if (match.route.path == "/pong/") {
-		await checkConnection();
-		eventPong(view);
+        if (!inSudoku)
+        {
+            console.log("leaving sudoku");
+            navigateTo("/sudoku/");
+        } else {
+            console.log("leavingn't sudoku");
+            initialize();
+        }
+    } else if (match.route.path == "/pong/") {
+        await checkConnection();
+        eventPong(view);
 
-	} else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
-		await checkConnection();
-		var socketProtocol = 'ws://';
-		console.log(window.location.protocol);
-		if (window.location.protocol === 'https:')
-		{
-			console.log('protocol https');
-			socketProtocol = 'wss://';
-		}
+    } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
+        await checkConnection();
+        var socketProtocol = 'ws://';
+        console.log(window.location.protocol);
+        if (window.location.protocol === 'https:')
+        {
+            console.log('protocol https');
+            socketProtocol = 'wss://';
+        }
 
-		const roomSocket = new WebSocket(
-			socketProtocol
-			+ window.location.host
-			+ '/ws'
-			+ window.location.pathname
-		);
-		await waitForSocketConnection(roomSocket);
+        const roomSocket = new WebSocket(
+            socketProtocol
+            + window.location.host
+            + '/ws'
+            + window.location.pathname
+        );
+        await waitForSocketConnection(roomSocket);
 
-		console.log('my game is ready: ', myGame.gameState);
+        console.log('my game is ready: ', myGame.gameState);
 
-		const canvas = document.getElementById('canvas');
-		const ctx = canvas.getContext('2d');
-		canvas.width = window.innerWidth * 0.8;
-		canvas.height = window.innerHeight * 0.7;
-		roomSocket.onmessage = function (e)
-		{
-			const data = JSON.parse(e.data);
-			if (data.type === "fin du compte")
-			{
-				myGame.gameState = "playing";
-			}
-			wsonmessage(data, roomSocket, canvas, ctx);
-		};
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth * 0.8;
+        canvas.height = window.innerHeight * 0.7;
+        roomSocket.onmessage = function (e)
+        {
+            const data = JSON.parse(e.data);
+            if (data.type === "fin du compte")
+            {
+                myGame.gameState = "playing";
+            }
+            wsonmessage(data, roomSocket, canvas, ctx);
+        };
 
-		roomSocket.onclose = function (e)
-		{
-			console.error('Chat socket closed unexpectedly');
-		};
+        roomSocket.onclose = function (e)
+        {
+            console.error('Chat socket closed unexpectedly');
+        };
 
-		let starttime = Date.now();
-		while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
-		{	
-			let elapstime = Date.now() - starttime;
-			console.log("time: ",elapstime);
-			if (elapstime > 1000 / 60)
-			{
-				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
-				starttime += 1000 / 60;
-				console.log(".");
-			}
-			await new Promise(r => setTimeout(r, 2));
-		}
-	}
+        let starttime = Date.now();
+        while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
+        {    
+            let elapstime = Date.now() - starttime;
+            console.log("time: ",elapstime);
+            if (elapstime > 1000 / 60)
+            {
+                myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
+                starttime += 1000 / 60;
+                console.log(".");
+            }
+            await new Promise(r => setTimeout(r, 2));
+        }
+    }
 
-	displayUser();
+    displayUser();
 };
     
 async function getToken() {
@@ -554,6 +555,10 @@ document.addEventListener("DOMContentLoaded", () => {
 //fin Loader
 
     document.addEventListener('click', function(event) {
+        if (event.defaultPrevented) {
+            // The event has been handled and default action prevented; do nothing.
+            return;
+        }
         if (event.target.matches('[data-link]')) {
             console.log("data-link clicked");
             event.preventDefault();
@@ -561,29 +566,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-	document.addEventListener('click', function(event) {
-		// Handling data-action for button actions
-		renewToken();
+    document.addEventListener('click', function(event) {
+        // Handling data-action for button actions
+        renewToken();
         
         
-		const actionHandlers = {
+        const actionHandlers = {
             PvP,
-			Solo,
-			Start,
-			Easy,
-			Medium,
-			Hard,
-			Start,
-		};
-		
-		const action = event.target.getAttribute('data-action');
-		if (action && actionHandlers[action]) {
+            Solo,
+            Start,
+            Easy,
+            Medium,
+            Hard,
+            Start,
+        };
+        
+        const action = event.target.getAttribute('data-action');
+        if (action && actionHandlers[action]) {
             console.log(action);
             checkPermissionSudokuLobby(action, actionHandlers);
-		} else if (action) {
-			console.warn('No action defined for', action);
-		}
-	});
+        } else if (action) {
+            console.warn('No action defined for', action);
+        }
+    });
 
     document.addEventListener("click", function(event) {
         const UserTest = document.querySelector(".navbar-content.user-present")
