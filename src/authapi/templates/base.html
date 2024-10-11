@@ -18,8 +18,8 @@
     <link href="{% static 'pages/Group.svg' %}" rel="shortcut icon" type="image/svg"/>
 
     {% comment %} <link rel="stylesheet" type="text/css" href="https://localhost:8083/auth/static/pages/pages_auth.css"> {% endcomment %}
-    
-    <link rel="stylesheet" type="text/css" href="https://{{ DNS }}:8083/auth/static/pages/pages_auth.css?request_by=Home">
+    <base href="/">
+    <link rel="stylesheet" type="text/css" href="auth/static/pages/pages_auth.css?request_by=Home">
 </head>
       {% block content %}
       {% endblock %}

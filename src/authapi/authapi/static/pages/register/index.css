@@ -93,10 +93,11 @@ a:hover {
 }
 
 .index-main-container {
-    display: flex;
-    justify-content: space-between;
-    width: -webkit-fill-available;
-    margin-bottom: 2vh;
+  display: flex;
+  justify-content: space-between;
+  width: -webkit-fill-available;
+  margin-bottom: 2vh;
+  padding: 0 10vh;
 }
 
 .index-logo {

@@ -1,5 +1,5 @@
 .navbar {
-    width: 94vw;
+    /* width: 94vw; */
     padding-left: 3vw;
     padding-right: 3vw;
     padding-top: 1vh;
@@ -28,7 +28,7 @@ a .navbar{
 .navbar-home {
     top: 2%;
     left: 50vw;
-    transform: translate(-50%, 0);
+    transform: translate(-70%, 0);
     position: fixed;
 }
 

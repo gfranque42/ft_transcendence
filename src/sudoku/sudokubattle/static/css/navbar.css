@@ -1,28 +1,46 @@
 .navbar {
-    width: 94vw;
+    /* width: 100vw; */
     padding-left: 3vw;
     padding-right: 3vw;
     padding-top: 1vh;
     display: flex;
     justify-content: space-between;
-	z-index: 1;
+    color: #131112;
 }
 
+/* position: relative;
+flex-wrap: wrap;
+align-items: center;
+padding: .5rem 1rem; */
+
 a .navbar{
-    color: #FFFBFC;
+    color: #131112;
     cursor: pointer;
+    text-decoration: none;
 }
 
 
 .navbar-content {
-	font-family: 'Oswald', sans-serif;
-	color : #FFFBFC;
+    font-family: Oswald;
     font-size: 2.5vw;
-	z-index: 1;
-	text-decoration: none;
 }
 
 
 .navbar-logo {
-    height: 3vw;
+    transform: translate(0%, -25%);
+    height: 2vw;
+}
+
+.navbar-home {
+    top: 2%;
+    left: 50vw;
+    transform: translate(-70%, 0);
+    position: fixed;
+}
+
+.navbar-user {
+    top: 2%;
+    left: 95vw;
+    transform: translate(-100%, 0);
+    position: fixed;
 }

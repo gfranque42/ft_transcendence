@@ -1,1 +1,6 @@
-export const DNS='made-f0Cr6s4';
+export const DNS = window.location.hostname;
+
+// export function getHostname() {
+// 	DNS = window.location.hostname;
+// 	console.log(DNS);
+// }
