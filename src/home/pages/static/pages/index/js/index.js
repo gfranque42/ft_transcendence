@@ -495,7 +495,7 @@ async function displayUser()
     if (userElement) {
         let profileButton = '';
         let logout = '';
-        if (window.location.pathname === '/' || window.location.pathname === '/home/') {
+        if (window.location.pathname !== '/profile/') {
             profileButton = `<div class="profile" id="profile">Profile</div>`;
         }
 		if (window.location.pathname === '/sudoku/*') {
@@ -505,6 +505,7 @@ async function displayUser()
         <div class="art-marg"></div>
         ${logout}
         ${profileButton}
+        <div class="disconnect" id="disconnect">Log out</div>
         </div>`;
     }
 }

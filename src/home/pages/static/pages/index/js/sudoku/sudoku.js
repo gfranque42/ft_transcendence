@@ -94,7 +94,7 @@ function handleSocketMessage(e) {
 			showModal(timeUsed, winningUser, currentUser);
 			if (currentUser === winningUser && multiplayer === true) {
 				const losingId = data.loser_id;
-				sendGameResults(losingId, winningId, 5, 0);
+				sendGameResults(winningId, losingId, 1, 0);
 			}
 			stopTimer();
 			if (sudokuSocket) {

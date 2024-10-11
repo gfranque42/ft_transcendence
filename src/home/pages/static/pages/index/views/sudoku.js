@@ -29,6 +29,8 @@ export default class extends abstractviews {
             'https://'+DNS+':8083/sudokubattle/static/css/lobby.css?request_by=Home',
             'https://'+DNS+':8083/sudokubattle/static/css/sudoku.css?request_by=Home',
             'https://'+DNS+':8083/sudokubattle/static/css/waiting.css?request_by=Home',
+            'https://'+DNS+':8083/sudokubattle/static/css/index.css?request_by=Home',
+            // 'https://'+DNS+':8083/sudokubattle/static/css/index.css?request_by=Home'
         ];
 
         cssFiles.forEach(url => loadCSS(url));
