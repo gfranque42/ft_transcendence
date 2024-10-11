@@ -110,7 +110,12 @@ class changeUsername(forms.Form):
         widget=forms.TextInput(attrs={'class': 'profile-username-field'}),
         label='Username',
         )
-
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username:
+            if User.objects.filter(username=username).exists():
+                raise forms.ValidationError('Username already exists.')
+        return username
 
 
 class verificationEmail(forms.Form):

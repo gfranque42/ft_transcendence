@@ -1,3 +1,6 @@
+import {DNS} from "../js/dns.js";
+
+
 export default class {
     constructor() {
         this.csrfToken = null;
@@ -6,7 +9,9 @@ export default class {
     async LastCheckAddVerification(tmpToken) { 
         const token = await tmpToken;
 
-        let response = await fetch('https://localhost:8083/auth/send-otp', {
+        if (!token)
+            return false;
+        let response = await fetch('https://'+DNS+':8083/auth/send-otp?request_by=Home', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

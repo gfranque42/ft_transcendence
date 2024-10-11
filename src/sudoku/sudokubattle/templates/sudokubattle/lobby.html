@@ -5,17 +5,16 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sudoku</title>
-	<link href="{% static 'css/lobby.css' %}" rel="stylesheet">
-	<link href="{% static 'css/navbar.css' %}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
-    <link rel="stylesheet" type="text/css" href="/static/pages/pages.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/static/pages/pages.css"> -->
+    <link rel="stylesheet" type="text/css" href="https://localhost:8083/sudokubattle/static/pages/pages.css?request_by=Home">
 	<!-- <meta name="csrf-token" content="{{ csrf_token }}"> -->
 </head>
 <body>
 	{% csrf_token %}
     <div class="navbar">
-		<a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo"></a>
+		<a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="https://localhost:8083/static/pages/Group.svg" alt="Logo"></a>
 		<a href="/" class="navbar-content" id="home" data-link>HOME</a>
 		<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
 	  </div>

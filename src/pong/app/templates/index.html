@@ -14,6 +14,13 @@
 	<link href="{% static 'pong.svg' %}" rel="shortcut icon" type="image/svg"/>
 </head>
 <body>
+
+	<div class="navbar">
+		<a href="/" class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo" data-link></a>
+		<a href="/" class="navbar-content navbar-home" id="home" data-link>HOME</a>
+		<a href="/register/" class="navbar-content navbar-user" id="user" data-link>REGISTER</a>
+	</div>
+
 	{% csrf_token %}
 	<h1 id="Title">Pong Game</h1>
 	<button class="PvP Button">Player vs Player</button>

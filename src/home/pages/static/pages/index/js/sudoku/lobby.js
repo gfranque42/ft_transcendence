@@ -1,4 +1,5 @@
 import { getUser } from '../getUser.js';
+import { navigateTo  } from '../index.js';
 
 
 /*
@@ -10,6 +11,7 @@ game modes:
 */
 
 let	gameMode = -1;
+let multiplayer = false;
 
 export async function changeUsername(view)
 {
@@ -34,6 +36,7 @@ export function Solo()
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
 	gameMode = -1;
+	multiplayer = false;
 }
 
 export function PvP()
@@ -54,6 +57,7 @@ export function PvP()
 	medium.style.fontSize = '';
 	hard.style.fontSize = '';
 	gameMode = -1;
+	multiplayer = true;
 }
 
 export function Easy()
@@ -130,32 +134,35 @@ export function getCookie(name)
 export async function Start()
 {
 	const userInfo = await getUser();
+	console.log()
+	if (userInfo.expired) {
+		navigateTo('/login/');
+		return ;
+	}
 	console.log('Start button clicked');
 	if (gameMode == -1)
 		return ;
 
+	console.log('MULTIPLAYER??', multiplayer);
 	const roomData = {
 		difficulty: gameMode,
 		user: userInfo.Username,
 		id: userInfo.ID,
+		multiplayer: multiplayer,
 	};
 
-	console.log('roomData: ', userInfo);
-	console.log('roomData: ', roomData);
 	try
 	{
 		const tempContentHtml = document.body.innerHTML;
-		console.log('tempContentHtml: ', tempContentHtml);
 		// Extract CSRF token from HTML form
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(tempContentHtml, 'text/html');
 		const csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
-		console.log('csrfToken: ', csrfToken);
 
 		// console.log('dns: ', dns);
 		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 		// console.log('fetchurl: ', fetchurl);
-		const response = await fetch('/sudokubattle/api/sudoku/create/', {
+		const response = await fetch('/sudokubattle/api/sudoku/create/?request_by=Home', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -170,14 +177,8 @@ export async function Start()
 			console.log('Room created: ', responseData);
 
 			const roomUrl = responseData.roomUrl;
-			const link = document.createElement('a');
-			link.href = '/sudoku/' + roomUrl + '/';
-			link.setAttribute('data-link', '');
-			document.body.appendChild(link);
-			console.log(link);
-			link.click();
-			document.body.removeChild(link);
-
+			console.log('navigating to roomUrl: ', roomUrl);
+			navigateTo(`/sudoku/${roomUrl}/`);
 		}
 		else
 		{
@@ -189,7 +190,7 @@ export async function Start()
 		console.error('Error: ', error);
 		return ;
 	}
-	console.log("Start !");
+	console.log("Start!");
 
 	// Send a post request to go to the waiting room with the gamemode
 }

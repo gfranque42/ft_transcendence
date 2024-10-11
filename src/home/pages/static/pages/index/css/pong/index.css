@@ -10,7 +10,7 @@ body {
 	left: 35vw;
 	width: 30vw;
 	height: 10vh;
-	top: 5vh;
+	top: 10vh;
 	text-align: center;
 	font-size: 5vh;
 	font-family: "Oswald", sans-serif;
@@ -39,29 +39,34 @@ body {
 	cursor: pointer;
 }
 
+
+/* #sudoku {
+	top: 35vh;
+} */
+
 .PvP {
 	left: 20vw;
-	top: 25vh;
+	top: 30vh;
 }
 
 .PvA {
 	right: 20vw;
-	top: 25vh;
+	top: 30vh;
 }
 
 .LocalP {
 	right: 20vw;
-	bottom: 35vh;
+	bottom: 32vh;
 }
 
 .Tournament
 {
 	left: 20vw;
-	bottom: 35vh;
+	bottom: 32vh;
 }
 
 .Start {
-	bottom: 13vh;
+	bottom: 9vh;
 	left: 40vw;
 }
 
@@ -82,15 +87,15 @@ body {
 
 .Easy {
 	right: 33.5vw;
-	top: 40vh;
+	top: 43vh;
 }
 
 .Medium {
-	right: 27.5vw;
-	top: 40vh;
+	right: 27vw;
+	top: 43vh;
 }
 
 .Hard {
-	right: 21.5vw;
-	top: 40vh;
+	right: 20.5vw;
+	top: 43vh;
 }

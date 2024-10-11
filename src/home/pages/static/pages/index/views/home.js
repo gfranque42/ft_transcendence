@@ -1,3 +1,6 @@
+import {DNS} from "../js/dns.js";
+
+
 // import abstractviews from "./abstractviews.js";
 
 // export default class extends abstractviews {

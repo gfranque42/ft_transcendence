@@ -6,8 +6,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - Transcendence
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - ./authapi:/project
     env_file:
@@ -70,8 +70,8 @@ services:
     build:
       context: ./sudoku/
       dockerfile: Dockerfile
-    ports:
-      - "8005:8005"
+    expose:
+      - "8005"
     networks:
       - Transcendence
     volumes:

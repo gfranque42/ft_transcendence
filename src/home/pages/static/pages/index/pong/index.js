@@ -7,7 +7,7 @@ game modes:
 	3 = pva hard
 */
 import Pong from "../views/pong.js";
-
+import { navigateToInstead } from "../js/index.js";
 let	gameMode = -1;
 
 function PvA()
@@ -368,15 +368,9 @@ export async function checkConnection()
 
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
 	if (!response.ok)
 	{
-		const link = document.createElement('a');
-		link.href = '/login/';
-		link.setAttribute('data-link', '');
-		document.body.appendChild(link);
-		console.log(link);
-		link.click();
-		document.body.removeChild(link);
+		navigateToInstead("/login/");
 	}
 }

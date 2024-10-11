@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+<!-- write a room does not exist html page -->
 {% load static %}
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
@@ -8,13 +9,13 @@
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
 	<!-- <link rel="stylesheet" type="text/css" href="/static/pages/pages.css"> -->
-    <link rel="stylesheet" type="text/css" href="https://localhost:8083/sudokubattle/static/pages/pages.css?request_by=Home">
+	<link rel="stylesheet" type="text/css" href="https://localhost:8083/sudokubattle/static/pages/pages.css?request_by=Home">
 	<!-- <meta name="csrf-token" content="{{ csrf_token }}"> -->
 </head>
 <body>
 	{% csrf_token %}
 	<div class="main_text">
-		<h1>Waiting for an opponent...</h1>
+		<h1>Room does not exist</h1>
 	</div>
 </body>
 </html>

@@ -24,6 +24,12 @@ export function setSocket(newsocket)
 export function setGame() {
 	//Digits 1-9
 
+	const boardContainer = document.getElementById("board");
+	boardContainer.innerHTML = '';
+
+	const digitsContainer = document.getElementById("digits");
+	digitsContainer.innerHTML = '';
+
 	for (let i = 1; i<=9; i++) {
 		let number = document.createElement("div");
 		number.id = i;

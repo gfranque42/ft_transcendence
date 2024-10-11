@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4ck-deqpp#qu5%=dd*#b&kbh(gmec$=-+xbjzsaj&(!!5x!(hq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 
@@ -61,12 +61,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ft_transcendence.urls'
 
-
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8000', 'https://localhost:8083', 'http://127.0.0.1:8000', 'https://127.0.0.1:8083' 
+    'https://127.0.0.1:8083', 'https://localhost:8083', f"https://{os.getenv('DNS')}:8083"
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'https://localhost:8083', 'https://127.0.0.1:8083',]
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -167,7 +166,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'pages/static'),
+]
+
+# STATIC_ROOT = BASE_DIR / 'pages/static'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -175,6 +181,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ALLOWED_HOSTS = ['localhost']
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
-
-
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', os.getenv('DNS')]

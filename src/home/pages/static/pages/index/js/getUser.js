@@ -1,5 +1,8 @@
 
 import {setCookie, getCookie, eraseCookie} from "../js/cookie.js";
+import {DNS} from "./dns.js";
+
+
 
 export async function getUser()
 {
@@ -16,9 +19,8 @@ export async function getUser()
 		}
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token', options);
+	const response = await fetch('https://'+DNS+':8083/auth/test_token?request_by=Home', options);
 	const UserInformation = await response.json();
-	console.log(UserInformation);
 
 	return UserInformation;
 }

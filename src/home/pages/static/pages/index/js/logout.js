@@ -1,3 +1,4 @@
+import {DNS} from "./dns.js";
 
 export async function logout(userToken) {
 	const token = await userToken;
@@ -5,7 +6,7 @@ export async function logout(userToken) {
 	if (!token)
 		return null;
 
-	let response = await fetch('https://localhost:8083/auth/logout', {
+	let response = await fetch('https://'+DNS+':8083/auth/logout?request_by=Home', {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
