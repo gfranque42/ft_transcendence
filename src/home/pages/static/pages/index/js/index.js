@@ -7,8 +7,8 @@ import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
 import Pong from "../views/pong.js";
 import PongLobby from "../views/pong_lobby.js";
-import {vec2, paddle, ball, game, waitForSocketConnection, wsonmessage} from  "../pong/pong.js";
-import {eventPong, checkConnection} from "../pong/index.js";
+import { vec2, paddle, ball, game, waitForSocketConnection, wsonmessage, testToken } from "../pong/pong.js";
+import { eventPong, checkConnection } from "../pong/index.js";
 import Profile from "../views/profile.js";
 import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
@@ -16,6 +16,7 @@ import SudokuWaiting from "../views/waiting_sudoku.js";
 
 import { initialize } from "./sudoku/sudoku.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
+
 
 import {getRenewedToken} from "./token.js";
 import {logout} from "./logout.js";
@@ -41,7 +42,7 @@ async function renewToken() {
 }
 
 function isEmptyOrWhitespace(str) {
-    return !str || /^\s*$/.test(str);
+	return !str || /^\s*$/.test(str);
 }
 
 
@@ -66,8 +67,8 @@ checkValidity();
 
 
 window.addEventListener('beforeunload', function (event) {
-    console.log("UNLOADING");
-    logout(UserToken);
+	console.log("UNLOADING");
+	logout(UserToken);
 });
 
 export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
@@ -85,13 +86,13 @@ const getParams = match => {
 };
 
 export const navigateTo = url => {
-    history.pushState(null, null, url);
-    router();
+	history.pushState(null, null, url);
+	router();
 };
 
 export const navigateToInstead = url => {
-    history.replaceState(null, null, url);
-    router();
+	history.replaceState(null, null, url);
+	router();
 };
 
 function JSONItirator(form) {
@@ -135,24 +136,24 @@ function JSONItirator(form) {
         element.textContent = "";
 });
 
+
 }
 async function navigateAfterPost(UserToken) {
-    const token = await UserToken;
-    if (token)
-        navigateTo("/");
+	const token = await UserToken;
+	if (token)
+		navigateTo("/");
 }
 
 async function checkOTP(status, token) {
-    const tmp = await status;
-    if (tmp.error)
-    {
-        const errorElements = document.querySelector(".error");
-        errorElements.innerHTML = "Invalide verification code";
-        return false;
-    }
-    UserToken = token;
-    navigateAfterPost(UserToken);
-    return true;
+	const tmp = await status;
+	if (tmp.error) {
+		const errorElements = document.querySelector(".error");
+		errorElements.innerHTML = "Invalide verification code";
+		return false;
+	}
+	UserToken = token;
+	navigateAfterPost(UserToken);
+	return true;
 }
 
 function VerificationEvent(verification, token) {
@@ -171,17 +172,17 @@ function VerificationEvent(verification, token) {
 }
 
 function hidePopstate() {
-    var qrCode = document.getElementById('qr-code');
-    var emailCode = document.getElementById('email-code');
-    var smsCode = document.getElementById('sms-code');
-    var friendRequest = document.getElementById('friend-request-code');
-    var clickOff = document.getElementById('click-off');
+	var qrCode = document.getElementById('qr-code');
+	var emailCode = document.getElementById('email-code');
+	var smsCode = document.getElementById('sms-code');
+	var friendRequest = document.getElementById('friend-request-code');
+	var clickOff = document.getElementById('click-off');
 
-    if (qrCode) qrCode.style.display = 'none';
-    if (emailCode) emailCode.style.display = 'none';
-    if (smsCode) smsCode.style.display = 'none';
-    if (friendRequest) friendRequest.style.display = 'none';
-    if (clickOff) clickOff.style.filter = 'none';
+	if (qrCode) qrCode.style.display = 'none';
+	if (emailCode) emailCode.style.display = 'none';
+	if (smsCode) smsCode.style.display = 'none';
+	if (friendRequest) friendRequest.style.display = 'none';
+	if (clickOff) clickOff.style.filter = 'none';
 }
 
 const router = async () => {
@@ -391,7 +392,6 @@ const router = async () => {
             });
         });
 	} else if (match.route.path == "/sudoku/") {
-
 		inSudoku = true;
 		changeUsername(view);
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
@@ -405,14 +405,38 @@ const router = async () => {
 		}
 	} else if (match.route.path == "/pong/") {
 		await checkConnection();
+		myGame.reset();
 		eventPong(view);
 
 	} else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
 		await checkConnection();
+		window.addEventListener('beforeunload', function (event) {
+			// Perform cleanup actions here
+			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+				roomSocket.close();
+			}
+			myGame.gameState = "end";
+			// Optionally, you can show a confirmation dialog (optional)
+			event.preventDefault();  // Some browsers require this
+			event.returnValue = '';  // This prompts the confirmation dialog in most browsers
+		});
+
+		// Handle back/forward navigation using the "popstate" event
+		window.addEventListener('popstate', function (event) {
+			// Perform any specific cleanup needed here
+			console.log('Back or forward button pressed');
+			
+			// Close WebSocket connection if it's open
+			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+				roomSocket.close();
+			}
+			myGame.gameState = "end";
+
+		});
+
 		var socketProtocol = 'ws://';
 		console.log(window.location.protocol);
-		if (window.location.protocol === 'https:')
-		{
+		if (window.location.protocol === 'https:') {
 			console.log('protocol https');
 			socketProtocol = 'wss://';
 		}
@@ -423,32 +447,35 @@ const router = async () => {
 			+ '/ws'
 			+ window.location.pathname
 		);
-		await waitForSocketConnection(roomSocket);
 
-		console.log('my game is ready: ', myGame.gameState);
+		let canvas = document.getElementById('canvas');
+		let ctx = canvas.getContext('2d');
 
-		const canvas = document.getElementById('canvas');
-		const ctx = canvas.getContext('2d');
-		canvas.width = window.innerWidth * 0.8;
-		canvas.height = window.innerHeight * 0.7;
-		roomSocket.onmessage = function (e)
-		{
+		roomSocket.onopen = function () {
+			testToken(roomSocket).then(() => {
+				myGame.reset();
+				console.log('my game is ready: ', myGame.gameState);
+
+				canvas.width = window.innerWidth * 0.8;
+				canvas.height = window.innerHeight * 0.7;
+			});
+		}
+		roomSocket.onmessage = function (e) {
 			const data = JSON.parse(e.data);
-			if (data.type === "fin du compte")
-			{
+			if (data.type === "fin du compte") {
 				myGame.gameState = "playing";
+				console.log("my gamestate: ",myGame.gameState);
 			}
 			wsonmessage(data, roomSocket, canvas, ctx);
 		};
 
-		roomSocket.onclose = function (e)
-		{
-			console.error('Chat socket closed unexpectedly');
+		roomSocket.onclose = function (e) {
+			console.log('Chat socket closed');
 		};
 
 		let starttime = Date.now();
-		while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
-		{	
+        while (myGame.gameState != "end")
+        {	
 			let elapstime = Date.now() - starttime;
 			console.log("time: ",elapstime);
 			if (elapstime > 1000 / 60)
@@ -458,12 +485,12 @@ const router = async () => {
 				console.log(".");
 			}
 			await new Promise(r => setTimeout(r, 2));
-		}
+        }
 	}
 
 	displayUser();
 };
-    
+
 async function getToken() {
     return await UserToken;
 }
@@ -637,5 +664,4 @@ document.addEventListener("DOMContentLoaded", () => {
             verification.LastCheckAddVerification(TmpToken);
         }
     });
-
 });
