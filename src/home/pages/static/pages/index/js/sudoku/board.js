@@ -38,60 +38,39 @@ export function setGame() {
 		number.classList.add("number");
 		document.getElementById("digits").appendChild(number);
 	}
-	
-	//console.log()
-	// Board 9x9
+
 	for (let r = 0; r < 9; r++) {
 		for (let c = 0; c < 9; c++) {
 			let tile = document.createElement("div");
-			tile.id = r.toString() + "-" + c.toString();
-			if (board[r][c] != 0)
-			{
+			tile.id = `${r}-${c}`; // Set tile ID as row-col format
+			tile.classList.add("tile");
+
+			// Set initial value if it's not 0
+			if (board[r][c] != 0) {
 				tile.innerText = board[r][c];
 				tile.classList.add("tile-start");
 			}
-			if (r == 0 && c == 0) {
-				tile.classList.add("corner-top-left");
-			}
-			if (r == 0 && c == 8) {
-				tile.classList.add("corner-top-right");
-			}
-			if (r == 8 && c == 0) {
-				tile.classList.add("corner-bottom-left");
-			}
-			if (r == 8 && c == 8) {
-				tile.classList.add("corner-bottom-right");
-			}
-			if (r == 2 || r == 5) {
-				tile.classList.add("horizontal-line");
-			}
-			if (c == 2 || c == 5) {
-				tile.classList.add("vertical-line");
-			}
-			if (r == 0) {
-				tile.classList.add("horizontal-top-line");
-			}
-			if (r == 8) {
-				tile.classList.add("horizontal-bottom-line");
-			}
-			if (c == 0) {
-				tile.classList.add("vertical-left-line");
-			}
-			if (c == 8) {
-				tile.classList.add("vertical-right-line");
-			}
-			if (r == 0 || r == 8) {
-				tile.classList.add("outer-line");
-			}
-			if (c == 0 || c == 8) {
-				tile.classList.add("outer-line");
-			}
+
 			tile.addEventListener("click", selectTile);
-			tile.classList.add("tile");
-			document.getElementById("board").appendChild(tile);
+			boardContainer.appendChild(tile);
 		}
 	}
+
 	document.addEventListener("keydown", handleKeyPress);
+
+	document.addEventListener("click", (event) => {
+		if (!event.target.classList.contains("tile") && !event.target.classList.contains("number")) {
+			clearHighlights();
+			if (tileSelected) {
+				tileSelected.classList.remove("tile-selected");
+				tileSelected = null;
+			}
+			if (numSelected) {
+				numSelected.classList.remove("number-selected");
+				numSelected = null;
+			}
+		}
+	});
 }
 
 function selectNumber() {
@@ -108,9 +87,8 @@ function selectTile() {
 				return;
 			}
 			this.innerText = numSelected.id;
-			// Mettre à jour la grille de jeu
 			const [row, col] = this.id.split('-').map(Number);
-			board[row][col] = Number(numSelected.id); // Met à jour le tableau board
+			board[row][col] = Number(numSelected.id);
 			numSelected.classList.remove("number-selected");
 			numSelected = null;
 			this.classList.remove("tile-selected");
@@ -118,25 +96,22 @@ function selectTile() {
 			clearHighlights();
 		}
 
-		
 		if (tileSelected != null) {
 			tileSelected.classList.remove("tile-selected");
 			clearHighlights();
 		}
 		tileSelected = this;
 		tileSelected.classList.add("tile-selected");
-		highlightRelatedTiles(tileSelected); // Mettre en évidence les cases liées
+		highlightRelatedTiles(tileSelected);
 		let number = tileSelected.innerText;
 		if (number != 0) {
-			highlightSameNumberTiles(number); // Mettre en évidence les chiffres similaires
+			highlightSameNumberTiles(number);
 		}
 
-		// Vérifier la validité de la grille
 		if (!isValidSudoku(board)) {
 			console.log("Grille invalide");
 		}
 
-		// Vérifier si le jeu est terminé
 		if (isBoardComplete(board) && isValidSudoku(board)) {
 			console.log("Grille complète");
 			const timeUsed = document.getElementById("timer").innerText;
@@ -154,20 +129,26 @@ function handleKeyPress(event) {
 		let key = event.key;
 		if (key >= '1' && key <= '9') {
 			tileSelected.innerText = key;
-			// Mettre à jour la grille de jeu
             const [row, col] = tileSelected.id.split('-').map(Number);
-            board[row][col] = Number(key); // Met à jour le tableau board
-			tileSelected.classList.remove("tile-selected"); // Retirer la couleur temporaire lors de la saisie
+            board[row][col] = Number(key);
+			tileSelected.classList.remove("tile-selected");
+			tileSelected = null;
+			clearHighlights();
+		}
+		if (key == 'Backspace' || key == 'Delete') {
+			tileSelected.innerText = '';
+			const [row, col] = tileSelected.id.split('-').map(Number);
+			board[row][col] = 0;
+			tileSelected.classList.remove("tile-selected");
 			tileSelected = null;
 			clearHighlights();
 		}
 	}
-	// Vérifier la validité de la grille
+
 	if (!isValidSudoku(board)) {
 		console.log("Grille invalide");
 	}
 
-	// Vérifier si le jeu est terminé
 	if (isBoardComplete(board) && isValidSudoku(board)) {
 		console.log("Grille complète");
 		const timeUsed = document.getElementById("timer").innerText;
@@ -183,13 +164,11 @@ function handleKeyPress(event) {
 function highlightRelatedTiles(tile) {
 	let [row, col] = tile.id.split("-").map(Number);
 
-	// Highlight row and column
 	for (let i = 0; i < 9; i++) {
 		document.getElementById(row + "-" + i).classList.add("tile-highlight");
 		document.getElementById(i + "-" + col).classList.add("tile-highlight");
 	}
 
-	// Highlight 3x3 square
 	let startRow = Math.floor(row / 3) * 3;
 	let startCol = Math.floor(col / 3) * 3;
 	for (let r = startRow; r < startRow + 3; r++) {
