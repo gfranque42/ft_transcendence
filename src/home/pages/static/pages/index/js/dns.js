@@ -1,1 +1,1 @@
-export const DNS='made-f0Cr12s5';
+export const DNS = window.location.hostname;

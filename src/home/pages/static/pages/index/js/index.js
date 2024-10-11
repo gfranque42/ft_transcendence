@@ -7,8 +7,8 @@ import Verification from "../views/Verification.js";
 import Register from "../views/register.js";
 import Pong from "../views/pong.js";
 import PongLobby from "../views/pong_lobby.js";
-import {vec2, paddle, ball, game, waitForSocketConnection, wsonmessage} from  "../pong/pong.js";
-import {eventPong, checkConnection} from "../pong/index.js";
+import { vec2, paddle, ball, game, waitForSocketConnection, wsonmessage, testToken } from "../pong/pong.js";
+import { eventPong, checkConnection } from "../pong/index.js";
 import Profile from "../views/profile.js";
 import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
@@ -16,6 +16,7 @@ import SudokuWaiting from "../views/waiting_sudoku.js";
 
 import { initialize, eventFunc, gameInProgress } from "./sudoku/sudoku.js";
 import { PvP, Solo, Start, Easy, Medium, Hard, changeUsername } from "./sudoku/lobby.js";
+
 
 import {getRenewedToken} from "./token.js";
 import {logout} from "./logout.js";
@@ -41,7 +42,7 @@ async function renewToken() {
 }
 
 function isEmptyOrWhitespace(str) {
-    return !str || /^\s*$/.test(str);
+	return !str || /^\s*$/.test(str);
 }
 
 
@@ -66,8 +67,8 @@ checkValidity();
 
 
 window.addEventListener('beforeunload', function (event) {
-    console.log("UNLOADING");
-    logout(UserToken);
+	console.log("UNLOADING");
+	logout(UserToken);
 });
 
 export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
@@ -85,13 +86,13 @@ const getParams = match => {
 };
 
 export const navigateTo = url => {
-    history.pushState(null, null, url);
-    router();
+	history.pushState(null, null, url);
+	router();
 };
 
 export const navigateToInstead = url => {
-    history.replaceState(null, null, url);
-    router();
+	history.replaceState(null, null, url);
+	router();
 };
 
 function JSONItirator(form) {
@@ -135,24 +136,24 @@ function JSONItirator(form) {
         element.textContent = "";
 });
 
+
 }
 async function navigateAfterPost(UserToken) {
-    const token = await UserToken;
-    if (token)
-        navigateTo("/");
+	const token = await UserToken;
+	if (token)
+		navigateTo("/");
 }
 
 async function checkOTP(status, token) {
-    const tmp = await status;
-    if (tmp.error)
-    {
-        const errorElements = document.querySelector(".error");
-        errorElements.innerHTML = "Invalide verification code";
-        return false;
-    }
-    UserToken = token;
-    navigateAfterPost(UserToken);
-    return true;
+	const tmp = await status;
+	if (tmp.error) {
+		const errorElements = document.querySelector(".error");
+		errorElements.innerHTML = "Invalide verification code";
+		return false;
+	}
+	UserToken = token;
+	navigateAfterPost(UserToken);
+	return true;
 }
 
 function VerificationEvent(verification, token) {
@@ -171,17 +172,17 @@ function VerificationEvent(verification, token) {
 }
 
 function hidePopstate() {
-    var qrCode = document.getElementById('qr-code');
-    var emailCode = document.getElementById('email-code');
-    var smsCode = document.getElementById('sms-code');
-    var friendRequest = document.getElementById('friend-request-code');
-    var clickOff = document.getElementById('click-off');
+	var qrCode = document.getElementById('qr-code');
+	var emailCode = document.getElementById('email-code');
+	var smsCode = document.getElementById('sms-code');
+	var friendRequest = document.getElementById('friend-request-code');
+	var clickOff = document.getElementById('click-off');
 
-    if (qrCode) qrCode.style.display = 'none';
-    if (emailCode) emailCode.style.display = 'none';
-    if (smsCode) smsCode.style.display = 'none';
-    if (friendRequest) friendRequest.style.display = 'none';
-    if (clickOff) clickOff.style.filter = 'none';
+	if (qrCode) qrCode.style.display = 'none';
+	if (emailCode) emailCode.style.display = 'none';
+	if (smsCode) smsCode.style.display = 'none';
+	if (friendRequest) friendRequest.style.display = 'none';
+	if (clickOff) clickOff.style.filter = 'none';
 }
 
 const router = async () => {
@@ -391,10 +392,9 @@ const router = async () => {
                 }
             });
         });
-    } else if (match.route.path == "/sudoku/") {
-
-        inSudoku = true;
-        changeUsername(view);
+	} else if (match.route.path == "/sudoku/") {
+		inSudoku = true;
+		changeUsername(view);
     } else if (match.route.path == '/sudoku/[A-Za-z0-9]{10}/') {
         if (!inSudoku)
         {
@@ -464,7 +464,7 @@ const router = async () => {
 
     displayUser();
 };
-    
+
 async function getToken() {
     return await UserToken;
 }
@@ -541,6 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // checkValidity();
 
     console.log("DOM loading")
+    // getHostname();
 
     const handleHomePageLoad = () => {
         console.log("handleHomePageLoad");
@@ -660,5 +661,4 @@ document.addEventListener("DOMContentLoaded", () => {
             verification.LastCheckAddVerification(TmpToken);
         }
     });
-
 });
