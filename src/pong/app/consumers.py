@@ -29,12 +29,13 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			# 	self.close()
 			# 	return
 			# Join room group
-			await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 			if self.room_name == gTournament.lobbyRoom.roomName:
 				self.tournament = True
-				if gTournament.lobbyRoom.roomName == None:
+				if gTournament.lobbyRoom.channelLayer == None:
 					gTournament.lobbyRoom.channelLayer = get_channel_layer()
+					print(self.room_name,": channel layer type: ",type(gTournament.lobbyRoom.channelLayer),flush=True)
 					gTournament.lobbyRoom.roomGroupName = self.room_group_name
+					print(self.room_name,": groupname: ",self.room_group_name,flush=True)
 					gTournament.lobbyRoom.channelName = self.channel_name
 				await self.accept()
 			else:
@@ -51,6 +52,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		except Exception as e:
 			print(self.room_name,": error: ",e,flush=True)
 			self.close()
+		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
 	async def disconnect(self, close_code):
 		if self.tournament == True:
@@ -166,10 +168,11 @@ class	PongConsumer(AsyncWebsocketConsumer):
 										"player1Name": gTournament.rooms[self.room_name].players[0],
 										"player2Name": gTournament.rooms[self.room_name].players[1],}))
 
-	async def tournament(self, event):
+	async def tournamentRedirect(self, event):
+		print("Event received in tournament: ", event, flush=True)
 		print("From Tournament: ",event["numberOfRooms"]," number of rooms",flush=True)
 		roomKey = ""
-		for key, value in event.item():
+		for key, value in event.items():
 			if value == self.username:
 				roomKey = key
 				break

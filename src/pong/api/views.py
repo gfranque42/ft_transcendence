@@ -96,6 +96,7 @@ def	getIndex(request):
 		status = "Tournament in progress"
 	else:
 		status = str(gTournament.lobbyRoom.nbPlayers - len(gTournament.lobbyRoom.players))+" left to start"
+	print("number of players waiting for the tournament: ",len(gTournament.lobbyRoom.players),flush=True)
 	context = {
 		'status': status,
 		'url': gTournament.lobbyRoom.roomName,

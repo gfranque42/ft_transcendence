@@ -97,7 +97,7 @@ class	room():
 
 	@database_sync_to_async
 	def	removePlayer(self, player: str) -> None:
-		print(self.roomName,": I have to remove ",player,flush=True)
+		print(self.roomName,": I have to remove ",player," in partyType: ",self.partyType,flush=True)
 		if self.partyType < 4:
 			try:
 				room = Room.objects.get(url=self.roomName)
@@ -118,6 +118,9 @@ class	room():
 					print(room.playerCount,flush=True)
 				else:
 					raise roomException(self.roomName+": Player " + player + " isn't in this room!", 1002)
+		if self.partyType == 6 or self.partyType == 5:
+			if player in self.players:
+				self.players.remove(player)
 
 	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
@@ -307,30 +310,35 @@ class	tournament():
 				return 0
 		return 1
 
-	async def	sendRooms(self) -> None:
-		infos = {'type': 'tournament', 'message': 'tournament'}
-		infos['numberOfRooms'] = len(self.players) / 2
+	def	sendRooms(self) -> None:
+		infos = {'type': 'tournamentRedirect', 'message': 'tournament'}
+		infos['numberOfRooms'] = int(len(self.players) / 2)
 		i = 0
 		for key in self.rooms:
+			print("key: ",key,flush=True)
 			roomName = "Room"+str(i)
 			infos[roomName] = key
 			roomNamep1 = roomName+str(1)
 			infos[roomNamep1] = self.players[i * 2]
 			roomNamep1 = roomName+str(2)
 			infos[roomNamep1] = self.players[i * 2 + 1]
+			i += 1
 		print("infos de sendRooms: ",infos,flush=True)
-		await self.channelLayer.group_send(self.roomGroupName, infos)
+		print("channelLayer: ",self.lobbyRoom.channelLayer,", roomgroupname: ",self.lobbyRoom.roomGroupName,flush=True)
+		print("booooooooooooooob:[",async_to_sync(self.lobbyRoom.channelLayer.group_send)(self.lobbyRoom.roomGroupName, infos),"]",flush=True)
 
 	def	start(self) -> None:
 		print(self.lobbyRoom.roomName,": from start, thread in comming",flush=True)
 		self.thread = Thread(target=self.routine, args=())
 		self.inTour = True
+		self.players = self.lobbyRoom.players
 		self.thread.start()
 		if self.thread:
 			self.thread.join()
 
 	def	routine(self) -> None:
 		print(self.lobbyRoom.roomName,": bisous de la routine",flush=True)
+		print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
 		while len(self.players) > 1:
 			print(self.lobbyRoom.roomName,": liste des joueurs: ",self.players,flush=True)
 			self.shufflePlayers()
@@ -339,11 +347,14 @@ class	tournament():
 			while i < (len(self.players) / 2):
 				url = randomUrl()
 				self.rooms[url] = room(url,2,5)
-			async_to_sync(self.sendRooms)()
+				i += 1
+			self.sendRooms()
 			while self.checkRoom() == 0:
 				async_to_sync(asyncio.sleep)(1)
 			for key in self.rooms:
-				self.rooms[key].thread.join()
+				if self.rooms[key].thread:
+					print(self.lobbyRoom.roomName,": je join la room ",self.rooms[key].roomName,flush=True)
+					self.rooms[key].thread.join()
 			for key in self.rooms:
 				self.players.remove(self.rooms[key].looser)
 			self.lobbyRoom.players.clear()
