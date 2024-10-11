@@ -60,7 +60,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         room = await sync_to_async(SudokuRoom.objects.get)(url=self.room_name)
         multiplayer = room.multiplayer
         player1 = await sync_to_async(get_player1)(room)
-        player2 = await sync_to_async(get_player2)(room) if multiplayer else None
+        player2 = await sync_to_async(get_player2)(room) if multiplayer and room.is_full else None
         
         # Mark room as completed
         room.is_completed = True
