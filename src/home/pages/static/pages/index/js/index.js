@@ -548,6 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // checkValidity();
 
     console.log("DOM loading")
+    // getHostname();
 
     const handleHomePageLoad = () => {
         console.log("handleHomePageLoad");

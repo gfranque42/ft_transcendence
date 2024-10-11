@@ -2,13 +2,10 @@ import abstractviews from "./abstractviews.js";
 import {getCookie} from "../js/cookie.js";
 import {navigateToInstead} from "../js/index.js";
 import {DNS} from "../js/dns.js";
+import {loadCSS} from "../js/loadCSS.js";
 
 
-// var DICT = {
-//     "sms": false,
-//     "email": false,
-//     "app": false,
-// };
+
 
 function isEmptyOrWhitespace(str) {
     return !str || /^\s*$/.test(str);
@@ -29,7 +26,17 @@ export default class extends abstractviews {
             navigateToInstead("/login/");
             return ;
         }
-        console.log("token Profile: " + token);
+
+        const cssFiles = [
+            'https://'+DNS+':8083/auth/static/pages/register/register.css?request_by=Home',
+            'https://'+DNS+':8083/auth/static/pages/register/login.css?request_by=Home',
+            'https://'+DNS+':8083/auth/static/pages/register/profile.css?request_by=Home',
+            'https://'+DNS+':8083/auth/static/pages/register/navbar.css?request_by=Home',
+            'https://'+DNS+':8083/auth/static/pages/register/index.css?request_by=Home'
+        ];
+
+        console.log(cssFiles);
+        cssFiles.forEach(url => loadCSS(url));
         
         const options = {
             method: 'GET',
@@ -38,6 +45,7 @@ export default class extends abstractviews {
                 'Authorization': `Token ${token}`
             }
         };
+
         
         const response = await fetch('https://'+DNS+':8083/auth/profile?request_by=Home', options);
         const tempContentHtml = await response.text();

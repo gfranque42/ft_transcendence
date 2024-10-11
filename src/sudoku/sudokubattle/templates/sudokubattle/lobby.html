@@ -5,19 +5,28 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sudoku</title>
+
+	<!-- Bootstrap CSS -->
+	<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+		integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+		crossorigin="anonymous"
+	/>
+
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 	<link href="{% static 'Sudoku.svg' %}" rel="shortcut icon" type="image/svg"/>
     <!-- <link rel="stylesheet" type="text/css" href="/static/pages/pages.css"> -->
-    <link rel="stylesheet" type="text/css" href="https://localhost:8083/sudokubattle/static/pages/pages.css?request_by=Home">
+    <link rel="stylesheet" type="text/css" href="https://{{ DNS }}:8083/sudokubattle/static/pages/pages.css?request_by=Home">
 	<!-- <meta name="csrf-token" content="{{ csrf_token }}"> -->
 </head>
 <body>
 	{% csrf_token %}
     <div class="navbar">
-		<a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="https://localhost:8083/static/pages/Group.svg" alt="Logo"></a>
-		<a href="/" class="navbar-content" id="home" data-link>HOME</a>
-		<a href="/register/" class="navbar-content" id="user" data-link>REGISTER</a>
-	  </div>
+		<a href="/"   class="navbar-content" id="logo" data-link><img class=" navbar-logo" src="{% static 'pages/Group.svg' %}" alt="Logo" data-link></a>
+		<a href="/" class="navbar-content navbar-home" id="home" data-link>HOME</a>
+		<a href="/register/" class="navbar-content navbar-user" id="user" data-link>REGISTER</a>
+    </div>
 	<button class="PvP Button" data-action="PvP">Player vs Player</button>
 	<button class="Solo Button" data-action="Solo">Solo Play</button>
 	<button class="Start Button" data-action="Start">Start Game</button>
