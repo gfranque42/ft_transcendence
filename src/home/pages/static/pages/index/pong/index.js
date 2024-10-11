@@ -1,3 +1,5 @@
+import {DNS} from "../js/dns.js";
+
 /*
 game modes:
 	-1 = no modes
@@ -199,7 +201,7 @@ async function checkRoom(options, gameMode)
 {
 	if (gameMode != 0)
 		return "None";
-	const response = await fetch('https://localhost:8083/api_pong/getroom', options);
+	const response = await fetch('https://'+DNS+':8083/api_pong/getroom?request_by=Home', options);
 	const rooms = await response.json();
 	console.log('rooms:',rooms);
 	let room;
@@ -278,7 +280,7 @@ export async	function Start(csrftoken, url)
 			{
 				getCookie('token');
 				// console.log('dns: ', dns);
-				const fetchurl = 'https://localhost:8083/api_pong/postroom/';
+				const fetchurl = 'https://'+DNS+':8083/api_pong/postroom/?request_by=Home';
 				// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
 				console.log('fetchurl: ', fetchurl);
 				const response = await fetch(fetchurl, {
@@ -368,7 +370,7 @@ export async function checkConnection()
 
 	};
 
-	const response = await fetch('https://localhost:8083/auth/test_token?request_by=Home', options);
+	const response = await fetch('https://'+DNS+':8083/auth/test_token?request_by=Home', options);
 	if (!response.ok)
 	{
 		navigateToInstead("/login/");

@@ -18,8 +18,8 @@ services:
     build:
       context: ./pong/
       dockerfile: Dockerfile
-    ports:
-      - "8002:8002"
+    expose:
+      - "8002"
     networks:
       - Transcendence
     volumes:
