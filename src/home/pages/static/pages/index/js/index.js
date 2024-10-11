@@ -432,19 +432,19 @@ const router = async () => {
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth * 0.8;
         canvas.height = window.innerHeight * 0.7;
-        roomSocket.onmessage = function (e)
-        {
-            const data = JSON.parse(e.data);
-            if (data.type === "fin du compte")
-            {
-                myGame.gameState = "playing";
-            }
-            wsonmessage(data, roomSocket, canvas, ctx);
-        };
+  		});
+		}
+		roomSocket.onmessage = function (e) {
+			const data = JSON.parse(e.data);
+			if (data.type === "fin du compte") {
+				myGame.gameState = "playing";
+				console.log("my gamestate: ",myGame.gameState);
+			}
+			wsonmessage(data, roomSocket, canvas, ctx);
+		};
 
-        roomSocket.onclose = function (e)
-        {
-            console.error('Chat socket closed unexpectedly');
+        roomSocket.onclose = function (e) {
+          console.log('Chat socket closed');
         };
 
         let starttime = Date.now();

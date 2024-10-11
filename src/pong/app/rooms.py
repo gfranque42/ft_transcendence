@@ -2,6 +2,7 @@ from typing import List, Optional
 from threading import Thread, Lock
 import threading
 from .pong import *
+from .consumers import *
 from .models import Room
 import asyncio
 from channels.db import database_sync_to_async
@@ -9,6 +10,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 from concurrent.futures import ThreadPoolExecutor
 import time
 import random
+from channels.layers import get_channel_layer
 
 class	roomException(Exception):
 	def	__init__(self, message: str, errorCode: int) -> None:
@@ -178,6 +180,7 @@ class	room():
 					self.looser = self.players[1]
 				else:
 					self.looser = self.players[0]
+				print(self.roomName,": looseeeeeerrrrrr: ",self.looser,flush=True)
 				message = "finish"
 				print(self.roomName,": the game is finished",flush=True)
 			self.sendUpdate(message)
@@ -191,6 +194,9 @@ class	room():
 	def	updateData(self, data, username: str) -> None:
 		# with self.lock:
 		print(self.roomName,": data receive for updateData",flush=True)
+		print(self.roomName,": username: ",username,flush=True)
+		print(self.roomName,": player0: ",self.players[0],flush=True)
+		print(self.roomName,": player1: ",self.players[1],flush=True)
 		if self.partyType == 4:
 			if data['w'] == True:
 				self.paddleL.key -= self.paddleL.vel
@@ -200,8 +206,10 @@ class	room():
 				self.paddleR.key -= self.paddleR.vel
 			if data['down'] == True:
 				self.paddleR.key += self.paddleR.vel
-		elif self.partyType == 0 and self.partyType == 5:
+		elif self.partyType == 0 or self.partyType == 5:
+			print("here I am",flush=True)
 			if username == self.players[0]:
+				print("rock you",flush=True)
 				if data['w'] == True:
 					self.paddleL.key -= self.paddleL.vel
 				if data['s'] == True:
@@ -211,6 +219,7 @@ class	room():
 				if data['down'] == True:
 					self.paddleL.key += self.paddleL.vel
 			else:
+				print("like a hurricane",flush=True)
 				if data['w'] == True:
 					self.paddleR.key -= self.paddleR.vel
 				if data['s'] == True:
@@ -284,13 +293,14 @@ def	randomUrl() -> str:
 
 class	tournament():
 	def	__init__(self) -> None:
-		self.lobbyRoom: room				= room(randomUrl(), 4, 6)
+		self.lobbyRoom: room				= room(randomUrl(), 2, 6)
 		# lroom = Room.objects.create(url=self.lobbyRoom.roomName,difficulty=6,maxPlayers=8)
 		# lroom.save()
 		self.rooms							= {}
 		self.players: List[str]				= []
 		self.thread: Optional[threading.Thread]	= None
 		self.inTour: bool					= False
+		self.consumer: PongConsumer			= None
 
 	def	shufflePlayers(self) -> None:
 		playerPlaces = []
@@ -310,7 +320,8 @@ class	tournament():
 				return 0
 		return 1
 
-	def	sendRooms(self) -> None:
+	async def	sendRooms(self) -> None:
+		print("don't forget to bring a towel !",flush=True)
 		infos = {'type': 'tournamentRedirect', 'message': 'tournament'}
 		infos['numberOfRooms'] = int(len(self.players) / 2)
 		i = 0
@@ -324,8 +335,12 @@ class	tournament():
 			infos[roomNamep1] = self.players[i * 2 + 1]
 			i += 1
 		print("infos de sendRooms: ",infos,flush=True)
-		print("channelLayer: ",self.lobbyRoom.channelLayer,", roomgroupname: ",self.lobbyRoom.roomGroupName,flush=True)
-		print("booooooooooooooob:[",async_to_sync(self.lobbyRoom.channelLayer.group_send)(self.lobbyRoom.roomGroupName, infos),"]",flush=True)
+		try:
+			print("channelLayer: ",self.lobbyRoom.channelLayer,", roomgroupname: ",self.lobbyRoom.roomGroupName,flush=True)
+			await self.consumer.channel_layer.group_send(self.consumer.room_group_name, infos)
+			print("send_group ok!",flush=True)
+		except Exception as e:
+			print("error with group_send: ",e,flush=True)
 
 	def	start(self) -> None:
 		print(self.lobbyRoom.roomName,": from start, thread in comming",flush=True)
@@ -348,9 +363,9 @@ class	tournament():
 				url = randomUrl()
 				self.rooms[url] = room(url,2,5)
 				i += 1
-			self.sendRooms()
-			while self.checkRoom() == 0:
-				async_to_sync(asyncio.sleep)(1)
+			async_to_sync(self.sendRooms)()
+			# while self.checkRoom() == 0:
+			# async_to_sync(asyncio.sleep)(10)
 			for key in self.rooms:
 				if self.rooms[key].thread:
 					print(self.lobbyRoom.roomName,": je join la room ",self.rooms[key].roomName,flush=True)
