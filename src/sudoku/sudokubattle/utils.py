@@ -28,11 +28,11 @@ def solve_sudoku(board):
 
 def remove_elements(board, difficulty):
 	if difficulty == 0:
-		removals = 2
+		removals = 18
 	elif difficulty == 2:
 		removals = 50
 	else:
-		removals = 36
+		removals = 30
 
 	while removals > 0:
 		row = random.randint(0, 8)

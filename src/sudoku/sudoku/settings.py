@@ -27,7 +27,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-
+DNS = os.getenv('DNS')
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +54,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+def dns(request):
+    return {'DNS': DNS}
+
 ROOT_URLCONF = 'sudoku.urls'
 
 TEMPLATES = [
@@ -67,6 +70,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'sudoku.settings.dns',
+
             ],
         },
     },

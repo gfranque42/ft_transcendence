@@ -249,12 +249,12 @@ Content-Type: application/json
 ###
 
 
-POST https://localhost:8083/auth/games
+POST https://made-f0ar5s5:8083/auth/games?request_by=Home
 Content-Type: application/json
 
 {
-    "winner_id": "2",
-    "loser_id": "1",
+    "winner_id": "1",
+    "loser_id": "2",
     "score_winner": "11",
     "score_loser": "0",
     "game_type": "pong"

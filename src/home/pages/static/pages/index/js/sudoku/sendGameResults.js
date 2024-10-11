@@ -23,6 +23,7 @@ export async function sendGameResults(winner_id, loser_id, score_winner, score_l
 	if (response.status !== 200) {
 		return data;
 	}
+	console.log(winner_id, loser_id);
 	body["winner_id"] = winner_id;
 	body["loser_id"] = loser_id;
 	body["score_winner"] = score_winner;

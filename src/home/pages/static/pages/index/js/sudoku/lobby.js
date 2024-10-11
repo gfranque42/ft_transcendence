@@ -112,25 +112,6 @@ export function getCookie(name)
 	return cookieValue;
 }
 
-// async	export function getUser()
-// {
-// 	const token = getCookie('token');
-
-// 	const options = {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Token ${token}`
-//         }
-//     };
-
-// 	const response = await fetch('https://localhost:8083/auth/test_token', options);
-// 	const UserInformation = await response.json();
-// 	console.log(UserInformation);
-
-// 	return UserInformation;
-// }
-
 export async function Start()
 {
 	const userInfo = await getUser();
@@ -140,8 +121,10 @@ export async function Start()
 		return ;
 	}
 	console.log('Start button clicked');
-	if (gameMode == -1)
+	if (gameMode == -1) {
+		alert('Please select a game mode');
 		return ;
+	}
 
 	console.log('MULTIPLAYER??', multiplayer);
 	const roomData = {

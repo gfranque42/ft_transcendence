@@ -2,6 +2,7 @@ import {DNS} from "./dns.js";
 
 export async function getRenewedToken(token) {
 
+	console.log(DNS);
 	const options = {
 		method: 'GET',
 		headers: {

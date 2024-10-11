@@ -1,5 +1,5 @@
 .navbar {
-    width: 94vw;
+    /* width: 100vw; */
     padding-left: 3vw;
     padding-right: 3vw;
     padding-top: 1vh;
@@ -10,13 +10,13 @@
 a .navbar{
     color: #131112;
     cursor: pointer;
-    text-decoration: none;
 }
 
 
 .navbar-content {
     font-family: Oswald;
     font-size: 2.5vw;
+    line-height: 1;
 }
 
 
@@ -28,7 +28,7 @@ a .navbar{
 .navbar-home {
     top: 2%;
     left: 50vw;
-    transform: translate(-50%, 0);
+    transform: translate(-70%, 0);
     position: fixed;
 }
 
@@ -37,4 +37,46 @@ a .navbar{
     left: 95vw;
     transform: translate(-100%, 0);
     position: fixed;
+}
+
+
+.user-hover {
+    position: relative;
+    display: inline-block;
+}
+
+.user-hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px; /* Set the thickness of the underline */
+    background-color: black;
+    transition: all 0.5s ease; /* Adjust the speed of the animation */
+}
+
+.disconnect, .profile {
+    font-size: 1.2vw;
+    line-height: 0; /* Starting line-height */
+    text-align: center;
+    /* top: -1vh; */
+    transform: translateY(-30px); /* Start above */
+    transition: transform 0.5s ease, opacity 0.4s ease; /* Animate transform and opacity */
+    opacity: 0; /* Initially hidden */
+}
+
+.user-present:hover .user-hover::after {
+    width: 100%;
+    left: 0;
+}
+
+.user-present:hover .profile {
+    transform: translateY(10px); /* Move down into view */
+    opacity: 1; /* Make visible */
+}
+
+.user-present:hover .disconnect {
+    transform: translateY(45px); /* Move down into view */
+    opacity: 1; /* Make visible */
 }

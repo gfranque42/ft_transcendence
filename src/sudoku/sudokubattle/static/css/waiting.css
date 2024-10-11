@@ -3,6 +3,8 @@ body {
 	text-align: center;
 	background-color: #585481;
 	color: #FFFBFC;
+    overflow: hidden;
+
 }
 
 .main_text {
