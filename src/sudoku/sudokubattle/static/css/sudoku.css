@@ -102,6 +102,14 @@ body {
 }
 
 .tile-highlight {
+	background-color: #d6b4db;
+}
+
+.tile-selected.tile-highlight {
+	background-color: #a19cd6;
+}
+
+.tile-same-number-highlight {
 	background-color: #c69fcb;
 }
 
