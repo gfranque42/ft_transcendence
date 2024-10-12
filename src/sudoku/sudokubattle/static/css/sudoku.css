@@ -106,11 +106,11 @@ body {
 }
 
 .tile-selected.tile-highlight {
-	background-color: #a19cd6;
+	background-color: #b281ba;
 }
 
 .tile-same-number-highlight {
-	background-color: #c69fcb;
+	background-color: #b281ba;
 }
 
 .modal {

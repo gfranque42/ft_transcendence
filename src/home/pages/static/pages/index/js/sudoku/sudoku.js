@@ -1,4 +1,4 @@
-import { setBoard, setCurrentUser, setGame, setSocket } from './board.js';
+import { setBoard, setCurrentUser, setGame, setSocket, setRoomName } from './board.js';
 import { startTimer, setStartTime, stopTimer } from './timer.js';
 import { showModal } from './modal.js';
 import { getUser } from '../getUser.js';
@@ -73,6 +73,7 @@ function handleSocketMessage(e) {
 		setStartTime(startTime);
 		startTimer();
 		setBoard(board);
+		setRoomName(roomName);
 		setSocket(sudokuSocket);
 		setCurrentUser(currentUser);
 		setGame();
@@ -94,7 +95,9 @@ function handleSocketMessage(e) {
 			showModal(timeUsed, winningUser, currentUser);
 			if (currentUser === winningUser && multiplayer === true) {
 				const losingId = data.loser_id;
-				sendGameResults(losingId, winningId, 1, 0);
+				const losingUser = data.loser;
+				console.log('sending game results :', losingId, winningId, losingUser, winningUser);
+				sendGameResults(winningId, losingId, 1, 0);
 			}
 			stopTimer();
 			if (sudokuSocket) {
