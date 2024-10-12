@@ -192,7 +192,7 @@ function highlightSameNumberTiles(number) {
 	let tiles = document.querySelectorAll(".tile");
 	tiles.forEach(tile => {
 		if (tile.innerText === number) {
-			tile.classList.add("tile-highlight");
+			tile.classList.add("tile-same-number-highlight");
 		}
 	});
 }
@@ -201,5 +201,9 @@ function clearHighlights() {
 	let highlightedTiles = document.querySelectorAll(".tile-highlight");
 	highlightedTiles.forEach(tile => {
 		tile.classList.remove("tile-highlight");
+	});
+	highlightedTiles = document.querySelectorAll(".tile-same-number-highlight");
+	highlightedTiles.forEach(tile => {
+		tile.classList.remove("tile-same-number-highlight");
 	});
 }

@@ -99,3 +99,15 @@ body {
 	right: 20.5vw;
 	top: 43vh;
 }
+
+#url {
+	left: -100vw;
+	top: -100vh;
+	display: none;
+}
+
+#Status {
+	left: 15vw;
+	width: 30vw;
+	top: 66vh;
+}

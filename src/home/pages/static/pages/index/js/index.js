@@ -408,59 +408,85 @@ const router = async () => {
         await checkConnection();
         eventPong(view);
 
-    } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/") {
-        await checkConnection();
-        var socketProtocol = 'ws://';
-        console.log(window.location.protocol);
-        if (window.location.protocol === 'https:')
-        {
-            console.log('protocol https');
-            socketProtocol = 'wss://';
+    } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/")  {
+		await checkConnection();
+		window.addEventListener('beforeunload', function (event) {
+			// Perform cleanup actions here
+			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+				roomSocket.close();
+			}
+			myGame.gameState = "end";
+			// Optionally, you can show a confirmation dialog (optional)
+			event.preventDefault();  // Some browsers require this
+			event.returnValue = '';  // This prompts the confirmation dialog in most browsers
+		});
+
+		// Handle back/forward navigation using the "popstate" event
+		window.addEventListener('popstate', function (event) {
+			// Perform any specific cleanup needed here
+			console.log('Back or forward button pressed');
+			
+			// Close WebSocket connection if it's open
+			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+				roomSocket.close();
+			}
+			myGame.gameState = "end";
+
+		});
+
+		var socketProtocol = 'ws://';
+		console.log(window.location.protocol);
+		if (window.location.protocol === 'https:') {
+			console.log('protocol https');
+			socketProtocol = 'wss://';
+		}
+
+		const roomSocket = new WebSocket(
+			socketProtocol
+			+ window.location.host
+			+ '/ws'
+			+ window.location.pathname
+		);
+
+		let canvas = document.getElementById('canvas');
+		let ctx = canvas.getContext('2d');
+
+		roomSocket.onopen = function () {
+			testToken(roomSocket).then(() => {
+				myGame.reset();
+				console.log('my game is ready: ', myGame.gameState);
+
+				canvas.width = window.innerWidth * 0.8;
+				canvas.height = window.innerHeight * 0.7;
+			});
+		}
+		roomSocket.onmessage = function (e) {
+			const data = JSON.parse(e.data);
+			if (data.type === "fin du compte") {
+				myGame.gameState = "playing";
+				console.log("my gamestate: ",myGame.gameState);
+			}
+			wsonmessage(data, roomSocket, canvas, ctx);
+		};
+
+		roomSocket.onclose = function (e) {
+			console.log('Chat socket closed');
+		};
+
+		let starttime = Date.now();
+        while (myGame.gameState != "end")
+        {	
+			let elapstime = Date.now() - starttime;
+			// console.log("time: ",elapstime);
+			if (elapstime > 1000 / 60)
+			{
+				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
+				starttime += 1000 / 60;
+				// console.log(".");
+			}
+			await new Promise(r => setTimeout(r, 2));
         }
-
-        const roomSocket = new WebSocket(
-            socketProtocol
-            + window.location.host
-            + '/ws'
-            + window.location.pathname
-        );
-        await waitForSocketConnection(roomSocket);
-
-        console.log('my game is ready: ', myGame.gameState);
-
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth * 0.8;
-        canvas.height = window.innerHeight * 0.7;
-        roomSocket.onmessage = function (e)
-        {
-            const data = JSON.parse(e.data);
-            if (data.type === "fin du compte")
-            {
-                myGame.gameState = "playing";
-            }
-            wsonmessage(data, roomSocket, canvas, ctx);
-        };
-
-        roomSocket.onclose = function (e)
-        {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        let starttime = Date.now();
-        while (myGame.gameState != "end" && match.route.path == "/pong/[A-Za-z0-9]{10}/")
-        {    
-            let elapstime = Date.now() - starttime;
-            console.log("time: ",elapstime);
-            if (elapstime > 1000 / 60)
-            {
-                myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
-                starttime += 1000 / 60;
-                console.log(".");
-            }
-            await new Promise(r => setTimeout(r, 2));
-        }
-    }
+	}
 
     displayUser();
 };
@@ -495,7 +521,7 @@ async function displayUser()
     if (userElement) {
         let profileButton = '';
         let logout = '';
-        if (window.location.pathname === '/' || window.location.pathname === '/home/') {
+        if (window.location.pathname !== '/profile/') {
             profileButton = `<div class="profile" id="profile">Profile</div>`;
         }
 		if (window.location.pathname === '/sudoku/*') {
@@ -505,6 +531,7 @@ async function displayUser()
         <div class="art-marg"></div>
         ${logout}
         ${profileButton}
+        <div class="disconnect" id="disconnect">Log out</div>
         </div>`;
     }
 }
