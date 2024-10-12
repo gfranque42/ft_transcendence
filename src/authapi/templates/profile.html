@@ -1,4 +1,5 @@
 {%extends "base.html" %}
+{% load tz %}
 {% load static %}
 {% block content %}
 
@@ -140,6 +141,7 @@
                 
             </div>
 
+            {% timezone "Europe/Paris" %}
             <div class="col-sm-4">
                 <div class="scroll-match-history">
                     {% if games %}
@@ -160,7 +162,6 @@
                                     <div class="match-users">{{item.loser}} vs {{item.winner}}</div>
                                     <div class="match-score">{{item.score_loser}} / {{item.score_winner}}</div>
                                     {% endif %}
-                                    
                                     <div class="match-score">{{item.created_at|date:"m/d/y - H:i" }}</div>
                                 </div>
                                 <div class="match-status-card">
@@ -178,7 +179,8 @@
                     {% endif %}
                 </div>
             </div>
-            
+            {% endtimezone %}
+
             
             <div class="col-sm">
                 <div class="stats-card">
