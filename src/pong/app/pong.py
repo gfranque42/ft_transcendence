@@ -62,6 +62,14 @@ class	Paddle:
 		self.dir = self.key
 		self.key = 0
 
+def	AngleInterpolation(ymin: float,ymax: float, xmin:float, xmax: float, x: float) -> float:
+	if x < xmin:
+		return ymin
+	elif x > xmax:
+		return ymax
+	y = ymax * ((x - xmin)/(xmax - xmin)) + ymin * ((xmax - x)/(xmax - xmin))
+	return y
+
 def	CheckPaddleCollisionWithEdge(Paddle):
 	if (Paddle.coor.y + Paddle.dir <= 0):
 		Paddle.dir = -Paddle.coor.y
@@ -84,9 +92,10 @@ def	CheckBallCollisionWithPaddle(Ball, Paddle, Score):
 	if (Ball.coor.x < 100 / 2 and Paddle.coor.x < 100 / 2):
 		if (Ball.coor.x + Ball.dir.x < Paddle.coor.x + Paddle.size.x):
 			if (Ball.coor.y + Ball.size.y + Ball.dir.y >= Paddle.coor.y + Paddle.dir and Ball.coor.y + Ball.dir.y <= Paddle.coor.y + Paddle.dir + Paddle.size.y):
-				# hitZone = (Ball.coor.y + Ball.dir.y + Ball.size.y / 2 - Paddle.coor.y + Paddle.dir) / Paddle.size.y
+				hitZone = (Ball.coor.y + Ball.dir.y + (Ball.size.y / 2)) - (Paddle.coor.y + Paddle.dir + (Paddle.size.y / 2))
 				# Ball.angle = 90 + (hitZone - 0.5) * 120
-				Ball.angle = 180 - Ball.angle
+				Ball.angle = AngleInterpolation(-45, 45, -Paddle.size.y / 2.0, Paddle.size.y / 2.0, hitZone)
+				# Ball.angle = 180 - Ball.angle
 				newDir = (Paddle.coor.x + Paddle.size.x - Ball.coor.x) / Ball.dir.x
 				Ball.dir.x *= newDir
 				Ball.dir.y *= newDir
@@ -97,9 +106,11 @@ def	CheckBallCollisionWithPaddle(Ball, Paddle, Score):
 	if (Ball.coor.x > 100 / 2 and Paddle.coor.x > 100 / 2):
 		if (Ball.coor.x + Ball.size.x + Ball.dir.x > Paddle.coor.x):
 			if (Ball.coor.y + Ball.size.y + Ball.dir.y >= Paddle.coor.y + Paddle.dir and Ball.coor.y + Ball.dir.y <= Paddle.coor.y + Paddle.dir + Paddle.size.y):
-				# hitZone = (Ball.coor.y + Ball.dir.y + Ball.size.y / 2 - Paddle.coor.y + Paddle.dir) / Paddle.size.y
+				hitZone = (Ball.coor.y + Ball.dir.y + (Ball.size.y / 2)) - (Paddle.coor.y + Paddle.dir + (Paddle.size.y / 2))
 				# Ball.angle = 90 + (hitZone - 0.5) * 120
-				Ball.angle = 180 - Ball.angle
+				Ball.angle = AngleInterpolation(225, 135, -Paddle.size.y / 2.0, Paddle.size.y / 2.0, hitZone)
+				# Ball.angle = 180 - Ball.angle
+				newDir = (Paddle.coor.x + Paddle.size.x - Ball.coor.x) / Ball.dir.x
 				newDir = (Paddle.coor.x - Ball.coor.x - Ball.size.x) / Ball.dir.x
 				Ball.dir.x *= newDir
 				Ball.dir.y *= newDir

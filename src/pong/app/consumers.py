@@ -160,6 +160,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		elif (message == "finish"):
 			print(self.username,': the game is finished !\nBye bye !',flush=True)
 			await self.send(text_data=json.dumps(event))
+			if self.tournament == False and self.tournamentRoom == False:
+				event["button"] = "Back to the menu"
+				event["redir"] = "/"
 			await asyncio.sleep(1)
 			await self.close()
 		elif (message == "countdown"):
@@ -211,7 +214,3 @@ class	PongConsumer(AsyncWebsocketConsumer):
 				gRoomsManager.rooms[self.room_name].scoreL = 5
 		# await self.send(text_data=json.dumps({"type": "end game", "message": message}))
 		await self.close()
-
-class	TournoisConsumer(AsyncWebsocketConsumer):
-	async def	connect(self):
-		self.accept()

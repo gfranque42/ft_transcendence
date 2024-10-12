@@ -46,7 +46,7 @@ class	room():
 		self.partyType: int						= partyType
 		self.paddleL: Paddle					= Paddle(Vec2(3, 32.5), Vec2(3, 35), 1.5, 0)
 		self.paddleR: Paddle					= Paddle(Vec2(94, 32.5), Vec2(3, 35), 1.5, 0)
-		self.ball: Ball							= Ball(Vec2(48, 48), Vec2(4, 4), 45, 2)
+		self.ball: Ball							= Ball(Vec2(48, 48), Vec2(4, 4), 225, 2)
 		self.scoreL: int						= 0
 		self.scoreR: int						= 0
 		self.players: List[str]					= []
@@ -56,6 +56,10 @@ class	room():
 		self.lock: threading.Lock				= Lock()
 		self.thread: Optional[threading.Thread]	= None
 		self.looser: str						= ""
+		self.urlwin: str						= "/pong/"
+		self.urlloose: str						= "/"
+		self.buttonwin: str						= "Next round"
+		self.buttonloose: str					= "Back to the menu"
 		print(self.roomName,": Je suis initialisé !",flush=True)
 
 	def	__repr__(self):
@@ -280,7 +284,11 @@ class	room():
 							"scoreR": self.scoreR,
 							"username": "bob",
 							"id": 0,
-							"partyType": self.partyType
+							"partyType": self.partyType,
+							"buttonwin": self.buttonwin,
+							"buttonloose": self.buttonloose,
+							"urlwin": self.urlwin,
+							"urlloose": self.urlloose
 							})
 
 def	randomUrl() -> str:
@@ -362,10 +370,9 @@ class	tournament():
 			while i < (len(self.players) / 2):
 				url = randomUrl()
 				self.rooms[url] = room(url,2,5)
+				self.rooms[url].urlwin += self.lobbyRoom.roomName+"/"
 				i += 1
 			async_to_sync(self.sendRooms)()
-			# while self.checkRoom() == 0:
-			# async_to_sync(asyncio.sleep)(10)
 			for key in self.rooms:
 				if self.rooms[key].thread:
 					print(self.lobbyRoom.roomName,": je join la room ",self.rooms[key].roomName,flush=True)

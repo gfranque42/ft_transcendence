@@ -326,23 +326,40 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			console.log(data.scoreR);
 			console.log(data.player1Name);
 			console.log(data.player2Name);
-			if (data.partyType == 0 && data.scoreL === 5 && data.player1Name === data.username)
+			let back = document.getElementById('backtopong');
+			if ((data.partyType == 0 || data.partyType == 5) && data.scoreL === 5 && data.player1Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
 				result.style.display = "flex";
+				back.textContent = data.buttonwin
+				back.href = data.urlwin
+				if (data.partyType == 0)
+				{
+					back.textContent = data.buttonloose
+					back.href = data.urlloose
+				}
 			}
-			else if (data.partyType == 0 && data.scoreR === 5 && data.player2Name === data.username)
+			else if ((data.partyType == 0 || data.partyType == 5) && data.scoreR === 5 && data.player2Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
 				result.style.display = "flex";
+				back.textContent = data.buttonwin
+				back.href = data.urlwin
+				if (data.partyType == 0)
+				{
+					back.textContent = data.buttonloose
+					back.href = data.urlloose
+				}
 			}
-			else if (data.partyType == 0)
+			else if (data.partyType == 0 || data.partyType == 5)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You loose !";
 				result.style.display = "flex";
+				back.textContent = data.buttonloose
+				back.href = data.urlloose
 			}
 			else
 			{
@@ -356,8 +373,9 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					result.textContent = data.player2Name + " win !";
 				}
 				result.style.display = "flex";
+				back.textContent = data.buttonloose
+				back.href = data.urlloose
 			}
-			let back = document.getElementById('backtopong');
 			back.style.display = 'block';
 			myGame.gameState = "end";
 			console.log('myGame.gameState:'+myGame.gameState);
