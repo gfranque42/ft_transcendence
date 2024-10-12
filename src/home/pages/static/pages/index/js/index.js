@@ -521,17 +521,17 @@ async function displayUser()
     if (userElement) {
         let profileButton = '';
         let logout = '';
-        if (window.location.pathname !== '/profile/') {
+        if (window.location.pathname !== '/profile/' && !(/\/sudoku\/[A-Za-z0-9]{10}\//.test(window.location.pathname))) {
             profileButton = `<div class="profile" id="profile">Profile</div>`;
         }
-		if (window.location.pathname === '/sudoku/*') {
+		if (!(/\/sudoku\/[A-Za-z0-9]{10}\//.test(window.location.pathname))) {
+            console.log("deserving of logout");
             logout = `<div class="disconnect" id="disconnect">Log out</div>`;
 		}
 		userElement.outerHTML = `<div class="navbar-content user-present" id="user">${await UserInformation.Username}
         <div class="art-marg"></div>
         ${logout}
         ${profileButton}
-        <div class="disconnect" id="disconnect">Log out</div>
         </div>`;
     }
 }
