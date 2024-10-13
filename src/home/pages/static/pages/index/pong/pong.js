@@ -307,6 +307,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx) {
     myGame.gameState = "playing";
   } else if (data.type === "gameUpdate") {
     console.log("data.message: !" + data.message + "!");
+    console.log("data : ", data);
     if (data.message == "update") {
       console.log(data);
       gameUpdate(data, myGame);
