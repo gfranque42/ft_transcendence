@@ -315,7 +315,10 @@ class	tournamentRoom():
 		self.finish: bool						= False
 		self.thread: Optional[Thread]			= None
 		self.channelLayer						= get_channel_layer()
-		self.roomGroupName: str						= None
+		self.roomGroupName: str					= None
+		self.finishMessage: str					= "End of match"
+		self.looser: str						= ""
+		self.partyType: int						= 5
 	
 	async def	countDown(self) -> None:
 		print(self.players,": roomTournois: countdown started",flush=True)
@@ -341,6 +344,12 @@ class	tournamentRoom():
 	def	gameLoop(self) -> None:
 		print(self.players,": gameLoop started !",flush=True)
 		try:
+			async_to_sync(gTournament.lobbyRoom.channelLayer.group_send)(
+						gTournament.lobbyRoom.roomGroupName, {"type": "tournamentUpdate", "message": "ready for playing",
+							"player1Name": self.players[0],
+							"player2Name": self.players[1],
+							"player1": self.players[0],
+							"player2": self.players[1],})
 			async_to_sync(self.countDown)()
 			print(self.players,": countdown done !",flush=True)
 			self.inGame = True
@@ -352,9 +361,8 @@ class	tournamentRoom():
 			exit()
 		message: str = "update"
 		while self.inGame == True:
-			# with self.lock:
 			self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR = gameUpdate(self.paddleL, self.paddleR, self.ball, self.scoreL, self.scoreR)
-			print(self.roomName,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
+			print(self.players,": scoreL = ",self.scoreL,", scoreR = ",self.scoreR,flush=True)
 			if self.scoreL == 5 or self.scoreR == 5:
 				self.inGame = False
 				self.finish = True
@@ -365,60 +373,39 @@ class	tournamentRoom():
 				print(self.players,": looseeeeeerrrrrr: ",self.looser,flush=True)
 				message = "finish"
 				print(self.players,": the game is finished",flush=True)
-			self.sendUpdate(message)
+			self.tournamentUpdate(message)
 			print(self.players,": bobbbbbb paddleLdir=",self.paddleL.dir,"\npaddleLkey=",self.paddleL.dir,"\npaddleRdir=",self.paddleR.dir,"\npaddleRkey=",self.paddleR.vel,flush=True)
 			async_to_sync(asyncio.sleep)(1/20)
-			# time.sleep(1/20)
 		if self.scoreL != 5 and self.scoreR != 5:
 			async_to_sync(self.channelLayer.group_send)(
 						self.roomGroupName, {"type": "quit", "message": "quit"})
 
 	def	updateData(self, data, username: str) -> None:
-		# with self.lock:
-		print(self.roomName,": data receive for updateData",flush=True)
-		print(self.roomName,": username: ",username,flush=True)
-		print(self.roomName,": player0: ",self.players[0],flush=True)
-		print(self.roomName,": player1: ",self.players[1],flush=True)
-		if self.partyType == 4:
+		print(self.players,": data receive for updateData",flush=True)
+		print(self.players,": username: ",username,flush=True)
+		print(self.players,": player0: ",self.players[0],flush=True)
+		print(self.players,": player1: ",self.players[1],flush=True)
+		if username == self.players[0]:
+			print("rock you",flush=True)
 			if data['w'] == True:
 				self.paddleL.key -= self.paddleL.vel
 			if data['s'] == True:
 				self.paddleL.key += self.paddleL.vel
+			if data['up'] == True:
+				self.paddleL.key -= self.paddleL.vel
+			if data['down'] == True:
+				self.paddleL.key += self.paddleL.vel
+		elif username == self.players[1]:
+			print("like a hurricane",flush=True)
+			if data['w'] == True:
+				self.paddleR.key -= self.paddleR.vel
+			if data['s'] == True:
+				self.paddleR.key += self.paddleR.vel
 			if data['up'] == True:
 				self.paddleR.key -= self.paddleR.vel
 			if data['down'] == True:
 				self.paddleR.key += self.paddleR.vel
-		elif self.partyType == 0 or self.partyType == 5:
-			print("here I am",flush=True)
-			if username == self.players[0]:
-				print("rock you",flush=True)
-				if data['w'] == True:
-					self.paddleL.key -= self.paddleL.vel
-				if data['s'] == True:
-					self.paddleL.key += self.paddleL.vel
-				if data['up'] == True:
-					self.paddleL.key -= self.paddleL.vel
-				if data['down'] == True:
-					self.paddleL.key += self.paddleL.vel
-			else:
-				print("like a hurricane",flush=True)
-				if data['w'] == True:
-					self.paddleR.key -= self.paddleR.vel
-				if data['s'] == True:
-					self.paddleR.key += self.paddleR.vel
-				if data['up'] == True:
-					self.paddleR.key -= self.paddleR.vel
-				if data['down'] == True:
-					self.paddleR.key += self.paddleR.vel
-		else:
-			if data['w'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if data['s'] == True:
-				self.paddleL.key += self.paddleL.vel
-			if data['up'] == True:
-				self.paddleL.key -= self.paddleL.vel
-			if data['down'] == True:
-				self.paddleL.key += self.paddleL.vel
+		
 		if self.paddleL.key > 0 and self.paddleL.key > self.paddleL.vel:
 			self.paddleL.key = self.paddleL.vel
 		elif self.paddleL.key < 0 and self.paddleL.key < -self.paddleL.vel:
@@ -427,13 +414,12 @@ class	tournamentRoom():
 			self.paddleR.key = self.paddleR.vel
 		elif self.paddleR.key < 0 and self.paddleR.key < -self.paddleR.vel:
 			self.paddleR.key = -self.paddleR.vel
-		print(self.roomName,": fin de updateData!",flush=True)
-		print(self.roomName,": paddleLdir=",self.paddleL.dir,"\npaddleLkey=",self.paddleL.dir,"\npaddleRdir=",self.paddleR.dir,"\npaddleRkey=",self.paddleR.vel,flush=True)
+		print(self.players,": fin de updateData!",flush=True)
 
-	def	sendUpdate(self, message) -> None:
-		print(self.roomName,": sendUpdate with message \"",message,"\"",flush=True)
+	def	tournamentUpdate(self, message) -> None:
+		print(self.players,": tournamentUpdate with message \"",message,"\"",flush=True)
 		async_to_sync(self.channelLayer.group_send)(
-						self.roomGroupName, {"type": "gameUpdate", "message": message,
+						self.roomGroupName, {"type": "tournamentUpdate", "message": message,
 							"ballcx": self.ball.coor.x,
 							"ballcy": self.ball.coor.y,
 							"ballsx": self.ball.size.x,
@@ -466,19 +452,20 @@ class	tournamentRoom():
 							"buttonwin": self.buttonwin,
 							"buttonloose": self.buttonloose,
 							"urlwin": self.urlwin,
-							"urlloose": self.urlloose
+							"urlloose": self.urlloose,
+							"player1": self.players[0],
+							"player2": self.players[1],
 							})
 
 class	tournament():
 	def	__init__(self) -> None:
 		self.lobbyRoom: room				= room(randomUrl(), 2, 6)
-		# lroom = Room.objects.create(url=self.lobbyRoom.roomName,difficulty=6,maxPlayers=8)
-		# lroom.save()
 		self.rooms: List[tournamentRoom]	= []
 		self.players: List[str]				= []
 		self.thread: Optional[threading.Thread]	= None
 		self.inTour: bool					= False
 		self.consumer: PongConsumer			= None
+		self.lobbyRoom.roomGroupName		= "pong_%s" % self.lobbyRoom.roomName
 
 	def	shufflePlayers(self) -> None:
 		playerPlaces = []
@@ -492,33 +479,33 @@ class	tournament():
 		self.players = [playerPlaces[i] for i in newPlaces]
 		print (self.players)
 
-	def	checkRoom(self) -> int:
-		for key in self.rooms:
-			if self.rooms[key].inGame == False:
-				return 0
-		return 1
+	# def	checkRoom(self) -> int:
+	# 	for key in self.rooms:
+	# 		if self.rooms[key].inGame == False:
+	# 			return 0
+	# 	return 1
 
-	async def	sendRooms(self) -> None:
-		print("don't forget to bring a towel !",flush=True)
-		infos = {'type': 'tournamentRedirect', 'message': 'tournament'}
-		infos['numberOfRooms'] = int(len(self.players) / 2)
-		i = 0
-		for key in self.rooms:
-			print("key: ",key,flush=True)
-			roomName = "Room"+str(i)
-			infos[roomName] = key
-			roomNamep1 = roomName+str(1)
-			infos[roomNamep1] = self.players[i * 2]
-			roomNamep1 = roomName+str(2)
-			infos[roomNamep1] = self.players[i * 2 + 1]
-			i += 1
-		print("infos de sendRooms: ",infos,flush=True)
-		try:
-			print("channelLayer: ",self.lobbyRoom.channelLayer,", roomgroupname: ",self.lobbyRoom.roomGroupName,flush=True)
-			await self.consumer.channel_layer.group_send(self.consumer.room_group_name, infos)
-			print("send_group ok!",flush=True)
-		except Exception as e:
-			print("error with group_send: ",e,flush=True)
+	# async def	sendRooms(self) -> None:
+	# 	print("don't forget to bring a towel !",flush=True)
+	# 	infos = {'type': 'tournamentRedirect', 'message': 'tournament'}
+	# 	infos['numberOfRooms'] = int(len(self.players) / 2)
+	# 	i = 0
+	# 	for key in self.rooms:
+	# 		print("key: ",key,flush=True)
+	# 		roomName = "Room"+str(i)
+	# 		infos[roomName] = key
+	# 		roomNamep1 = roomName+str(1)
+	# 		infos[roomNamep1] = self.players[i * 2]
+	# 		roomNamep1 = roomName+str(2)
+	# 		infos[roomNamep1] = self.players[i * 2 + 1]
+	# 		i += 1
+	# 	print("infos de sendRooms: ",infos,flush=True)
+	# 	try:
+	# 		print("channelLayer: ",self.lobbyRoom.channelLayer,", roomgroupname: ",self.lobbyRoom.roomGroupName,flush=True)
+	# 		await self.consumer.channel_layer.group_send(self.consumer.room_group_name, infos)
+	# 		print("send_group ok!",flush=True)
+	# 	except Exception as e:
+	# 		print("error with group_send: ",e,flush=True)
 
 	def	start(self) -> None:
 		print(self.lobbyRoom.roomName,": from start, thread in comming",flush=True)
@@ -587,3 +574,7 @@ class	tournament():
 		self.inTour = False
 		self.rooms.clear()
 		self.lobbyRoom.players.clear()
+
+gRoomsManager: roomsManager = roomsManager()
+
+gTournament: tournament = tournament()

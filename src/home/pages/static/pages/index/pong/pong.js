@@ -296,10 +296,15 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		}));
 		myGame.gameState = "playing";
 	}
-	else if (data.type === "gameUpdate")
+	else if (data.type === "gameUpdate" || data.type === "tournamentUpdate")
 	{
 		console.log("data.message: !"+data.message+"!");
-		if (data.message == "update")
+		if (data.type === "tournamentUpdate" && data.message === "ready for playing")
+		{
+			console.log('game loading', data);
+			gameDisplay(data.player1Name, data.player2Name);
+		}
+		else if (data.message == "update")
 		{
 			console.log(data);
 			gameUpdate(data, myGame);
