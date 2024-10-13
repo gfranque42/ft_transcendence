@@ -1,5 +1,6 @@
 import {myGame} from "../js/index.js"
 import {DNS} from "../js/dns.js";
+import { sendGameResults } from "./sendGameResults.js";
 
 export class vec2
 {
@@ -331,12 +332,16 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
 				result.style.display = "flex";
+				console.log('data.player1id:',data.player1Id);
+				console.log('data.player2id:',data.player2Id);
+				sendGameResults(data.player1Id, data.player2Id, data.scoreL, data.scoreR);
 			}
 			else if (data.partyType == 0 && data.scoreR === 5 && data.player2Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
 				result.style.display = "flex";
+				sendGameResults(data.player2Id, data.player1Id, data.scoreL, data.scoreR);
 			}
 			else if (data.partyType == 0)
 			{

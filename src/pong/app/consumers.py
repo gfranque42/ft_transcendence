@@ -54,8 +54,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			else:
 				print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
 				if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
-					await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
-					await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
+					await gRoomsManager.rooms[self.room_name].addPlayer("Player1", 0)
+					await gRoomsManager.rooms[self.room_name].addPlayer("Player2", 0)
 				if gRoomsManager.rooms[self.room_name].channelLayer == None:
 					gRoomsManager.rooms[self.room_name].channelLayer = get_channel_layer()
 					gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
@@ -69,16 +69,16 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def disconnect(self, close_code):
 		if self.tournament == True:
 			if self.username:
-				await gTournament.lobbyRoom.removePlayer(self.username)
+				await gTournament.lobbyRoom.removePlayer(self.username, id)
 		elif self.tournamentRoom == True:
 			if self.username:
-				await gTournament.rooms[self.room_name].removePlayer(self.username)
+				await gTournament.rooms[self.room_name].removePlayer(self.username, id)
 				await self.channel_layer.group_send(
 								self.room_group_name, {"type": "quit", "message": "quitting", "left": self.username})
 		else:
 			if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].ready == False:
 				try:
-					await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
+					await gRoomsManager.rooms[self.room_name].removePlayer(self.username, id)
 				except Exception as e:
 					print(self.room_name,": error: ",e,flush=True)
 			# Leave room group
@@ -98,7 +98,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			self.id = text_data_json["id"]
 			if self.tournament == True:
 				try:
-					await gTournament.lobbyRoom.addPlayer(self.username)
+					await gTournament.lobbyRoom.addPlayer(self.username, self.id)
 				except Exception as e:
 					print(self.username,": error: ",e,flush=True)
 					await self.close()
@@ -109,7 +109,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 					gTournament.start()
 			elif self.tournamentRoom == True:
 				try:
-					await gTournament.rooms[self.room_name].addPlayer(self.username)
+					await gTournament.rooms[self.room_name].addPlayer(self.username, self.id)
 				except Exception as e:
 					print(self.username,": error: ",e,flush=True)
 					await self.close()
@@ -121,9 +121,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			else:
 				if gRoomsManager.rooms[self.room_name].partyType != 4:
 					try:
-						await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
+						await gRoomsManager.rooms[self.room_name].addPlayer(self.username, self.id)
 						if gRoomsManager.rooms[self.room_name].partyType > 0 and gRoomsManager.rooms[self.room_name].partyType < 4:
-							await gRoomsManager.rooms[self.room_name].addPlayer("AI")
+							await gRoomsManager.rooms[self.room_name].addPlayer("AI", 0)
 							gRoomsManager.rooms[self.room_name].paddleR.ai = gRoomsManager.rooms[self.room_name].partyType
 					except Exception as e:
 						print(self.username,": error: ",e,flush=True)

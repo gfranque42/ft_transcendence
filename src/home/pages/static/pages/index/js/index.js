@@ -471,6 +471,8 @@ const router = async () => {
 
 		roomSocket.onclose = function (e) {
 			console.log('Chat socket closed');
+			myGame.gameState = "end";
+			myGame.reset();
 		};
 
 		let starttime = Date.now();
