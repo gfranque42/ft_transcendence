@@ -381,22 +381,21 @@ class Profile(APIView):
         formAvatar = changeAvatar(request.data, request.FILES)
         try:
             token = request.data['token']
-
-
-
             decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
             userProfile = UserProfile.objects.get(id=decoded['id'])
-
             if formUsername.is_valid() and formUsername.cleaned_data['username'] and userProfile.user.username != formUsername.cleaned_data['username']:
+                print("User profile username\n\n", flush=True)
                 new_username = formUsername.cleaned_data['username']
                 if User.objects.filter(username=new_username).exists():
                     return Response({'error': 'Username is taken'}, status=status.HTTP_401_UNAUTHORIZED)
                 userProfile.user.username = new_username
                 userProfile.user.save()
-                # userProfile.save
             if formAvatar.is_valid() and formAvatar.cleaned_data["avatar"]:
+                print("User profile Avatar", flush=True)
                 userProfile.avatar = formAvatar.cleaned_data["avatar"]
                 userProfile.save()
+            if (not formUsername.is_valid()):
+                return Response({'error': formUsername.errors}, status=status.HTTP_401_UNAUTHORIZED)
             return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
