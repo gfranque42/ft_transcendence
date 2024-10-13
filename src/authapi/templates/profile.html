@@ -29,6 +29,7 @@
     <!-- QR CODE -->
     <div class="popup" id="simple-popup">
         <form method="POST" class="form-verification-profile" id="qr-code">
+            {% csrf_token %}
             <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR Code">
             <div class="checkbox-container">
                 {{ formApp.app }}
