@@ -40,11 +40,11 @@ export class paddle {
     var height = canvas.height;
     ctx.fillStyle = color;
     const frame = frameTime / (1 / 20);
-    const posy = this.pos.y + this.dir * frame;
+    // const posy = this.pos.y + this.dir * frame;
     // console.log('draw posy:',posy,"\nframe:",frame,"\ndir:",this.dir,"\npos.y:",this.pos.y);
     ctx.fillRect(
       (this.pos.x / 100) * width,
-      (posy / 100) * height,
+      (this.pos.y / 100) * height,
       (this.size.x / 100) * width,
       (this.size.y / 100) * height
     );
@@ -61,28 +61,27 @@ export class ball {
   reset() {
     this.pos.x = -5;
     this.pos.y = -5;
-    this.size.x = 2;
-    this.size.y = 2;
+    this.size.x = 4;
+    this.size.y = 4;
     this.dir.x = 0;
     this.dir.y = 0;
   }
 
-  update(ballcx, ballcy, ballsx, ballsy, balldx, balldy) {
-    this.pos.update(ballcx + ballsx / 2, ballcy + ballsy / 2);
-    this.size.update(ballsx, ballsy);
-    this.dir.update(balldx, balldy);
+  update(ballcx, ballcy) {
+    this.pos.update(ballcx + this.size.x / 2, ballcy + this.size.y / 2);
   }
 
   draw(canvas, ctx, color, frameTime) {
     var width = canvas.width;
     var height = canvas.height;
     const frame = frameTime / (1 / 20);
-    const posx = this.pos.x + this.dir.x * frame;
-    const posy = this.pos.y + this.dir.y * frame;
+    console.log("frame:", frame);
+    // const posx = this.pos.x + this.dir.x * frame;
+    // const posy = this.pos.y + this.dir.y * frame;
     ctx.beginPath();
     ctx.arc(
-      (posx / 100) * width,
-      (posy / 100) * height,
+      (this.pos.x / 100) * width,
+      (this.pos.y / 100) * height,
       (this.size.x / 100) * height,
       0,
       Math.PI * 2
@@ -126,15 +125,11 @@ export class game {
     paddleRdy,
     ballcx,
     ballcy,
-    ballsx,
-    ballsy,
-    balldx,
-    balldy,
     frameTime
   ) {
     this.paddleL.update(paddleLcx, paddleLcy, paddleLsx, paddleLsy, paddleLdy);
     this.paddleR.update(paddleRcx, paddleRcy, paddleRsx, paddleRsy, paddleRdy);
-    this.ball.update(ballcx, ballcy, ballsx, ballsy, balldx, balldy);
+    this.ball.update(ballcx, ballcy);
     this.frameTime = frameTime;
   }
 
@@ -184,10 +179,6 @@ function gameUpdate(data, game) {
     data.paddleRd,
     data.ballcx,
     data.ballcy,
-    data.ballsx,
-    data.ballsy,
-    data.balldx,
-    data.balldy,
     Date.now()
   );
   // console.log('game updated');

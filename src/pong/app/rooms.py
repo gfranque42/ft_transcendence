@@ -51,7 +51,7 @@ class room:
         self.partyType: int = partyType
         self.paddleL: Paddle = Paddle(Vec2(3, 32.5), Vec2(3, 35), 1.5, 0)
         self.paddleR: Paddle = Paddle(Vec2(94, 32.5), Vec2(3, 35), 1.5, 0)
-        self.ball: Ball = Ball(Vec2(48, 48), Vec2(4, 4), 225, 2)
+        self.ball: Ball = Ball(Vec2(48, 48), Vec2(4, 4), 225, 2/3)
         self.scoreL: int = 0
         self.scoreR: int = 0
         self.players: List[str] = []
@@ -253,7 +253,7 @@ class room:
                 self.paddleR.vel,
                 flush=True,
             )
-            async_to_sync(asyncio.sleep)(1 / 20)
+            async_to_sync(asyncio.sleep)(1 / 60)
             # time.sleep(1/20)
         if self.scoreL != 5 and self.scoreR != 5:
             async_to_sync(self.channelLayer.group_send)(
@@ -335,10 +335,6 @@ class room:
             "message": message,
             "ballcx": self.ball.coor.x,
             "ballcy": self.ball.coor.y,
-            "ballsx": self.ball.size.x,
-            "ballsy": self.ball.size.y,
-            "balldx": self.ball.dir.x,
-            "balldy": self.ball.dir.y,
             "balla": self.ball.angle,
             "ballv": self.ball.vel,
             "paddleLcx": self.paddleL.coor.x,
@@ -387,10 +383,6 @@ class room:
                 "paddleRd",
                 "ballcx",
                 "ballcy",
-                "ballsx",
-                "ballsy",
-                "balldx",
-                "balldy",
             }
             async_to_sync(self.channelLayer.group_send)(
                 self.roomGroupName, {k: v for k, v in obj.items() if k in keys}
