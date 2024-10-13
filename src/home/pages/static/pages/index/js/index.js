@@ -223,6 +223,8 @@ const router = async () => {
 
     async function checkForm(form) {
         const FullForm = await form;
+        if (!FullForm)
+            return null;
         if (FullForm)
             JSONItirator(FullForm);
         if (FullForm.token)

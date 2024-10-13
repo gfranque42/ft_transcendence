@@ -41,10 +41,8 @@ class CreateUserForm(UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if not re.match(r'^[a-zA-Z0-9]+$', username):
-            raise forms.ValidationError("The username must only contain letters and numbers.")
         if len(username) > 20:
-            raise forms.ValidationError("Username exceeds maximum length(20).")
+            raise forms.ValidationError("exceeds maximum length.")
         return username
 
     def clean_email(self):
