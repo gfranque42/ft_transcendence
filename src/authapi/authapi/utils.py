@@ -124,12 +124,14 @@ def SendOTPbySMS(userProfile):
     response = client.sms.send_message({
         'from': settings.VONAGE_VIRTUAL_NUMBER,
         'to': [userProfile.sms],
-        'text': totp.now(),
+        'text': "Your Pin Code is: " + totp.now(),
     })
+
+    print(response["messages"][0]["status"], flush=True)
     if response["messages"][0]["status"] == "0":
-        print("Message sent successfully.")
+        print("Message sent successfully.", flush=True)
     else:
-        print(f"Message failed with error: {response['messages'][0]['error-text']}")
+        print(f"Message failed with error: {response['messages'][0]['error-text']}\n\n", flush=True)
 
 
 

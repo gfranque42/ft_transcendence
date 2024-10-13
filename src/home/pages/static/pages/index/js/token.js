@@ -2,7 +2,6 @@ import {DNS} from "./dns.js";
 
 export async function getRenewedToken(token) {
 
-	console.log(DNS);
 	const options = {
 		method: 'GET',
 		headers: {
@@ -10,10 +9,10 @@ export async function getRenewedToken(token) {
 			'Authorization': `Token ${token}`
 		}
 	};
-
+	
 	const response = await fetch('https://'+DNS+':8083/auth/get_token?request_by=Home', options);
 	const newToken = await response.json();
-
+	
 	if (!newToken)
 		return null;
 	return newToken.token

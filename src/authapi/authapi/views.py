@@ -521,30 +521,36 @@ def get_token(request):
     try:
         auth_header = request.headers.get('Authorization')
         if (not auth_header):
-            return Response({"token": None}, status=status.HTTP_200_OK)
+            return Response({"token": None}, status=status.HTTP_301_MOVED_PERMANENTLY)
         token = auth_header.split(' ')[1]
         if (token == 'null'):
-            return Response({"token": None}, status=status.HTTP_200_OK)
+            return Response({"token": None}, status=status.HTTP_301_MOVED_PERMANENTLY)
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=payload['id'])
         return Response({"token": CreateToken(userProfile) }, status=status.HTTP_201_CREATED)
     except jwt.ExpiredSignatureError:
-        return Response({"token": None}, status=status.HTTP_200_OK)
+        return Response({"token": None}, status=status.HTTP_301_MOVED_PERMANENTLY)
     except UserProfile.DoesNotExist:
-        return Response({"token": None}, status=status.HTTP_200_OK)
+        return Response({"token": None}, status=status.HTTP_301_MOVED_PERMANENTLY)
 
 @api_view(['GET'])
 def test_token(request):
     try:
         auth_header = request.headers.get('Authorization')
+        if (not auth_header):
+            return Response({"token": None}, status=status.HTTP_200_OK)
         token = auth_header.split(' ')[1]
+        if (token == 'null'):
+            return Response({"token": None}, status=status.HTTP_301_MOVED_PERMANENTLY)
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         userProfile = UserProfile.objects.get(id=payload['id'])
         return Response({"Username": format(userProfile.user.username), "ID": format(userProfile.user.id)})
     except jwt.ExpiredSignatureError:
-        return Response({"expired": True}, status=status.HTTP_200_OK)
+        return Response({"expired": True}, status=status.HTTP_301_MOVED_PERMANENTLY)
     except UserProfile.DoesNotExist:
-        return Response({"token": None}, status=status.HTTP_200_OK)
+        return Response({"token": None}, status=status.HTTP_301_MOVED_PERMANENTLY)
+    except Exception as e:
+        return Response({"token": e}, status=status.HTTP_301_MOVED_PERMANENTLY)
 
 
 

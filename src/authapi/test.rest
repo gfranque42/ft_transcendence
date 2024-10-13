@@ -274,7 +274,7 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNz
 
 GET https://localhost:8083/auth/get_token?request_by=Home
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzI4NTM2NTI0LCJpYXQiOjE3Mjg1MjkzMjR9.9qTHxrH9OE3VE3evCqxVy24BTTQiwuZ_7QIEAENeaAo
+Authorization: Token null
 
 {
 }
@@ -282,7 +282,7 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNz
 
 GET https://localhost:8083/auth/get_token?request_by=Home
 Content-Type: application/json
-Authorization: Token null
+Authorization: Token 
 
 {
 }
