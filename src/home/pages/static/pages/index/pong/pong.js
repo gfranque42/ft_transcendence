@@ -398,45 +398,31 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 				back.id = 'winnerpong';
 				back.textContent = data.buttonwin
 			}
-			// const pourStan = {
-				// 	"player one" : data.player1id,
-				// 	"player two": data.player2id,
-				// 	"score one": scoreL,
-				// 	"score two": scoreR,
-				// 	"winner": 1,// ou 2 player id du winner
-				// 	"game": "pong"
-				// };
-				// const link = document.createElement('a');
-				// link.href = '/pong/';
-				// link.setAttribute('data-link', '');
-				// document.body.appendChild(link);
-				// console.log(link);
-				// link.click();
-				// document.body.removeChild(link);
-			}
+			roomSocket.close(1000, "Closing at end of the game")
 		}
-		else if (data.type == "tournament")
-			{
-				myGame.reset();
-				const link = document.createElement('a');
-				link.href = '/pong/'+data.url;
-				link.setAttribute('data-link', '');
-				document.body.appendChild(link);
-				console.log(link);
-				link.click();
-				document.body.removeChild(link);
-			}
-			else if (data.type === "end game")
-				{
-					console.log("serveur wants to quit");
-					const link = document.createElement('a');
-					link.href = '/pong/';
-					link.setAttribute('data-link', '');
-					document.body.appendChild(link);
-					console.log(link);
-					link.click();
-					document.body.removeChild(link);
-				}
+	}
+	else if (data.type == "tournament")
+	{
+		myGame.reset();
+		const link = document.createElement('a');
+		link.href = '/pong/'+data.url;
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+	else if (data.type === "end game")
+	{
+		console.log("serveur wants to quit");
+		const link = document.createElement('a');
+		link.href = '/pong/';
+		link.setAttribute('data-link', '');
+		document.body.appendChild(link);
+		console.log(link);
+		link.click();
+			document.body.removeChild(link);
+	}
 }
 
 document.addEventListener('click', function(event)

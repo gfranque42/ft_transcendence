@@ -162,7 +162,6 @@ class	room():
 		except Room.DoesNotExist:
 			print("Room Does Not Exist: ", self.roomName, flush=True)
 			return
-				self.id.remove(id)
 
 	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)

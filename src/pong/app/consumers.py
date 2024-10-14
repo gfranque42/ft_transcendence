@@ -21,8 +21,8 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		try:
 			print(self.room_name,": partyType = [",type(gRoomsManager.rooms[self.room_name].partyType),"]",flush=True)
 			if int(gRoomsManager.rooms[self.room_name].partyType) == 4:
-				await gRoomsManager.rooms[self.room_name].addPlayer("Player1")
-				await gRoomsManager.rooms[self.room_name].addPlayer("Player2")
+				await gRoomsManager.rooms[self.room_name].addPlayer("Player1", 0)
+				await gRoomsManager.rooms[self.room_name].addPlayer("Player2", 0)
 			if gRoomsManager.rooms[self.room_name].channelLayer == None:
 				gRoomsManager.rooms[self.room_name].channelLayer = get_channel_layer()
 				gRoomsManager.rooms[self.room_name].roomGroupName = self.room_group_name
@@ -36,7 +36,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 	async def disconnect(self, close_code):
 		if gRoomsManager.rooms[self.room_name].partyType != 4 and gRoomsManager.rooms[self.room_name].ready == False:
 			try:
-				await gRoomsManager.rooms[self.room_name].removePlayer(self.username)
+				await gRoomsManager.rooms[self.room_name].removePlayer(self.username, self.id)
 			except Exception as e:
 				print(self.room_name,": error: ",e,flush=True)
 		# Leave room group
@@ -58,9 +58,9 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			if gRoomsManager.rooms[self.room_name].partyType != 4:
 				try:
 					print('coucou de receive, add: ',self.username, flush=True)
-					await gRoomsManager.rooms[self.room_name].addPlayer(self.username)
+					await gRoomsManager.rooms[self.room_name].addPlayer(self.username, self.id)
 					if gRoomsManager.rooms[self.room_name].partyType > 0 and gRoomsManager.rooms[self.room_name].partyType < 4:
-						await gRoomsManager.rooms[self.room_name].addPlayer("AI")
+						await gRoomsManager.rooms[self.room_name].addPlayer("AI", 0)
 						gRoomsManager.rooms[self.room_name].paddleR.ai = gRoomsManager.rooms[self.room_name].partyType
 				except Exception as e:
 					print(self.username,": error: ",e,flush=True)
