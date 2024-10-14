@@ -1,6 +1,7 @@
 import {myGame} from "../js/index.js"
 import {DNS} from "../js/dns.js";
 import {Start} from "../pong/index.js";
+import { sendGameResults } from "./sendGameResults.js";
 
 export class vec2
 {
@@ -345,6 +346,9 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					back.textContent = data.buttonloose
 					back.href = data.urlloose
 				}
+				console.log('data.player1id:',data.player1Id);
+				console.log('data.player2id:',data.player2Id);
+				sendGameResults(data.player1Id, data.player2Id, data.scoreL, data.scoreR);
 			}
 			else if ((data.partyType == 0 || data.partyType == 5) && data.scoreR === 3 && data.player2Name === data.username)
 			{
@@ -358,6 +362,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					back.textContent = data.buttonloose
 					back.href = data.urlloose
 				}
+				sendGameResults(data.player2Id, data.player1Id, data.scoreL, data.scoreR);
 			}
 			else if (data.partyType == 0 || data.partyType == 5)
 			{

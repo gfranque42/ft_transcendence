@@ -1,4 +1,4 @@
-import { setBoard, setCurrentUser, setGame, setSocket } from './board.js';
+import { setBoard, setCurrentUser, setGame, setSocket, setRoomName } from './board.js';
 import { startTimer, setStartTime, stopTimer } from './timer.js';
 import { showModal } from './modal.js';
 import { getUser } from '../getUser.js';
@@ -73,6 +73,7 @@ function handleSocketMessage(e) {
 		setStartTime(startTime);
 		startTimer();
 		setBoard(board);
+		setRoomName(roomName);
 		setSocket(sudokuSocket);
 		setCurrentUser(currentUser);
 		setGame();
@@ -94,6 +95,8 @@ function handleSocketMessage(e) {
 			showModal(timeUsed, winningUser, currentUser);
 			if (currentUser === winningUser && multiplayer === true) {
 				const losingId = data.loser_id;
+				const losingUser = data.loser;
+				console.log('sending game results :', losingId, winningId, losingUser, winningUser);
 				sendGameResults(winningId, losingId, 1, 0);
 			}
 			stopTimer();
@@ -123,13 +126,14 @@ export function eventFunc(event) {
 	if (!confirmation) {
 		console.log("event: ", event.defaultPrevented);
 		// event.defaultPrevented = true;
-		console.log("no confirmation");
+		console.log("no confirmation in sudoku.js");
 		event.preventDefault();
-		event.stopImmediatePropagation();
+		event.stopPropagation();
 
 		console.log("event: ", event.defaultPrevented);
 	}
 	else {
+		console.log("HELLO ?? UNLOADING");
 		if (sudokuSocket) {
 			sudokuSocket.send(JSON.stringify({
 				'type': 'user_left',
@@ -144,6 +148,33 @@ export function eventFunc(event) {
 		if (sudokuSocket) {
 			sudokuSocket.close();
 		}
+	}
+}
+
+function beforeUnloadEvent(event) {
+	console.log("beforeUnloadEventFunc");
+	if (!window.location.pathname.includes('/sudoku/'))
+		return;
+	if (gameInProgress) {
+		const confirmationMessage = "Are you sure you want to leave? Leaving now means you will give up the game.";
+		event.returnValue = confirmationMessage;
+		return confirmationMessage;
+	}
+}
+
+function handleUnload() {
+	console.log("Unloading...");
+	if (sudokuSocket) {
+		sudokuSocket.send(JSON.stringify({
+			'type': 'user_left',
+			'username': currentUser,
+			'adversary': adversary || ''
+		}));
+	}
+	gameInProgress = false;
+	stopTimer();
+	if (sudokuSocket) {
+		sudokuSocket.close();
 	}
 }
 
@@ -172,5 +203,9 @@ export async function initialize() {
 
 	homeButton.addEventListener("click", eventFunc);
 	// window.addEventListener('popstate', eventFunc);
-	window.addEventListener('beforeunload', eventFunc);
+	window.addEventListener('beforeunload', beforeUnloadEvent);
+	window.addEventListener('unload', function(event) {
+		if (window.location.pathname.includes(`/sudoku/${roomName.value}/`))
+			handleUnload();
+	});
 }

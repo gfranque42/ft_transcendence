@@ -44,12 +44,13 @@ class	room():
 		self.channelName						= None
 		self.nbPlayers: int						= nbPlayers
 		self.partyType: int						= partyType
-		self.paddleL: Paddle					= Paddle(Vec2(3, 32.5), Vec2(3, 35), 1.5, 0)
-		self.paddleR: Paddle					= Paddle(Vec2(94, 32.5), Vec2(3, 35), 1.5, 0)
-		self.ball: Ball							= Ball(Vec2(48, 48), Vec2(4, 4), 225, 2)
+		self.paddleL: Paddle					= Paddle(Vec2(3, 32.5), Vec2(3, 35), 2.1, 0)
+		self.paddleR: Paddle					= Paddle(Vec2(94, 32.5), Vec2(3, 35), 2.1, 0)
+		self.ball: Ball							= Ball(Vec2(48, 48), Vec2(3, 3), 35, 2)
 		self.scoreL: int						= 0
 		self.scoreR: int						= 0
 		self.players: List[str]					= []
+		self.id: List[int]						= []
 		self.ready: bool						= False
 		self.inGame: bool						= False
 		self.finish: bool						= False
@@ -66,7 +67,7 @@ class	room():
 		return repr(self.roomName)
 
 	@database_sync_to_async
-	def	addPlayer(self, player: str) -> None:
+	def	addPlayer(self, player: str, id: int) -> None:
 		print(self.roomName,": I have to append ",player,flush=True)
 		if self.partyType != 4:
 			try:
@@ -77,6 +78,7 @@ class	room():
 			with self.lock:
 				if player not in self.players:
 					self.players.append(player)
+					self.id.append(id)
 					print("playercount",room.playerCount,flush=True)
 					room.addPlayer(player)
 					# room.playersCount()
@@ -93,6 +95,7 @@ class	room():
 			with self.lock:
 				if player not in self.players:
 					self.players.append(player)
+					self.id.append(id)
 				# else:
 				# 	raise roomException(self.roomName+": Player " + player + " is already in this room!", 1001)
 				if self.partyType == 4 and len(self.players) == 2:
@@ -102,7 +105,7 @@ class	room():
 						self.ready = True
 
 	@database_sync_to_async
-	def	removePlayer(self, player: str) -> None:
+	def	removePlayer(self, player: str, id: int) -> None:
 		print(self.roomName,": I have to remove ",player," in partyType: ",self.partyType,flush=True)
 		if self.partyType != 4:
 			try:
@@ -115,6 +118,7 @@ class	room():
 					print(room.players,flush=True)
 					print(room.playerCount,flush=True)
 					self.players.remove(player)
+					self.id.remove(id)
 					print(type(room.players),flush=True)
 					room.removePlayer(player)
 					# room.save()
@@ -158,6 +162,7 @@ class	room():
 		except Room.DoesNotExist:
 			print("Room Does Not Exist: ", self.roomName, flush=True)
 			return
+				self.id.remove(id)
 
 	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
@@ -311,6 +316,8 @@ class	room():
 							"paddleRv": self.paddleR.vel,
 							"player1Name": self.players[0],
 							"player2Name": self.players[1],
+							"player1Id": self.id[0],
+							"player2Id": self.id[1],
 							"scoreL": self.scoreL,
 							"scoreR": self.scoreR,
 							"username": "bob",

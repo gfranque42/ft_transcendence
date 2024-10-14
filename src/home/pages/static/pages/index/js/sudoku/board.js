@@ -5,6 +5,12 @@ var tileSelected = null;
 let board = null;
 let socket = null;
 let currentUser = null;
+let roomName = null;
+
+export function setRoomName(newroomName)
+{
+	roomName = newroomName;
+}
 
 export function setBoard(newboard)
 {
@@ -59,6 +65,8 @@ export function setGame() {
 	document.addEventListener("keydown", handleKeyPress);
 
 	document.addEventListener("click", (event) => {
+		if (window.location.pathname !== `/sudoku/${roomName.value}/`)
+			return;
 		if (!event.target.classList.contains("tile") && !event.target.classList.contains("number")) {
 			clearHighlights();
 			if (tileSelected) {
@@ -125,6 +133,8 @@ function selectTile() {
 }
 
 function handleKeyPress(event) {
+	if (window.location.pathname !== `/sudoku/${roomName.value}/`)
+		return;
 	if (tileSelected && !tileSelected.classList.contains("tile-start")) {
 		let key = event.key;
 		if (key >= '1' && key <= '9') {
@@ -182,7 +192,7 @@ function highlightSameNumberTiles(number) {
 	let tiles = document.querySelectorAll(".tile");
 	tiles.forEach(tile => {
 		if (tile.innerText === number) {
-			tile.classList.add("tile-highlight");
+			tile.classList.add("tile-same-number-highlight");
 		}
 	});
 }
@@ -191,5 +201,9 @@ function clearHighlights() {
 	let highlightedTiles = document.querySelectorAll(".tile-highlight");
 	highlightedTiles.forEach(tile => {
 		tile.classList.remove("tile-highlight");
+	});
+	highlightedTiles = document.querySelectorAll(".tile-same-number-highlight");
+	highlightedTiles.forEach(tile => {
+		tile.classList.remove("tile-same-number-highlight");
 	});
 }

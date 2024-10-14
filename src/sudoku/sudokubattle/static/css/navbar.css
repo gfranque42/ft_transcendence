@@ -8,12 +8,13 @@
 }
 
 a .navbar{
-    color: #131112;
+    color: #fffbfc;
     cursor: pointer;
 }
 
 
 .navbar-content {
+    color: #fffbfc;
     font-family: Oswald;
     font-size: 2.5vw;
     line-height: 1;

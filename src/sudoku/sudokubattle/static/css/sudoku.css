@@ -102,7 +102,15 @@ body {
 }
 
 .tile-highlight {
-	background-color: #c69fcb;
+	background-color: #d6b4db;
+}
+
+.tile-selected.tile-highlight {
+	background-color: #b281ba;
+}
+
+.tile-same-number-highlight {
+	background-color: #b281ba;
 }
 
 .modal {
