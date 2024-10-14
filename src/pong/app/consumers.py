@@ -14,7 +14,6 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		self.room_group_name = "pong_%s" % self.room_name
 		self.username = None
 		self.tournament = False
-		self.tournamentRoom = False
 
 		print(self.room_name,": connection en cours",flush=True)
 
@@ -56,6 +55,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 							self.room_group_name, {"type": "quit", "message": "quitting", "left": self.username})
 			if gRoomsManager.rooms[self.room_name].thread and self.username and gRoomsManager.rooms[self.room_name].players[0] == self.username and gRoomsManager.rooms[self.room_name].finish == True:
 				gRoomsManager.rooms[self.room_name].thread.join()
+				
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	# Receive message from WebSocket

@@ -128,6 +128,17 @@ class	room():
 			if player in self.players:
 				self.players.remove(player)
 
+	@database_sync_to_async
+	def	endOfParty(self) -> None:
+		print(self.roomName,": End of the party",flush=True)
+		try:
+			room = Room.objects.get(url=self.roomName)
+			room.delete()
+			del gRoomsManager.rooms[self.roomName]
+		except Room.DoesNotExist:
+			print("Room Does Not Exist: ", self.roomName, flush=True)
+			return
+
 	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
 		if self.ready == True and self.inGame == False:
