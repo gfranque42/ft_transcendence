@@ -1,5 +1,6 @@
 import {myGame} from "../js/index.js"
 import {DNS} from "../js/dns.js";
+import {Start} from "../pong/index.js";
 
 export class vec2
 {
@@ -332,7 +333,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			console.log(data.player1Name);
 			console.log(data.player2Name);
 			let back = document.getElementById('backtopong');
-			if ((data.partyType == 0 || data.partyType == 5) && data.scoreL === 5 && data.player1Name === data.username)
+			if ((data.partyType == 0 || data.partyType == 5) && data.scoreL === 3 && data.player1Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
@@ -345,7 +346,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					back.href = data.urlloose
 				}
 			}
-			else if ((data.partyType == 0 || data.partyType == 5) && data.scoreR === 5 && data.player2Name === data.username)
+			else if ((data.partyType == 0 || data.partyType == 5) && data.scoreR === 3 && data.player2Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
@@ -384,43 +385,61 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			back.style.display = 'block';
 			myGame.gameState = "end";
 			console.log('myGame.gameState:'+myGame.gameState);
+			const	result = document.getElementById("result");
+			if (data.partyType == 5 && result.textContent == "You win !" && data.urlwin == "Next round")
+			{
+				console.log("start function !!!");
+				back.removeAttribute('href');
+				back.id = 'winnerpong';
+				back.textContent = data.buttonwin
+			}
 			// const pourStan = {
-			// 	"player one" : data.player1id,
-			// 	"player two": data.player2id,
-			// 	"score one": scoreL,
-			// 	"score two": scoreR,
-			// 	"winner": 1,// ou 2 player id du winner
-			// 	"game": "pong"
-			// };
-			// const link = document.createElement('a');
-			// link.href = '/pong/';
-			// link.setAttribute('data-link', '');
-			// document.body.appendChild(link);
-			// console.log(link);
-			// link.click();
-			// document.body.removeChild(link);
+				// 	"player one" : data.player1id,
+				// 	"player two": data.player2id,
+				// 	"score one": scoreL,
+				// 	"score two": scoreR,
+				// 	"winner": 1,// ou 2 player id du winner
+				// 	"game": "pong"
+				// };
+				// const link = document.createElement('a');
+				// link.href = '/pong/';
+				// link.setAttribute('data-link', '');
+				// document.body.appendChild(link);
+				// console.log(link);
+				// link.click();
+				// document.body.removeChild(link);
+			}
 		}
-	}
-	else if (data.type == "tournament")
-	{
-		myGame.reset();
-		const link = document.createElement('a');
-		link.href = '/pong/'+data.url;
-		link.setAttribute('data-link', '');
-		document.body.appendChild(link);
-		console.log(link);
-		link.click();
-		document.body.removeChild(link);
-	}
-	else if (data.type === "end game")
-	{
-		console.log("serveur wants to quit");
-		const link = document.createElement('a');
-		link.href = '/pong/';
-		link.setAttribute('data-link', '');
-		document.body.appendChild(link);
-		console.log(link);
-		link.click();
-		document.body.removeChild(link);
-	}
+		else if (data.type == "tournament")
+			{
+				myGame.reset();
+				const link = document.createElement('a');
+				link.href = '/pong/'+data.url;
+				link.setAttribute('data-link', '');
+				document.body.appendChild(link);
+				console.log(link);
+				link.click();
+				document.body.removeChild(link);
+			}
+			else if (data.type === "end game")
+				{
+					console.log("serveur wants to quit");
+					const link = document.createElement('a');
+					link.href = '/pong/';
+					link.setAttribute('data-link', '');
+					document.body.appendChild(link);
+					console.log(link);
+					link.click();
+					document.body.removeChild(link);
+				}
 }
+
+document.addEventListener('click', function(event)
+{
+	if (event.target.matches('#winnerpong'))
+	{
+		const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+		console.log("start function launched!!!");
+		   Start(csrftoken, 5);
+	}
+});

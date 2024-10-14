@@ -65,10 +65,10 @@ def	postRoom(request):
 		gRoomsManager.rooms[request.data["url"]] = room(request.data["url"],
 											request.data["maxPlayers"], request.data["difficulty"])
 		return (Response(serializer.data))
-	print(serializer.is_valid())
-	print(serializer.errors)
-	print(serializer.data)
-	print(request.data)
+	# print(serializer.is_valid())
+	# print(serializer.errors)
+	# print(serializer.data)
+	# print(request.data)
 	return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
@@ -90,16 +90,35 @@ def	deleteRoom(request, pk):
 def	getIndex(request):
 	template = loader.get_template('index.html')
 	status: str = "bob"
-	if gTournament.inTour == False and len(gTournament.lobbyRoom.players) == 0:
+	i = 0
+	room = Room.objects.filter(difficulty=5)
+	for rom in room:
+		i += rom.playerCount
+	if gTournament.players < 2:
+		gTournament.players = gTournament.maxplayers
+		gTournament.inTour = False
+	if (gTournament.inTour == False and gTournament.players == gTournament.maxplayers and i == 0) or (gTournament.maxplayers - i) < 0:
 		status = "No tournament for now"
 	elif gTournament.inTour == True:
 		status = "Tournament in progress"
 	else:
-		status = str(gTournament.lobbyRoom.nbPlayers - len(gTournament.lobbyRoom.players))+" left to start"
-	print("number of players waiting for the tournament: ",len(gTournament.lobbyRoom.players),flush=True)
+		status = str(gTournament.maxplayers - i)+" left to start"
+	print("number of players waiting for the tournament: ",i,flush=True)
 	context = {
 		'status': status,
 	}
+	keys = []
+	print("get index: ",gRoomsManager.rooms, flush=True)
+	for key in gRoomsManager.rooms:
+		print(gRoomsManager.rooms[key].scoreL, gRoomsManager.rooms[key].scoreR, flush=True)
+		if gRoomsManager.rooms[key].scoreL == 3 or gRoomsManager.rooms[key].scoreR == 3:
+			gRoomsManager.rooms[key].endOfParty()
+			keys.append(key)
+	print("get index: ",keys,flush=True)
+	for i in keys:
+		del gRoomsManager.rooms[i]
+	print("get index: ",gRoomsManager.rooms, flush=True)
+   
 	return HttpResponse(template.render(context, request))
 	# return (render(request, "index.html"))
 

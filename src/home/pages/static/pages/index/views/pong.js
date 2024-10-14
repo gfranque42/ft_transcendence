@@ -24,8 +24,8 @@ export default class extends abstractviews {
         return tempContentHtml;
     }
 
-    async PongLobbyCreation() {
-        return (Start(csrfToken),tournamentUrl);
+    async PongLobbyCreation(gameMode) {
+        return (Start(csrfToken, gameMode));
     }
 
     setTitle(title) {

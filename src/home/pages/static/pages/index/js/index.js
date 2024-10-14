@@ -410,30 +410,31 @@ const router = async () => {
 
     } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/")  {
 		await checkConnection();
-        myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
-		window.addEventListener('beforeunload', function (event) {
-			// Perform cleanup actions here
-			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
-				roomSocket.close();
-			}
-			myGame.gameState = "end";
-			// Optionally, you can show a confirmation dialog (optional)
-			event.preventDefault();  // Some browsers require this
-			event.returnValue = '';  // This prompts the confirmation dialog in most browsers
-		});
+        myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2),
+                new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
+		// window.addEventListener('beforeunload', function (event) {
+		// 	// Perform cleanup actions here
+		// 	if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+		// 		roomSocket.close();
+		// 	}
+		// 	myGame.gameState = "end";
+		// 	// Optionally, you can show a confirmation dialog (optional)
+		// 	event.preventDefault();  // Some browsers require this
+		// 	event.returnValue = '';  // This prompts the confirmation dialog in most browsers
+		// });
 
-		// Handle back/forward navigation using the "popstate" event
-		window.addEventListener('popstate', function (event) {
-			// Perform any specific cleanup needed here
-			console.log('Back or forward button pressed');
+		// // Handle back/forward navigation using the "popstate" event
+		// window.addEventListener('popstate', function (event) {
+		// 	// Perform any specific cleanup needed here
+		// 	console.log('Back or forward button pressed');
 			
-			// Close WebSocket connection if it's open
-			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
-				roomSocket.close();
-			}
-			myGame.gameState = "end";
+		// 	// Close WebSocket connection if it's open
+		// 	if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
+		// 		roomSocket.close();
+		// 	}
+		// 	myGame.gameState = "end";
 
-		});
+		// });
 
 		var socketProtocol = 'ws://';
 		console.log(window.location.protocol);
