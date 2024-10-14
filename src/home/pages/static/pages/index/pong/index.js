@@ -227,11 +227,9 @@ async function checkRoom(options, gameMode)
 	return "None";
 }
 
-export async	function Start(csrftoken, url)
+export async	function Start(csrftoken)
 {
 	checkConnection();
-	const result = document.getElementById("url");
-	const tournamentUrl = result.textContent
 	if (gameMode == -1)
 		return ;
 	let maxPlayers = 1;
@@ -241,8 +239,6 @@ export async	function Start(csrftoken, url)
 		maxPlayers = 0;
 	let roomExist = 0;
 	let roomUrl = generateRandomUrl();
-	if (gameMode == 5)
-		roomUrl = tournamentUrl;
 	try
 	{
 		const cookie = getCookie('token');
@@ -271,7 +267,6 @@ export async	function Start(csrftoken, url)
 		difficulty: gameMode,
 		maxPlayers: maxPlayers,
 	};
-	console.log("tournament url: ",tournamentUrl);
 	if (gameMode != 5)
 	{
 		try

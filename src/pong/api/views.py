@@ -99,13 +99,7 @@ def	getIndex(request):
 	print("number of players waiting for the tournament: ",len(gTournament.lobbyRoom.players),flush=True)
 	context = {
 		'status': status,
-		'url': gTournament.lobbyRoom.roomName,
 	}
-	rooms =Room.objects.all()
-	print("Rooms in the api:",flush=True)
-	for room in rooms:
-		print(room,flush=True)
-	print(gRoomsManager.rooms.keys(),flush=True)
 	return HttpResponse(template.render(context, request))
 	# return (render(request, "index.html"))
 

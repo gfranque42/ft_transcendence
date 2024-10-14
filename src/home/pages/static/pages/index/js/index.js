@@ -71,7 +71,7 @@ window.addEventListener('beforeunload', function (event) {
 	logout(UserToken);
 });
 
-export let myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
+export let myGame;
 
 // Define a function to convert path to regex
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -410,6 +410,7 @@ const router = async () => {
 
     } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/")  {
 		await checkConnection();
+        myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2), new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
 		window.addEventListener('beforeunload', function (event) {
 			// Perform cleanup actions here
 			if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
