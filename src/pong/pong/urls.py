@@ -15,9 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.static import serve
+from django.conf import settings
+import os
+
 
 urlpatterns = [
+    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'pong/app/static'),}),
     path('pong/admin/', admin.site.urls),
 	path('api_pong/', include('api.urls')),
 	path('pong/', include('app.urls')),
