@@ -30,6 +30,16 @@ class	tournament:
 class	roomsManager:
 	def	__init__(self):
 		self.rooms = {}
+		# try:
+		# 	room = Room.objects.get(url="SbDaMcGf24")
+		# except Room.DoesNotExist:
+		# 	room = Room.objects.create(url="SbDaMcGf24", maxPlayers=2)
+		self.rooms["SbDaMcGf24"] = room("SbDaMcGf24", 2, 5)
+		self.rooms["SbDaMcGf24"].channelLayer = get_channel_layer()
+		self.rooms["SbDaMcGf24"].roomGroupName = "pong_%s" % "SbDaMcGf24"
+		print("mydict:",self.rooms,flush=True)
+		
+
 
 #party types:
 # 1 - 2 - 3 ai ? 
@@ -61,6 +71,9 @@ class	room():
 		self.urlloose: str						= "/"
 		self.buttonwin: str						= "Back to the menu"
 		self.buttonloose: str					= "Back to the menu"
+		if self.roomName == "SbDaMcGf24":
+			self.buttonwin = "You won the tournament !"
+			self.urlwin = "/"
 		print(self.roomName,": Je suis initialisé !",flush=True)
 
 	def	__repr__(self):
@@ -69,7 +82,7 @@ class	room():
 	@database_sync_to_async
 	def	addPlayer(self, player: str, id: int) -> None:
 		print(self.roomName,": I have to append ",player,flush=True)
-		if self.partyType != 4:
+		if self.partyType != 4 and self.roomName != "SbDaMcGf24":
 			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
@@ -107,7 +120,7 @@ class	room():
 	@database_sync_to_async
 	def	removePlayer(self, player: str, id: int) -> None:
 		print(self.roomName,": I have to remove ",player," in partyType: ",self.partyType,flush=True)
-		if self.partyType != 4:
+		if self.partyType != 4 and self.roomName != "SbDaMcGf24":
 			try:
 				room = Room.objects.get(url=self.roomName)
 			except Room.DoesNotExist:
@@ -131,6 +144,14 @@ class	room():
 
 	@database_sync_to_async
 	def	waitForTournament(self) -> None:
+		if self.roomName == "SbDaMcGf24":
+			async_to_sync(self.channelLayer.group_send)(
+					self.roomGroupName, {"type": "gameUpdate", "message": "ready for playing"})
+			async_to_sync(gRoomsManager.rooms[self.roomName].start)()
+			return
+		# gRoomsManager.rooms["SbDaMcGf24"] = room("SbDaMcGf24", 2, 5)
+		# gRoomsManager.rooms["SbDaMcGf24"].channelLayer = get_channel_layer()
+		# gRoomsManager.rooms["SbDaMcGf24"].roomGroupName = "pong_%s" % "SbDaMcGf24"
 		room = Room.objects.filter(difficulty=5)
 		i = 0
 		groupName = []
@@ -149,7 +170,7 @@ class	room():
 				print(gn,": sent",flush=True)
 			gTournament.players //= 2
 		self.buttonwin = "Next round"
-		self.urlwin = "Next round"
+		self.urlwin = "pong/SbDaMcGf24/"
 		if gTournament.players < 2:
 			self.buttonwin = "You win the tournament !"
 			self.urlwin = "/"

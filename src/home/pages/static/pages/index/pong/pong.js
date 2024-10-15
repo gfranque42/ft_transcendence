@@ -397,9 +397,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			const	result = document.getElementById("result");
 			if (data.partyType == 5 && result.textContent == "You win !" && data.urlwin == "Next round")
 			{
-				console.log("start function !!!");
-				back.removeAttribute('href');
-				back.id = 'winnerpong';
+				back.href = "pong/SbDaMcGf24/";
 				back.textContent = data.buttonwin
 			}
 			roomSocket.close(1000, "Closing at end of the game")
@@ -429,12 +427,12 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 	}
 }
 
-document.addEventListener('click', function(event)
-{
-	if (event.target.matches('#winnerpong'))
-	{
-		const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-		console.log("start function launched!!!");
-		   Start(csrftoken, 5);
-	}
-});
+// document.addEventListener('click', function(event)
+// {
+// 	if (event.target.matches('#winnerpong'))
+// 	{
+// 		const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+// 		console.log("start function launched!!!");
+// 		   Start(csrftoken, 5);
+// 	}
+// });
