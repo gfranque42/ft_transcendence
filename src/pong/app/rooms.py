@@ -44,7 +44,7 @@ class	room():
 		self.partyType: int						= partyType
 		self.paddleL: Paddle					= Paddle(Vec2(3, 32.5), Vec2(3, 35), 2.1, 0)
 		self.paddleR: Paddle					= Paddle(Vec2(94, 32.5), Vec2(3, 35), 2.1, 0)
-		self.ball: Ball							= Ball(Vec2(48, 48), Vec2(3, 3), 35, 2)
+		self.ball: Ball							= Ball(Vec2(48, 48), Vec2(3, 3), 2, 2)
 		self.scoreL: int						= 0
 		self.scoreR: int						= 0
 		self.players: List[str]					= []
@@ -120,7 +120,7 @@ class	room():
 		gRoomsManager.rooms["SbDaMcGf24"].finish = False
 		gRoomsManager.rooms["SbDaMcGf24"].paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 2.1, 0)
 		gRoomsManager.rooms["SbDaMcGf24"].paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), 2.1, 0)
-		gRoomsManager.rooms["SbDaMcGf24"].ball = Ball(Vec2(48, 48), Vec2(3, 3), 35, 2)
+		gRoomsManager.rooms["SbDaMcGf24"].ball = Ball(Vec2(48, 48), Vec2(3, 3), 2, 2)
 		room = Room.objects.filter(difficulty=5)
 		i = 0
 		groupName = []
