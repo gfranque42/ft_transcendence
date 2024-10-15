@@ -193,26 +193,17 @@ function getCookie(name)
 			}
 		}
 	}
-	console.log("cookie: ", cookieValue);
 	return cookieValue;
 }
 
 async function checkRoom(options, gameMode)
 {
-	if (gameMode != 0)
-		return "None";
 	const response = await fetch('https://'+DNS+':8083/api_pong/getroom?request_by=Home', options);
 	const rooms = await response.json();
-	console.log('rooms:',rooms);
-	let room;
 	for (let i = 0; i < rooms.length; i++)
 	{
-		console.log("i = ",i," rooms[i].maxPlayers - players.length = ",(rooms[i].maxPlayers - rooms[i].playerCount));
-		console.log("i = ",i," rooms[i].maxPlayers = ",(rooms[i].maxPlayers));
-		console.log("i = ",i," players.length = ",rooms[i].playerCount);
 		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 1)
 		{
-			console.log(rooms[i]);
 			return (rooms[i].url);
 		}
 	}
@@ -220,29 +211,24 @@ async function checkRoom(options, gameMode)
 	{
 		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 2)
 		{
-			console.log(rooms[i]);
 			return (rooms[i].url);
 		}
 	}
 	return "None";
 }
 
-export async	function Start(csrftoken, url)
+export async	function Start(csrftoken, Mode)
 {
 	checkConnection();
-	const result = document.getElementById("url");
-	const tournamentUrl = result.textContent
-	if (gameMode == -1)
+	if (Mode == -1)
 		return ;
 	let maxPlayers = 1;
-	if (gameMode == 0)
+	if (Mode == 0 || Mode == 5)
 		maxPlayers = 2;
-	if (gameMode == 4)
+	if (Mode == 4)
 		maxPlayers = 0;
 	let roomExist = 0;
 	let roomUrl = generateRandomUrl();
-	if (gameMode == 5)
-		roomUrl = tournamentUrl;
 	try
 	{
 		const cookie = getCookie('token');
@@ -254,8 +240,8 @@ export async	function Start(csrftoken, url)
 				'Authorization': `Token ${cookie}`
 			}
 			};
-		const str = await checkRoom(options, gameMode);
-		if (gameMode == 0 && str != "None")
+		const str = await checkRoom(options, Mode);
+		if ((Mode == 0 || Mode == 5) && str != "None")
 		{
 			roomExist = 1;
 			roomUrl = str;
@@ -268,63 +254,52 @@ export async	function Start(csrftoken, url)
 	}
 	const roomData = {
 		url: roomUrl,
-		difficulty: gameMode,
+		difficulty: Mode,
 		maxPlayers: maxPlayers,
 	};
-	console.log("tournament url: ",tournamentUrl);
-	if (gameMode != 5)
+	try
 	{
-		try
+		if (roomExist == 0)
 		{
-			if (roomExist == 0)
+			getCookie('token');
+			const fetchurl = 'https://'+DNS+':8083/api_pong/postroom/?request_by=Home';
+			const response = await fetch(fetchurl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken,
+				},
+				body: JSON.stringify(roomData),
+			});
+			if (response.ok)
 			{
-				getCookie('token');
-				// console.log('dns: ', dns);
-				const fetchurl = 'https://'+DNS+':8083/api_pong/postroom/?request_by=Home';
-				// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-				console.log('fetchurl: ', fetchurl);
-				const response = await fetch(fetchurl, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-CSRFToken': csrftoken,
-					},
-					body: JSON.stringify(roomData),
-				});
-				if (response.ok)
-				{
-					const responseData = await response.json();
-					console.log('Room created: ', responseData);
-				}
-				else
-				{
-					console.error('Failed to create a room: ', response.statusText);
-				}
+				const responseData = await response.json();
+			}
+			else
+			{
+				console.error('Failed to create a room: ', response.statusText);
 			}
 		}
-		catch (error)
-		{
-			console.error('Error: ',error);
-			return ;
-		}
 	}
-	console.log("Start !");
+	catch (error)
+	{
+		console.error('Error: ',error);
+		return ;
+	}
 	const link = document.createElement('a');
 	link.href = '/pong/' + roomUrl + '/';
 	link.setAttribute('data-link', '');
 	document.body.appendChild(link);
-	console.log(link);
 	link.click();
 	document.body.removeChild(link);
 }
 
-export function eventPong(view)
-{
 	document.addEventListener('click', function(event)
 	{
 		if (event.target.matches('.Start'))
 		{
-			view.PongLobbyCreation();
+		const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+		Start(csrftoken, gameMode);
 		}
 		else if (event.target.matches('.PvP'))
 		{
@@ -355,7 +330,6 @@ export function eventPong(view)
 			Hard();
 		}
 	});
-}
 
 export async function checkConnection()
 {

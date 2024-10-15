@@ -1,5 +1,6 @@
 import {myGame} from "../js/index.js"
 import {DNS} from "../js/dns.js";
+import { sendGameResults } from "./sendGameResults.js";
 
 export class vec2
 {
@@ -39,7 +40,6 @@ export class paddle
 		this.pos.update(paddlecx, paddlecy);
 		this.size.update(paddlesx, paddlesy);
 		this.dir = paddledy;
-		// console.log("paddle coor:\nx:",this.pos.x,"\ny:",this.pos.y,"\nsx:",this.size.x,"\nsy:",this.size.y);
 	};
 
 	draw(canvas, ctx, color, frameTime)
@@ -49,7 +49,6 @@ export class paddle
 		ctx.fillStyle = color;
 		const frame = frameTime / (1/20);
 		const posy = this.pos.y + this.dir * frame;
-		// console.log('draw posy:',posy,"\nframe:",frame,"\ndir:",this.dir,"\npos.y:",this.pos.y);
 		ctx.fillRect(this.pos.x / 100 * width, posy / 100 * height, this.size.x / 100 * width, this.size.y / 100 * height);
 	};
 }
@@ -133,7 +132,6 @@ export class game
 		this.paddleL.draw(canvas, ctx, "#FFFBFC", frameTime);
 		this.paddleR.draw(canvas, ctx, "#FFFBFC", frameTime);
 		this.ball.draw(canvas, ctx, "#FFFBFC", frameTime);
-		// console.log('I am drawing');
 	};
 }
 
@@ -165,7 +163,6 @@ function compteARebour(number)
 function gameUpdate(data, game)
 {
 	game.update(data.paddleLcx, data.paddleLcy, data.paddleLsx, data.paddleLsy, data.paddleLd, data.paddleRcx, data.paddleRcy, data.paddleRsx, data.paddleRsy, data.paddleRd, data.ballcx, data.ballcy, data.ballsx, data.ballsy, data.balldx, data.balldy, Date.now());
-	// console.log('game updated');
 }
 
 function gameDraw(game, canvas, ctx)
@@ -189,7 +186,6 @@ export function getCookie(name)
 			}
 		}
 	}
-	console.log("cookie: ", cookieValue);
 	return cookieValue;
 }
 
@@ -202,7 +198,6 @@ keyPressed[40] = false;
 
 window.addEventListener('keydown', function(e){
 	keyPressed[e.keyCode] = true;
-	// console.log("Key pressed: ",e.keyCode, keyPressed[e.keyCode]);
 })
 
 window.addEventListener('keyup', function(e){
@@ -215,13 +210,11 @@ export async function waitForSocketConnection(roomSocket)
 		async function () {
 			if (roomSocket.readyState === 1)
 			{
-				console.log("Connection is made")
 				const me = await testToken(roomSocket);
 				return me;
 			}
 			else
 			{
-				console.log("wait for connection...")
 				await waitForSocketConnection(roomSocket);
 			}
 
@@ -249,9 +242,6 @@ export async function testToken(roomSocket)
 
 	const UserInformation = await response.json();
 
-	console.log(UserInformation);
-	console.log(UserInformation.Username);
-	console.log(UserInformation.ID);
 	roomSocket.send(JSON.stringify({
 		'type': "username",
 		'id': UserInformation.ID,
@@ -265,28 +255,22 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 	const	KEY_UP = 38;
 	const	KEY_DOWN = 40;
 
-	console.log('data onmessage: ', data.type);
 	if (data.type === "connected")
 	{
-		console.log('player connected!');
 		myGame.gameState = "waiting";
 	}
 	else if (data.type === "ready for playing")
 	{
-		console.log('game loading', data);
 		gameDisplay(data.player1Name, data.player2Name);
 	}
 	else if (data.type === "compte a rebour")
 	{
-		console.log(data);
 		compteARebour(data.number);
 	}
 	else if (data.type === "fin du compte")
 	{
-		console.log(data);
 		let comptearebour = document.getElementById('comptearebour');
 		comptearebour.style.display = '';
-		console.log("mon json en preparation!!",keyPressed['w']);
 		roomSocket.send(JSON.stringify({
 			'type': "ping",
 			'w': keyPressed[87],
@@ -296,12 +280,18 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		}));
 		myGame.gameState = "playing";
 	}
-	else if (data.type === "gameUpdate")
+	else if (data.type === "matchmaking")
 	{
-		console.log("data.message: !"+data.message+"!");
-		if (data.message == "update")
+		document.getElementById('comptearebour').innerHTML = data.player1+' vs '+data.player2;
+	}
+	else if (data.type === "gameUpdate" || data.type === "tournamentUpdate")
+	{
+		if (data.type === "tournamentUpdate" && data.message === "ready for playing")
 		{
-			console.log(data);
+			gameDisplay(data.player1Name, data.player2Name);
+		}
+		else if (data.message == "update")
+		{
 			gameUpdate(data, myGame);
 			
 			// gameDraw(game, canvas, ctx);
@@ -322,32 +312,47 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			document.getElementById('player1Score').textContent = data.scoreL;
 			document.getElementById('player2Score').textContent = data.scoreR;
-			console.log(data.scoreL);
-			console.log(data.scoreR);
-			console.log(data.player1Name);
-			console.log(data.player2Name);
-			if (data.partyType == 0 && data.scoreL === 5 && data.player1Name === data.username)
+			let back = document.getElementById('backtopong');
+			if ((data.partyType == 0 || data.partyType == 5) && data.scoreL === 3 && data.player1Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
 				result.style.display = "flex";
+				back.textContent = data.buttonwin
+				back.href = data.urlwin
+				if (data.partyType == 0)
+				{
+					back.textContent = data.buttonloose
+					back.href = data.urlloose
+				}
+				sendGameResults(data.player1Id, data.player2Id, data.scoreL, data.scoreR);
 			}
-			else if (data.partyType == 0 && data.scoreR === 5 && data.player2Name === data.username)
+			else if ((data.partyType == 0 || data.partyType == 5) && data.scoreR === 3 && data.player2Name === data.username)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You win !";
 				result.style.display = "flex";
+				back.textContent = data.buttonwin
+				back.href = data.urlwin
+				if (data.partyType == 0)
+				{
+					back.textContent = data.buttonloose
+					back.href = data.urlloose
+				}
+				sendGameResults(data.player2Id, data.player1Id, data.scoreL, data.scoreR);
 			}
-			else if (data.partyType == 0)
+			else if (data.partyType == 0 || data.partyType == 5)
 			{
 				const	result = document.getElementById("result");
 				result.textContent = "You loose !";
 				result.style.display = "flex";
+				back.textContent = data.buttonloose
+				back.href = data.urlloose
 			}
 			else
 			{
 				const	result = document.getElementById("result");
-				if (data.scoreL == 5)
+				if (data.scoreL == 3)
 				{
 					result.textContent = data.player1Name + " win !";
 				}
@@ -356,26 +361,18 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 					result.textContent = data.player2Name + " win !";
 				}
 				result.style.display = "flex";
+				back.textContent = data.buttonloose
+				back.href = data.urlloose
 			}
-			let back = document.getElementById('backtopong');
 			back.style.display = 'block';
 			myGame.gameState = "end";
-			console.log('myGame.gameState:'+myGame.gameState);
-			// const pourStan = {
-			// 	"player one" : data.player1id,
-			// 	"player two": data.player2id,
-			// 	"score one": scoreL,
-			// 	"score two": scoreR,
-			// 	"winner": 1,// ou 2 player id du winner
-			// 	"game": "pong"
-			// };
-			// const link = document.createElement('a');
-			// link.href = '/pong/';
-			// link.setAttribute('data-link', '');
-			// document.body.appendChild(link);
-			// console.log(link);
-			// link.click();
-			// document.body.removeChild(link);
+			const	result = document.getElementById("result");
+			if (data.partyType == 5 && result.textContent == "You win !" && data.urlwin == "Next round")
+			{
+				back.href = "pong/SbDaMcGf24/";
+				back.textContent = data.buttonwin
+			}
+			roomSocket.close(1000, "Closing at end of the game")
 		}
 	}
 	else if (data.type == "tournament")
@@ -385,19 +382,16 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		link.href = '/pong/'+data.url;
 		link.setAttribute('data-link', '');
 		document.body.appendChild(link);
-		console.log(link);
 		link.click();
 		document.body.removeChild(link);
 	}
 	else if (data.type === "end game")
 	{
-		console.log("serveur wants to quit");
 		const link = document.createElement('a');
 		link.href = '/pong/';
 		link.setAttribute('data-link', '');
 		document.body.appendChild(link);
-		console.log(link);
 		link.click();
-		document.body.removeChild(link);
+			document.body.removeChild(link);
 	}
 }
