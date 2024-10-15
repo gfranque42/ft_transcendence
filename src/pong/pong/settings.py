@@ -100,7 +100,6 @@ DATABASES = {
 
 bob = 'http://' + os.getenv('DNS') + ':8002'
 boby = 'https://' + os.getenv('DNS') + ':8083'
-print('bob: ', bob, '\nboby: ', boby)
 CORS_ALLOWED_ORIGINS = [
 	'https://localhost:8083',
 	'http://localhost:8002',
@@ -156,7 +155,5 @@ STATICFILES_DIRS = [
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-print(os.getenv('DNS'))
 
 ALLOWED_HOSTS = [os.getenv('DNS'), 'localhost']

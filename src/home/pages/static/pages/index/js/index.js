@@ -413,9 +413,7 @@ const router = async () => {
                 new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
 
 		var socketProtocol = 'ws://';
-		// console.log(window.location.protocol);
 		if (window.location.protocol === 'https:') {
-			// console.log('protocol https');
 			socketProtocol = 'wss://';
 		}
 
@@ -432,7 +430,6 @@ const router = async () => {
 		roomSocket.onopen = function () {
 			testToken(roomSocket).then(() => {
 				myGame.reset();
-				// console.log('my game is ready: ', myGame.gameState);
 
 				canvas.width = window.innerWidth * 0.8;
 				canvas.height = window.innerHeight * 0.7;
@@ -442,13 +439,11 @@ const router = async () => {
 			const data = JSON.parse(e.data);
 			if (data.type === "fin du compte") {
 				myGame.gameState = "playing";
-				// console.log("my gamestate: ",myGame.gameState);
 			}
 			wsonmessage(data, roomSocket, canvas, ctx);
 		};
 
 		roomSocket.onclose = function (e) {
-			// console.log('Chat socket closed');
 			myGame.gameState = "end";
 			myGame.reset();
 		};
@@ -456,12 +451,10 @@ const router = async () => {
         while (myGame.gameState != "end")
         {	
 			let elapstime = Date.now() - starttime;
-			// console.log("time: ",elapstime);
 			if (elapstime > 1000 / 60)
 			{
 				myGame.draw(canvas, ctx, (Date.now() - myGame.frameTime) / 1000);
 				starttime += 1000 / 60;
-				// console.log(".");
 			}
 			await new Promise(r => setTimeout(r, 2));
         }

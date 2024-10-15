@@ -193,7 +193,6 @@ function getCookie(name)
 			}
 		}
 	}
-	console.log("cookie: ", cookieValue);
 	return cookieValue;
 }
 
@@ -201,15 +200,10 @@ async function checkRoom(options, gameMode)
 {
 	const response = await fetch('https://'+DNS+':8083/api_pong/getroom?request_by=Home', options);
 	const rooms = await response.json();
-	console.log('rooms:',rooms);
 	for (let i = 0; i < rooms.length; i++)
 	{
-		console.log("i = ",i," rooms[i].maxPlayers - players.length = ",(rooms[i].maxPlayers - rooms[i].playerCount));
-		console.log("i = ",i," rooms[i].maxPlayers = ",(rooms[i].maxPlayers));
-		console.log("i = ",i," players.length = ",rooms[i].playerCount);
 		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 1)
 		{
-			console.log(rooms[i]);
 			return (rooms[i].url);
 		}
 	}
@@ -217,7 +211,6 @@ async function checkRoom(options, gameMode)
 	{
 		if (gameMode == rooms[i].difficulty && (rooms[i].maxPlayers - rooms[i].playerCount) == 2)
 		{
-			console.log(rooms[i]);
 			return (rooms[i].url);
 		}
 	}
@@ -269,10 +262,7 @@ export async	function Start(csrftoken, Mode)
 		if (roomExist == 0)
 		{
 			getCookie('token');
-			// console.log('dns: ', dns);
 			const fetchurl = 'https://'+DNS+':8083/api_pong/postroom/?request_by=Home';
-			// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-			console.log('fetchurl: ', fetchurl);
 			const response = await fetch(fetchurl, {
 				method: 'POST',
 				headers: {
@@ -284,7 +274,6 @@ export async	function Start(csrftoken, Mode)
 			if (response.ok)
 			{
 				const responseData = await response.json();
-				console.log('Room created: ', responseData);
 			}
 			else
 			{
@@ -297,12 +286,10 @@ export async	function Start(csrftoken, Mode)
 		console.error('Error: ',error);
 		return ;
 	}
-	console.log("Start !");
 	const link = document.createElement('a');
 	link.href = '/pong/' + roomUrl + '/';
 	link.setAttribute('data-link', '');
 	document.body.appendChild(link);
-	console.log(link);
 	link.click();
 	document.body.removeChild(link);
 }
@@ -312,7 +299,6 @@ export async	function Start(csrftoken, Mode)
 		if (event.target.matches('.Start'))
 		{
 		const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-		console.log("start function launched!!!");
 		Start(csrftoken, gameMode);
 		}
 		else if (event.target.matches('.PvP'))
