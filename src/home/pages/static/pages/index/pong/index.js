@@ -296,7 +296,7 @@ export async	function Start(csrftoken, Mode)
 
 document.addEventListener('click', function(event)
 {
-	if (window.location.hostname === '/pong/')
+	if (window.location.pathname === '/pong/')
 	{
 		if (event.target.matches('.Start'))
 		{

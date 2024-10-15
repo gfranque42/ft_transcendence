@@ -84,15 +84,14 @@ export default class extends abstractviews {
                 'X-CSRFToken': this.csrfToken,
             },
         });
-        console.log(response.status);
         const errorElement = document.querySelector(".profile-error");
 
+        if (response.status === 413) {
+            errorElement.innerHTML = "File Too Large";
+            return ;
+        }
         const data = await response.json();
-        console.log(data);
-        if (response.status === 413)
-            errorElement.innerHTML = "File Too Large"; 
-        if (response.status === 401)
-        {
+        if (response.status === 401){
             errorElement.innerHTML = data.error.username;
             return ;
         }
