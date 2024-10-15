@@ -67,7 +67,7 @@ class	PongConsumer(AsyncWebsocketConsumer):
 					await self.close()
 					# say to the front goodbye
 				if gRoomsManager.rooms[self.room_name].ready == True:
-					if gRoomsManager.rooms[self.room_name].partyType == 5:
+					if gRoomsManager.rooms[self.room_name].partyType == 5 and self.room_name != "SbDaMcGf24":
 						await gRoomsManager.rooms[self.room_name].waitForTournament()
 					else:
 						await self.channel_layer.group_send(

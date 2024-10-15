@@ -144,14 +144,15 @@ class	room():
 
 	@database_sync_to_async
 	def	waitForTournament(self) -> None:
-		if self.roomName == "SbDaMcGf24":
-			async_to_sync(self.channelLayer.group_send)(
-					self.roomGroupName, {"type": "gameUpdate", "message": "ready for playing"})
-			async_to_sync(gRoomsManager.rooms[self.roomName].start)()
-			return
-		# gRoomsManager.rooms["SbDaMcGf24"] = room("SbDaMcGf24", 2, 5)
-		# gRoomsManager.rooms["SbDaMcGf24"].channelLayer = get_channel_layer()
-		# gRoomsManager.rooms["SbDaMcGf24"].roomGroupName = "pong_%s" % "SbDaMcGf24"
+		gRoomsManager.rooms["SbDaMcGf24"].players.clear()
+		gRoomsManager.rooms["SbDaMcGf24"].scoreL = 0
+		gRoomsManager.rooms["SbDaMcGf24"].scoreR = 0
+		gRoomsManager.rooms["SbDaMcGf24"].ready = False
+		gRoomsManager.rooms["SbDaMcGf24"].inGame = False
+		gRoomsManager.rooms["SbDaMcGf24"].finish = False
+		gRoomsManager.rooms["SbDaMcGf24"].paddleL = Paddle(Vec2(3, 32.5), Vec2(3, 35), 2.1, 0)
+		gRoomsManager.rooms["SbDaMcGf24"].paddleR = Paddle(Vec2(94, 32.5), Vec2(3, 35), 2.1, 0)
+		gRoomsManager.rooms["SbDaMcGf24"].ball = Ball(Vec2(48, 48), Vec2(3, 3), 35, 2)
 		room = Room.objects.filter(difficulty=5)
 		i = 0
 		groupName = []
@@ -168,12 +169,12 @@ class	room():
 				print(gn,": send",flush=True)
 				async_to_sync(channelLayer.group_send)(gn, {"type": "gameUpdate", "message": "tournament start"})
 				print(gn,": sent",flush=True)
-			gTournament.players //= 2
+			# gTournament.players //= 2
 		self.buttonwin = "Next round"
 		self.urlwin = "pong/SbDaMcGf24/"
-		if gTournament.players < 2:
-			self.buttonwin = "You win the tournament !"
-			self.urlwin = "/"
+		# if gTournament.players < 2:
+		# 	self.buttonwin = "You win the tournament !"
+		# 	self.urlwin = "/"
 
 	def	endOfParty(self) -> None:
 		print(self.roomName,": End of the party",flush=True)

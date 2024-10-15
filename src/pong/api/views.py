@@ -116,7 +116,8 @@ def	getIndex(request):
 			keys.append(key)
 	print("get index: ",keys,flush=True)
 	for i in keys:
-		del gRoomsManager.rooms[i]
+		if i != "SbDaMcGf24":
+			del gRoomsManager.rooms[i]
 	print("get index: ",gRoomsManager.rooms, flush=True)
    
 	return HttpResponse(template.render(context, request))
