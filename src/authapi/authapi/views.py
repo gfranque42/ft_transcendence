@@ -394,8 +394,9 @@ class Profile(APIView):
                 print("User profile Avatar", flush=True)
                 userProfile.avatar = formAvatar.cleaned_data["avatar"]
                 userProfile.save()
-            if (not formUsername.is_valid()):
+            if (not formUsername.is_valid() and formUsername.cleaned_data):
                 return Response({'error': formUsername.errors}, status=status.HTTP_401_UNAUTHORIZED)
+
             return Response({'success': 'No Verification'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return Response({'error': 'Invalid Token'}, status=status.HTTP_401_UNAUTHORIZED)
