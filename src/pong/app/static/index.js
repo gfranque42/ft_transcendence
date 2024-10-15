@@ -126,7 +126,6 @@ function getCookie(name)
 			}
 		}
 	}
-	console.log("cookie: ", cookieValue);
 	return cookieValue;
 }
 
@@ -142,12 +141,9 @@ export async	function Start(csrfToken)
 	try
 	{
 		getCookie('token');
-		console.log('dns: ', dns);
 		const url = window.location.href;
 		const finalurl = url.replace(window.location.pathname, '');
 		const fetchurl = finalurl + '/api_pong/postroom/';
-		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-		console.log('fetchurl: ', fetchurl);
 		const response = await fetch(fetchurl, {
 			method: 'POST',
 			headers: {
@@ -159,7 +155,6 @@ export async	function Start(csrfToken)
 		if (response.ok)
 		{
 			const responseData = await response.json();
-			console.log('Room created: ', responseData);
 		}
 		else
 		{

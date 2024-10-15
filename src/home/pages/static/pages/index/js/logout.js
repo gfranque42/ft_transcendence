@@ -14,8 +14,6 @@ export async function logout(userToken) {
 		},
 	});
 
-	console.log("logout");
-
 	const data = await response.json();
 	return null;
 }

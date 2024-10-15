@@ -115,18 +115,16 @@ export function getCookie(name)
 export async function Start()
 {
 	const userInfo = await getUser();
-	console.log()
 	if (userInfo.expired) {
 		navigateTo('/login/');
 		return ;
 	}
-	console.log('Start button clicked');
+
 	if (gameMode == -1) {
 		alert('Please select a game mode');
 		return ;
 	}
 
-	console.log('MULTIPLAYER??', multiplayer);
 	const roomData = {
 		difficulty: gameMode,
 		user: userInfo.Username,
@@ -137,14 +135,10 @@ export async function Start()
 	try
 	{
 		const tempContentHtml = document.body.innerHTML;
-		// Extract CSRF token from HTML form
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(tempContentHtml, 'text/html');
 		const csrfToken = doc.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-		// console.log('dns: ', dns);
-		// const fetchurl = 'http://' + dns + ':8002/api_pong/postroom/';
-		// console.log('fetchurl: ', fetchurl);
 		const response = await fetch('/sudokubattle/api/sudoku/create/?request_by=Home', {
 			method: 'POST',
 			headers: {
@@ -157,10 +151,7 @@ export async function Start()
 		if (response.ok)
 		{
 			const responseData = await response.json();
-			console.log('Room created: ', responseData);
-
 			const roomUrl = responseData.roomUrl;
-			console.log('navigating to roomUrl: ', roomUrl);
 			navigateTo(`/sudoku/${roomUrl}/`);
 		}
 		else
@@ -174,6 +165,4 @@ export async function Start()
 		return ;
 	}
 	console.log("Start!");
-
-	// Send a post request to go to the waiting room with the gamemode
 }
