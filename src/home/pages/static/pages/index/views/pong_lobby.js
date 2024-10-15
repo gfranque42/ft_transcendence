@@ -1,5 +1,6 @@
 import abstractviews from "./abstractviews.js";
 import {DNS} from "../js/dns.js";
+import {loadCSS} from "../js/loadCSS.js";
 
 export let csrfToken = null;
 
@@ -10,8 +11,16 @@ export default class extends abstractviews {
         this.setTitle("PongLobby");
     }
 
-    async getHtml() 
+    async getHtml()
     {
+
+        const cssFiles = [ 
+            'https://'+DNS+':8083/static/pages/index/css/pong/pong.css?request_by=Home',
+            'https://'+DNS+':8083/static/pages/index/css/pong/index.css?request_by=Home',
+        ];
+
+        cssFiles.forEach(url => loadCSS(url));
+
 		const url = location.pathname;
 		const bob = url.replace('/pong/', '');
 		const room_name = bob.replace('/', '');
