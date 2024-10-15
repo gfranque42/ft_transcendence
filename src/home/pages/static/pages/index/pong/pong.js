@@ -298,6 +298,10 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 		}));
 		myGame.gameState = "playing";
 	}
+	else if (data.type === "matchmaking")
+	{
+		document.getElementById('comptearebour').innerHTML = data.player1+' vs '+data.player2;
+	}
 	else if (data.type === "gameUpdate" || data.type === "tournamentUpdate")
 	{
 		console.log("data.message: !"+data.message+"!");
@@ -375,7 +379,7 @@ export async function wsonmessage(data, roomSocket, canvas, ctx)
 			else
 			{
 				const	result = document.getElementById("result");
-				if (data.scoreL == 5)
+				if (data.scoreL == 3)
 				{
 					result.textContent = data.player1Name + " win !";
 				}

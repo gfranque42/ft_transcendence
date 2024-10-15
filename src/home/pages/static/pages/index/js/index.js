@@ -8,7 +8,7 @@ import Register from "../views/register.js";
 import Pong from "../views/pong.js";
 import PongLobby from "../views/pong_lobby.js";
 import { vec2, paddle, ball, game, waitForSocketConnection, wsonmessage, testToken } from "../pong/pong.js";
-import { eventPong, checkConnection } from "../pong/index.js";
+import { checkConnection } from "../pong/index.js";
 import Profile from "../views/profile.js";
 import Sudoku from "../views/sudoku.js";
 import SudokuLobby from "../views/lobby_sudoku.js";
@@ -406,40 +406,16 @@ const router = async () => {
         }
     } else if (match.route.path == "/pong/") {
         await checkConnection();
-        eventPong(view);
 
     } else if (match.route.path == "/pong/[A-Za-z0-9]{10}/")  {
 		await checkConnection();
         myGame = new game(new paddle(new vec2(-2, -2), new vec2(1, 1)), new paddle(new vec2(-2, -2),
                 new vec2(1, 1)), new ball(new vec2(-2, -2), new vec2(1, 1), new vec2(0, 0)));
-		// window.addEventListener('beforeunload', function (event) {
-		// 	// Perform cleanup actions here
-		// 	if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
-		// 		roomSocket.close();
-		// 	}
-		// 	myGame.gameState = "end";
-		// 	// Optionally, you can show a confirmation dialog (optional)
-		// 	event.preventDefault();  // Some browsers require this
-		// 	event.returnValue = '';  // This prompts the confirmation dialog in most browsers
-		// });
-
-		// // Handle back/forward navigation using the "popstate" event
-		// window.addEventListener('popstate', function (event) {
-		// 	// Perform any specific cleanup needed here
-		// 	console.log('Back or forward button pressed');
-			
-		// 	// Close WebSocket connection if it's open
-		// 	if (roomSocket && roomSocket.readyState === WebSocket.OPEN) {
-		// 		roomSocket.close();
-		// 	}
-		// 	myGame.gameState = "end";
-
-		// });
 
 		var socketProtocol = 'ws://';
-		console.log(window.location.protocol);
+		// console.log(window.location.protocol);
 		if (window.location.protocol === 'https:') {
-			console.log('protocol https');
+			// console.log('protocol https');
 			socketProtocol = 'wss://';
 		}
 
@@ -456,7 +432,7 @@ const router = async () => {
 		roomSocket.onopen = function () {
 			testToken(roomSocket).then(() => {
 				myGame.reset();
-				console.log('my game is ready: ', myGame.gameState);
+				// console.log('my game is ready: ', myGame.gameState);
 
 				canvas.width = window.innerWidth * 0.8;
 				canvas.height = window.innerHeight * 0.7;
@@ -466,17 +442,16 @@ const router = async () => {
 			const data = JSON.parse(e.data);
 			if (data.type === "fin du compte") {
 				myGame.gameState = "playing";
-				console.log("my gamestate: ",myGame.gameState);
+				// console.log("my gamestate: ",myGame.gameState);
 			}
 			wsonmessage(data, roomSocket, canvas, ctx);
 		};
 
 		roomSocket.onclose = function (e) {
-			console.log('Chat socket closed');
+			// console.log('Chat socket closed');
 			myGame.gameState = "end";
 			myGame.reset();
 		};
-
 		let starttime = Date.now();
         while (myGame.gameState != "end")
         {	

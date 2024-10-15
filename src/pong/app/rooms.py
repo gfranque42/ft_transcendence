@@ -165,6 +165,12 @@ class	room():
 
 	async def	countDown(self) -> None:
 		print(self.roomName,": countdown started",flush=True)
+		await self.channelLayer.group_send(
+						self.roomGroupName, {"type": "gameUpdate",
+							"message": "matchmaking",
+							"player1": self.players[0],
+							"player2": self.players[1]})
+		await asyncio.sleep(2)
 		if self.ready == True and self.inGame == False:
 			x: int = 3
 			while x > 0:

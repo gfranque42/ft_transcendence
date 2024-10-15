@@ -88,13 +88,13 @@ class	PongConsumer(AsyncWebsocketConsumer):
 		print(self.username,': bisous de game_update',flush=True)
 		message = event["message"]
 		event["username"] = self.username
-		event["id"] = self.id
 		print(self.username,': ',message,flush=True)
 		if (message == "update"):
 			print(self.username,': valeur de paddledir:', event["paddleLd"],flush=True)
 			await self.send(text_data=json.dumps(event))
 		elif (message == "finish"):
 			print(self.username,': the game is finished !\nBye bye !',flush=True)
+			event["id"] = self.id
 			await self.send(text_data=json.dumps(event))
 			event["button"] = "Back to the menu"
 			event["redir"] = "/"
@@ -104,6 +104,10 @@ class	PongConsumer(AsyncWebsocketConsumer):
 			await self.send(text_data=json.dumps({"type": "compte a rebour",
 					"message": "compte a rebour",
 					"number": event["number"]}))
+		elif (message == "matchmaking"):
+			await self.send(text_data=json.dumps({"type": message, "message": message,
+										"player1": event["player1"],
+										"player2": event["player2"]}))
 		elif (message == "fin du compte"):
 			await self.send(text_data=json.dumps({"type": "fin du compte",
 										 "message": "fin du compte",

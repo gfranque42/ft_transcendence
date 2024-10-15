@@ -307,13 +307,13 @@ export async	function Start(csrftoken, Mode)
 	document.body.removeChild(link);
 }
 
-export function eventPong(view)
-{
 	document.addEventListener('click', function(event)
 	{
 		if (event.target.matches('.Start'))
 		{
-			view.PongLobbyCreation(gameMode);
+		const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+		console.log("start function launched!!!");
+		Start(csrftoken, gameMode);
 		}
 		else if (event.target.matches('.PvP'))
 		{
@@ -344,7 +344,6 @@ export function eventPong(view)
 			Hard();
 		}
 	});
-}
 
 export async function checkConnection()
 {
