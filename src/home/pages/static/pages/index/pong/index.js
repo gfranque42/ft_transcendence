@@ -294,7 +294,9 @@ export async	function Start(csrftoken, Mode)
 	document.body.removeChild(link);
 }
 
-	document.addEventListener('click', function(event)
+document.addEventListener('click', function(event)
+{
+	if (window.location.hostname === '/pong/')
 	{
 		if (event.target.matches('.Start'))
 		{
@@ -329,7 +331,8 @@ export async	function Start(csrftoken, Mode)
 		{
 			Hard();
 		}
-	});
+	}
+});
 
 export async function checkConnection()
 {
